@@ -1,0 +1,21 @@
+import "funcs.lg";
+
+
+fun int main(){
+    rational <int, int> c = {1, 2};
+    curve<real> y (x, a, b) = a * sin(x) + b * cos(x) ^ 2 + a * b;
+    curve<real> w (x) = x^4 + 3*x^2 - 2*x;
+
+    curve<real> z = input_poly(5) / w;
+
+    curve<real> z2 = z * y;
+
+    curve<real> y1 = D[y, x];
+
+    z2 = D[z2, x];
+    curve<real> z3 = D[y*z2, x];
+
+    print_curve(z3);
+
+    return 0;
+}
