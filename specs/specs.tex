@@ -1,0 +1,151 @@
+\documentclass[12pt]{article}
+\usepackage{float}
+\title{\LARGE \textbf{Lgebra: A Symbolic Language} \\\large \textbf{CS****: Compiler-II Course Project}}
+\author{\textbf{Group **}}
+
+\begin{document}
+
+    \maketitle
+    \tableofcontents
+    
+    \newpage
+    \section{Introduction}
+    \section{Why Lgebra?}
+    \section{Language Specifications}
+    \subsection{Keywords}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|c|c|c|}
+            \hline
+            \textbf{Keywords} & \textbf{Description} & \textbf{Example} \\
+            \hline
+            if & & \\
+            \hline
+            else & & \\
+            \hline
+            until & & \\
+            \hline
+            repeat & & \\
+            \hline
+            for & & \\
+            \hline
+            break & & \\
+            \hline
+            continue & & \\
+            \hline
+            return & & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \subsection{Data Types}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|c|c|c|}
+            \hline
+            \textbf{Data Types} & \textbf{Description} & \textbf{Example} \\
+            \hline
+            int & & \\
+            \hline
+            long & & \\
+            \hline
+            float & & \\
+            \hline
+            real & & \\
+            \hline
+            complex & & \\
+            \hline
+            vector$<$Data Type$>$ & & \\
+            \hline
+            curves & & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \subsection{Identifiers}
+    \subsubsection{Rules}
+    \begin{enumerate}
+        \item All identifiers should start with alphabets
+        \item 
+    \end{enumerate}
+    \subsubsection{Reserved Identifiers}
+    \begin{enumerate}
+        \item Keywords and Datatype are reserved Identifiers
+        \item Constants like pi, e, ... are reserverd Identifiers
+    \end{enumerate}
+    \subsection{Declarations}
+    \subsubsection{Curves}
+    \begin{enumerate}
+        \item Curve should be declared as follows
+        \begin{verbatim}
+curve [return data type] curve_name(commma seperated variables) 
+= Expression in terms of independent variable
+        \end{verbatim}
+        \item Every curve should have atleast one independent variable (like x in f(x))
+        \item Apart from independent variables, other variable in expression should be declared and defined.
+        \item By default the return type of function is real. Hence it need not to be mentioned.
+        \item In following example, both x is different
+        \begin{verbatim}
+int x = 1;
+curve f(x) = x^2+1;
+        \end{verbatim}
+    \end{enumerate}
+    \subsubsection{Other Non-Curves}
+    \begin{enumerate}
+        \item Other declaration are C like declaration.
+    \end{enumerate}
+    \subsection{Expression}
+    \subsubsection{Curve}
+    \begin{enumerate}
+        \item [Some restiction on Curve]
+    \end{enumerate}
+    \subsubsection{Non-Curve}
+    Similar to C
+    \subsection{Constants}
+
+    \subsubsection{Built-In constants}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|c|c|c|}
+            \hline
+            \textbf{Name} & \textbf{Value} & \textbf{Description} \\
+            \hline
+            e&  2.721 & Euler Constant  \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \subsubsection{User-defined constants}
+    Explain About Long long constant, float constant , complex constant etc
+    \subsection{Functions}
+    \subsubsection{Built-In Functions}
+    \begin{enumerate}
+        \item \textbf{sum}:
+        \item \textbf{derivate}:
+    \end{enumerate}
+    \subsubsection{User-defined Functions}
+    \begin{enumerate}
+        \item User Defined Function should be defined as follows:
+    \end{enumerate}
+    \subsection{Structs}
+    \begin{enumerate}
+        \item C like functionalities
+    \end{enumerate}
+    \subsection{Vectors}
+    \begin{enumerate}
+        \item Explain Operation on Vectors and how to declare it.
+    \end{enumerate}
+    \subsection{Error Analysis}
+    \begin{enumerate}
+        \item Explain try and catch block
+    \end{enumerate}
+    
+    \section{Other Functionalities}
+    \subsection{Operator and Function Overloading}
+    \subsection{Irrational Mathematics}
+
+    
+    \section{Compilation Steps}
+    \section{Performance Analysis}
+    \section{Drawbacks}
+    \section{Future Scope}
+    \section{Conclusion}
+
+\end{document}

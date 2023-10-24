@@ -1,0 +1,31 @@
+\contentsline {section}{\numberline {1}Introduction}{3}{}%
+\contentsline {section}{\numberline {2}Why Lgebra?}{3}{}%
+\contentsline {section}{\numberline {3}Language Specifications}{3}{}%
+\contentsline {subsection}{\numberline {3.1}Keywords}{3}{}%
+\contentsline {subsection}{\numberline {3.2}Data Types}{3}{}%
+\contentsline {subsection}{\numberline {3.3}Identifiers}{3}{}%
+\contentsline {subsubsection}{\numberline {3.3.1}Rules}{3}{}%
+\contentsline {subsubsection}{\numberline {3.3.2}Reserved Identifiers}{4}{}%
+\contentsline {subsection}{\numberline {3.4}Declarations}{4}{}%
+\contentsline {subsubsection}{\numberline {3.4.1}Curves}{4}{}%
+\contentsline {subsubsection}{\numberline {3.4.2}Other Non-Curves}{4}{}%
+\contentsline {subsection}{\numberline {3.5}Expression}{4}{}%
+\contentsline {subsubsection}{\numberline {3.5.1}Curve}{4}{}%
+\contentsline {subsubsection}{\numberline {3.5.2}Non-Curve}{5}{}%
+\contentsline {subsection}{\numberline {3.6}Constants}{5}{}%
+\contentsline {subsubsection}{\numberline {3.6.1}Built-In constants}{5}{}%
+\contentsline {subsubsection}{\numberline {3.6.2}User-defined constants}{5}{}%
+\contentsline {subsection}{\numberline {3.7}Functions}{5}{}%
+\contentsline {subsubsection}{\numberline {3.7.1}Built-In Functions}{5}{}%
+\contentsline {subsubsection}{\numberline {3.7.2}User-defined Functions}{5}{}%
+\contentsline {subsection}{\numberline {3.8}Structs}{5}{}%
+\contentsline {subsection}{\numberline {3.9}Vectors}{5}{}%
+\contentsline {subsection}{\numberline {3.10}Error Analysis}{5}{}%
+\contentsline {section}{\numberline {4}Other Functionalities}{6}{}%
+\contentsline {subsection}{\numberline {4.1}Operator and Function Overloading}{6}{}%
+\contentsline {subsection}{\numberline {4.2}Irrational Mathematics}{6}{}%
+\contentsline {section}{\numberline {5}Compilation Steps}{6}{}%
+\contentsline {section}{\numberline {6}Performance Analysis}{6}{}%
+\contentsline {section}{\numberline {7}Drawbacks}{6}{}%
+\contentsline {section}{\numberline {8}Future Scope}{6}{}%
+\contentsline {section}{\numberline {9}Conclusion}{6}{}%

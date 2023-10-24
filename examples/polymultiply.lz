@@ -1,4 +1,4 @@
-// Multiply two polynomialscd 
+// Multiply two polynomial
 
 fun int main(){
     curve f(x), g(x); // real polynomial
