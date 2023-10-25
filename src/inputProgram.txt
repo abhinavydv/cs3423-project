@@ -1,0 +1,16 @@
+ram + - for { 
+    a+b;
+    9-5=2;
+}
+_rat09 += +- ++ -- >> +- 2**5
+char mohan = 'c';
+string s = "ujjwalsingh";
+if(a>b){
+
+    return 5;
+}
+ram 
+// my name is ujjwal
+/* fdgjdsgbjdf
+*/
+hjfgh _vcgsh
