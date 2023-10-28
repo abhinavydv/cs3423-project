@@ -1,50 +1,67 @@
 Identifier: ram
-Operator: +
-Operator: -
-Keyword: for
-Left Curly Brace: {
+Logical Bin Op: +
+Logical Bin Op: -
+Loop: for
+Curly: {
 Identifier: a
-Operator: +
+Logical Bin Op: +
 Identifier: b
-Semicolon: ;
-Number: 9
-Operator: -
-Number: 5
-Assignment:=
-Number: 2
-Semicolon: ;
-Right Curly Brace: }
+Semi Colon: ;
+Number Constant: 9
+Logical Bin Op: -
+Number Constant: 5
+Logical Bin Op: =
+Number Constant: 2
+Semi Colon: ;
+Curly: }
 Identifier: _rat09
-Compound Assignment: +=
-Plus Minus: +-
-Increment: ++
-Decrement: --
-Shift operator: >>
-Plus Minus: +-
-Number: 2
-Exponent: **
-Number: 5
-Keyword: char
+Logical Bin Op: +
+Logical Bin Op: =
+Logical Bin Op: +
+Logical Bin Op: -
+Logical Uni Op: ++
+Logical Uni Op: --
+Boolean Op: >>
+Logical Bin Op: +
+Logical Bin Op: -
+Number Constant: 2
+Logical Bin Op: *
+Logical Bin Op: *
+Number Constant: 5
+Char Dataype: char
 Identifier: mohan
-Assignment:=
-Character: 'c'
-Semicolon: ;
-Keyword: string
+Logical Bin Op: =
+Character Constant: 'c'
+Semi Colon: ;
+String Datatype: string
 Identifier: s
-Assignment:=
-String: "ujjwalsingh"
-Semicolon: ;
-Keyword: if
-Left Parenthesis: (
+Logical Bin Op: =
+String Constant: "ujjwalsingh"
+Semi Colon: ;
+Square Bracket: [
+Square Bracket: ]
+Conditional: if
+Parenthesis: (
 Identifier: a
-Comparison Operator: >
+Relational Op: >
 Identifier: b
-Right Parenthesis: )
-Left Curly Brace: {
-Keyword: return
-Number: 5
-Semicolon: ;
-Right Curly Brace: }
+Parenthesis: )
+Curly: {
+Return: return
+Number Constant: 5
+Semi Colon: ;
+Curly: }
 Identifier: ram
+Logical Bin Op: /
+Logical Bin Op: /
+Identifier: my
+Identifier: name
+Identifier: is
+Identifier: ujjwal
+Logical Bin Op: /
+Logical Bin Op: *
+Identifier: fdgjdsgbjdf
+Logical Bin Op: *
+Logical Bin Op: /
 Identifier: hjfgh
 Identifier: _vcgsh

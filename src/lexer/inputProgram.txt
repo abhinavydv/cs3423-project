@@ -4,7 +4,7 @@ ram + - for {
 }
 _rat09 += +- ++ -- >> +- 2**5
 char mohan = 'c';
-string s = "ujjwalsingh";
+string s = "ujjwalsingh"; []
 if(a>b){
 
     return 5;
