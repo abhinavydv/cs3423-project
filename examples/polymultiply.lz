@@ -16,7 +16,7 @@ fun int main(){
 
     curve c(k) = InverseFFT(y,11); // output can be of form x, but should be converted into k
 
-    print("Curve is ", c(t)); // print should display the curve in form of t.
+    print("Curve is ", c(t)); // print should display the curve in form of t
     
     return 0;
 }

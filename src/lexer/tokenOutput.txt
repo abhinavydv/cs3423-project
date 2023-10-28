@@ -1,67 +1,410 @@
-Identifier: ram
-Logical Bin Op: +
-Logical Bin Op: -
-Loop: for
-Curly: {
-Identifier: a
-Logical Bin Op: +
-Identifier: b
-Semi Colon: ;
-Number Constant: 9
-Logical Bin Op: -
-Number Constant: 5
-Logical Bin Op: =
-Number Constant: 2
-Semi Colon: ;
-Curly: }
-Identifier: _rat09
-Logical Bin Op: +
-Logical Bin Op: =
-Logical Bin Op: +
-Logical Bin Op: -
-Logical Uni Op: ++
-Logical Uni Op: --
-Boolean Op: >>
-Logical Bin Op: +
-Logical Bin Op: -
-Number Constant: 2
-Logical Bin Op: *
-Logical Bin Op: *
-Number Constant: 5
-Char Dataype: char
-Identifier: mohan
-Logical Bin Op: =
-Character Constant: 'c'
-Semi Colon: ;
-String Datatype: string
-Identifier: s
-Logical Bin Op: =
-String Constant: "ujjwalsingh"
-Semi Colon: ;
-Square Bracket: [
-Square Bracket: ]
-Conditional: if
+Logical Bin Op: /
+Logical Bin Op: /
+Identifier: Multiply
+Identifier: two
+Identifier: polynomial
+Identifier: fun
+Integer Datatype: int
+Identifier: main
 Parenthesis: (
-Identifier: a
-Relational Op: >
-Identifier: b
 Parenthesis: )
 Curly: {
+Curve Datatype: curve
+Identifier: f
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Comma: ,
+Identifier: g
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Semi Colon: ;
+Logical Bin Op: /
+Logical Bin Op: /
+Real Datatype: real
+Identifier: polynomial
+Identifier: f
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Logical Bin Op: =
+Identifier: input_poly
+Parenthesis: (
+Number Constant: 10
+Parenthesis: )
+Semi Colon: ;
+Identifier: g
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Logical Bin Op: =
+Identifier: input_poly
+Parenthesis: (
+Number Constant: 9
+Parenthesis: )
+Semi Colon: ;
+Complex Datatype: complex
+Square Bracket: [
+Square Bracket: ]
+Identifier: y_f
+Square Bracket: [
+Number Constant: 11
+Square Bracket: ]
+Comma: ,
+Identifier: y_g
+Square Bracket: [
+Number Constant: 11
+Square Bracket: ]
+Semi Colon: ;
+Identifier: y_f
+Logical Bin Op: =
+Identifier: FFT
+Parenthesis: (
+Identifier: f
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Comma: ,
+Number Constant: 10
+Parenthesis: )
+Semi Colon: ;
+Identifier: y_g
+Logical Bin Op: =
+Identifier: FFT
+Parenthesis: (
+Identifier: g
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Comma: ,
+Number Constant: 10
+Parenthesis: )
+Semi Colon: ;
+Complex Datatype: complex
+Square Bracket: [
+Square Bracket: ]
+Identifier: y
+Square Bracket: [
+Number Constant: 11
+Square Bracket: ]
+Semi Colon: ;
+Identifier: y
+Logical Bin Op: =
+Identifier: y_f
+Logical Bin Op: *
+Identifier: y_g
+Semi Colon: ;
+Logical Bin Op: /
+Logical Bin Op: /
+Identifier: Overloading
+Curve Datatype: curve
+Identifier: c
+Parenthesis: (
+Identifier: k
+Parenthesis: )
+Logical Bin Op: =
+Identifier: InverseFFT
+Parenthesis: (
+Identifier: y
+Comma: ,
+Number Constant: 11
+Parenthesis: )
+Semi Colon: ;
+Logical Bin Op: /
+Logical Bin Op: /
+Identifier: output
+Identifier: can
+Identifier: be
+Identifier: of
+Identifier: form
+Identifier: x
+Comma: ,
+Identifier: but
+Identifier: should
+Identifier: be
+Identifier: converted
+Identifier: into
+Identifier: k
+Identifier: print
+Parenthesis: (
+String Constant: "Curve is "
+Comma: ,
+Identifier: c
+Parenthesis: (
+Identifier: t
+Parenthesis: )
+Parenthesis: )
+Semi Colon: ;
+Logical Bin Op: /
+Logical Bin Op: /
+Identifier: print
+Identifier: should
+Identifier: display
+Identifier: the
+Curve Datatype: curve
+Identifier: in
+Identifier: form
+Identifier: of
+Identifier: t
 Return: return
-Number Constant: 5
+Number Constant: 0
 Semi Colon: ;
 Curly: }
-Identifier: ram
+Identifier: fun
+Complex Datatype: complex
+Square Bracket: [
+Square Bracket: ]
+Identifier: FFT
+Parenthesis: (
+Curve Datatype: curve
+Identifier: f
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Comma: ,
+Integer Datatype: int
+Identifier: degree
+Parenthesis: )
+Curly: {
 Logical Bin Op: /
 Logical Bin Op: /
-Identifier: my
-Identifier: name
-Identifier: is
-Identifier: ujjwal
+Return: return
+Identifier: type
+Square Bracket: [
+Identifier: number
+Identifier: of
+Return: return
+Identifier: variable
+Square Bracket: ]
+Square Bracket: [
+Identifier: type
+Square Bracket: ]
 Logical Bin Op: /
+Logical Bin Op: /
+Identifier: Zeros
+Identifier: of
+Identifier: Unity
+Curve Datatype: curve
+Complex Datatype: complex
+Identifier: zeroes
+Parenthesis: (
+Identifier: k
+Parenthesis: )
+Logical Bin Op: =
+Defined Constant: e
+Logical Bin Op: ^
+Parenthesis: (
+Number Constant: 2
 Logical Bin Op: *
-Identifier: fdgjdsgbjdf
+Identifier: k
 Logical Bin Op: *
+Identifier: _i_
+Logical Bin Op: *
+Defined Constant: pi
 Logical Bin Op: /
-Identifier: hjfgh
-Identifier: _vcgsh
+Parenthesis: (
+Identifier: degree
+Logical Bin Op: +
+Number Constant: 1
+Parenthesis: )
+Parenthesis: )
+Semi Colon: ;
+Curve Datatype: curve
+Complex Datatype: complex
+Identifier: y_poly
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Logical Bin Op: =
+Parenthesis: (
+Complex Datatype: complex
+Parenthesis: )
+Identifier: f
+Parenthesis: (
+Identifier: zeroes
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Parenthesis: )
+Semi Colon: ;
+Complex Datatype: complex
+Square Bracket: [
+Square Bracket: ]
+Identifier: y
+Square Bracket: [
+Identifier: degree
+Logical Bin Op: +
+Number Constant: 1
+Square Bracket: ]
+Semi Colon: ;
+Loop: for
+Identifier: k
+Logical Bin Op: =
+Number Constant: 0
+Identifier: to
+Identifier: degree
+Logical Bin Op: +
+Number Constant: 1
+Curly: {
+Complex Datatype: complex
+Square Bracket: [
+Square Bracket: ]
+Identifier: y
+Square Bracket: [
+Identifier: i
+Square Bracket: ]
+Logical Bin Op: =
+Identifier: y_poly
+Parenthesis: (
+Identifier: i
+Parenthesis: )
+Semi Colon: ;
+Curly: }
+Return: return
+Identifier: y
+Semi Colon: ;
+Curly: }
+Identifier: fun
+Curve Datatype: curve
+Identifier: InverseFFT
+Parenthesis: (
+Complex Datatype: complex
+Square Bracket: [
+Square Bracket: ]
+Identifier: y
+Comma: ,
+Integer Datatype: int
+Identifier: degree
+Parenthesis: )
+Curly: {
+Logical Bin Op: /
+Logical Bin Op: /
+Identifier: Inverse
+Identifier: Zeros
+Identifier: of
+Identifier: Unity
+Curve Datatype: curve
+Complex Datatype: complex
+Identifier: zeroes
+Parenthesis: (
+Identifier: k
+Parenthesis: )
+Logical Bin Op: =
+Defined Constant: e
+Logical Bin Op: ^
+Parenthesis: (
+Logical Bin Op: -
+Number Constant: 2
+Logical Bin Op: *
+Identifier: k
+Logical Bin Op: *
+Identifier: _i_
+Logical Bin Op: *
+Defined Constant: pi
+Logical Bin Op: /
+Parenthesis: (
+Identifier: degree
+Logical Bin Op: +
+Number Constant: 1
+Parenthesis: )
+Parenthesis: )
+Semi Colon: ;
+Curve Datatype: curve
+Complex Datatype: complex
+Identifier: y_poly
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Logical Bin Op: =
+Parenthesis: (
+Complex Datatype: complex
+Parenthesis: )
+Defined Function: sum
+Parenthesis: (
+Identifier: i
+Logical Bin Op: =
+Number Constant: 0
+Comma: ,
+Identifier: degree
+Comma: ,
+Bool True: true
+Comma: ,
+Identifier: y
+Square Bracket: [
+Identifier: i
+Square Bracket: ]
+Logical Bin Op: *
+Identifier: x
+Logical Bin Op: ^
+Identifier: i
+Parenthesis: )
+Semi Colon: ;
+Complex Datatype: complex
+Square Bracket: [
+Square Bracket: ]
+Identifier: y
+Square Bracket: [
+Identifier: degree
+Square Bracket: ]
+Semi Colon: ;
+Loop: for
+Identifier: k
+Logical Bin Op: =
+Number Constant: 0
+Identifier: to
+Identifier: degree
+Curly: {
+Complex Datatype: complex
+Square Bracket: [
+Square Bracket: ]
+Identifier: y
+Square Bracket: [
+Identifier: i
+Square Bracket: ]
+Logical Bin Op: =
+Identifier: y_poly
+Parenthesis: (
+Identifier: zeroes
+Parenthesis: (
+Identifier: i
+Parenthesis: )
+Parenthesis: )
+Semi Colon: ;
+Curly: }
+Curve Datatype: curve
+Identifier: c
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Logical Bin Op: =
+Defined Function: sum
+Parenthesis: (
+Identifier: i
+Logical Bin Op: =
+Number Constant: 0
+Comma: ,
+Identifier: degree
+Comma: ,
+Bool True: true
+Comma: ,
+Identifier: y_poly
+Parenthesis: (
+Identifier: zeroes
+Parenthesis: (
+Identifier: i
+Parenthesis: )
+Parenthesis: )
+Logical Bin Op: *
+Identifier: x
+Logical Bin Op: ^
+Identifier: i
+Parenthesis: )
+Semi Colon: ;
+Return: return
+Identifier: c
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Semi Colon: ;
+Curly: }

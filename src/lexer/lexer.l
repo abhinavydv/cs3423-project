@@ -49,11 +49,12 @@ break           (break)
 continue        (continue)
 true            (true)
 false           (false)
+import          (import)
 
 /*Logical Operator*/
 fact_n_not      (!)
 
-log_binaryOp    [-+/*=]|("->")
+log_binaryOp    [-+/*=^]|("->")
 log_uniaryOp    ("++")|("--") 
 
 /*Relational Operator*/
@@ -110,6 +111,7 @@ int line_count = 1;
 {break}                 {fprintf(yyout, "Break: %s\n",yytext);            return BREAK;}
 {continue}              {fprintf(yyout, "Continue: %s\n",yytext);         return CONTINUE;}
 {return}                {fprintf(yyout, "Return: %s\n",yytext);           return RETURN;}
+{import}                {fprintf(yyout, "Import: %s\n",yytext);           return IMPORT;}
 {true}                  {fprintf(yyout, "Bool True: %s\n",yytext);        return _TRUE;}
 {false}                 {fprintf(yyout, "Bool False: %s\n",yytext);       return _FALSE;}
 
@@ -148,6 +150,7 @@ int yywrap(void){
     return 1;
 }
 
+// Comment it while testing parser
 int main(int argc, char *argv[]){
 
 
