@@ -3,7 +3,7 @@
     #include <string.h>
     #include <stdlib.h>
     #include <assert.h>
-    // #include "y.tab.h"
+    #include "y.tab.h"
 
     FILE *yyin, *yyout;
     int line_count;
@@ -58,7 +58,9 @@ log_binaryOp    [-+/*=^]|("->")
 log_uniaryOp    ("++")|("--") 
 
 /*Relational Operator*/
-rel_Op          ("==")|("!=")|(">")|("<")|(">=")|("<=")|("&&")|("||")
+rel_Op          ("==")|("!=")|(">=")|("<=")|("&&")|("||")
+gt              (">")
+lt              ("<")
 
 /*Boolean Operator*/
 bool_Op         (~)|(&)|("|")|(>>)|(<<)|(^^)
@@ -124,20 +126,18 @@ int line_count = 1;
 {log_uniaryOp}          {fprintf(yyout, "Logical Uni Op: %s\n",yytext);       return LOG_UNI_OP;}
 {rel_Op}                {fprintf(yyout, "Relational Op: %s\n",yytext);        return REL_OP;}
 {bool_Op}               {fprintf(yyout, "Boolean Op: %s\n",yytext);           return BOOL_OP;}
-{fact_n_not}            {fprintf(yyout, "Log/Rel Uni Op: %s\n",yytext);       return FACT_N_NOT_OP;}
-
+{fact_n_not}            {fprintf(yyout, "Log/Rel Uni Op: %s\n",yytext);       return yytext;}
+{gt}                    {fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext;}
+{lt}                    {fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext;}
 
 {identifier}            {fprintf(yyout, "Identifier: %s\n",yytext);     return IDENTIFIER;}
 
 
-{curly}                 {fprintf(yyout, "Curly: %s\n",yytext);            return CURLY;}
-{parenthesis}           {fprintf(yyout, "Parenthesis: %s\n",yytext);      return PARENTHESIS;}
-{square}                {fprintf(yyout, "Square Bracket: %s\n",yytext);   return SQUARE;}
-
-
-{semi_col}              {fprintf(yyout, "Semi Colon: %s\n",yytext);       return SEMICOLON;}
-
-{comma}                 {fprintf(yyout, "Comma: %s\n",yytext);        return COMMA;}
+{curly}                 {fprintf(yyout, "Curly: %s\n",yytext);            return yytext;}
+{parenthesis}           {fprintf(yyout, "Parenthesis: %s\n",yytext);      return yytext;}
+{square}                {fprintf(yyout, "Square Bracket: %s\n",yytext);   return yytext;}
+{semi_col}              {fprintf(yyout, "Semi Colon: %s\n",yytext);       return yytext;}
+{comma}                 {fprintf(yyout, "Comma: %s\n",yytext);            return yytext;}
 
 {blank}                 {/* Ignore spaces and tabs*/ }
 {newline}               { line_count++; }
@@ -148,23 +148,4 @@ int line_count = 1;
 int yywrap(void){
 
     return 1;
-}
-
-// Comment it while testing parser
-int main(int argc, char *argv[]){
-
-
-    if (argc != 3){
-        printf("Format not Used: [executable] [input file] [c output file]\n");
-        assert(0);
-    }
- 
- 
-    yyin = fopen(argv[1], "r");
-    yyout = fopen(argv[2],"w");
-
-    yylex();
-
-    
-    return 0;
 }
