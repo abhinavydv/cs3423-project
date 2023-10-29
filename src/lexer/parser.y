@@ -52,18 +52,18 @@ variable        : '(' Identifiers ')'
 FunctionBody: FunctionBody LocalStatement
             |
 
-GlobalStatement: Decl
+GlobalStatement: Decl ';'
                | Struct
 
 Struct  : StructDecl '{' StructBody '}' ';'
 
 StructDecl: STRUCT IDENTIFIER
 
-StructBody  : StructBody Decl
-            | Decl
+StructBody  : StructBody Decl ';'
+            | Decl ';'
 
-Decl    : CPP_Type  Identifiers ';' 
-        | CURVE  Cur_identifiers ';'
+Decl    : CPP_Type  Identifiers  
+        | CURVE  Cur_identifiers 
 
 Cur_identifiers : Cur_identifiers ',' IDENTIFIER variable
                 | IDENTIFIER variable
@@ -71,8 +71,42 @@ Cur_identifiers : Cur_identifiers ',' IDENTIFIER variable
 Identifiers: Identifiers ',' IDENTIFIER
            | IDENTIFIER     
 
-LocalStatement: 
-              | 
+LocalStatement: loop
+              | conditional
+              | Non_assign // Non Assignment Statement
+              | Assign     // Assignment Statement
+
+loop    : UNTIL '(' Predicate ')' REPEAT '{' LocalStatement '}'
+        | REPEAT '{' LocalStatement '}' UNTIL '(' Predicate ')'
+
+conditional : IF '(' Predicate ')' '{' LocalStatement '}' otherwise
+
+otherwise   : ELSE '{' LocalStatement '}'
+            | 
+
+Non_assign  : Decl ';'
+            | FunCall ';'
+            | BREAK ';'
+            | CONTINUE ';'  // ADD MORE NON- ASSIGNMENT STATEMENT
+
+FunCall     : IDENTIFIER '(' Arguments ')'
+
+Arguments   : Identifiers
+            |
+
+// Start HERE
+
+Predicate   : ';'
+
+Assign      : lhs '=' rhs
+
+lhs         : IDENTIFIER
+rhs         : ';'
+
+
+
+
+            
 
 %%
 
