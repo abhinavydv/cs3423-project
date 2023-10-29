@@ -50,6 +50,7 @@ continue        (continue)
 true            (true)
 false           (false)
 import          (import)
+func            (func)
 
 /*Logical Operator*/
 fact_n_not      (!)
@@ -116,6 +117,7 @@ int line_count = 1;
 {import}                {fprintf(yyout, "Import: %s\n",yytext);           return IMPORT;}
 {true}                  {fprintf(yyout, "Bool True: %s\n",yytext);        return _TRUE;}
 {false}                 {fprintf(yyout, "Bool False: %s\n",yytext);       return _FALSE;}
+{func}                  {fprintf(yyout, "func: %s\n",yytext);             return FUNC;}
 
 
 {defined_const}         {fprintf(yyout, "Defined Constant: %s\n",yytext);   return DEF_CONST;}
@@ -126,18 +128,18 @@ int line_count = 1;
 {log_uniaryOp}          {fprintf(yyout, "Logical Uni Op: %s\n",yytext);       return LOG_UNI_OP;}
 {rel_Op}                {fprintf(yyout, "Relational Op: %s\n",yytext);        return REL_OP;}
 {bool_Op}               {fprintf(yyout, "Boolean Op: %s\n",yytext);           return BOOL_OP;}
-{fact_n_not}            {fprintf(yyout, "Log/Rel Uni Op: %s\n",yytext);       return yytext;}
-{gt}                    {fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext;}
-{lt}                    {fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext;}
+{fact_n_not}            {fprintf(yyout, "Log/Rel Uni Op: %s\n",yytext);       return yytext[0];}
+{gt}                    {fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext[0];}
+{lt}                    {fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext[0];}
 
 {identifier}            {fprintf(yyout, "Identifier: %s\n",yytext);     return IDENTIFIER;}
 
 
-{curly}                 {fprintf(yyout, "Curly: %s\n",yytext);            return yytext;}
-{parenthesis}           {fprintf(yyout, "Parenthesis: %s\n",yytext);      return yytext;}
-{square}                {fprintf(yyout, "Square Bracket: %s\n",yytext);   return yytext;}
-{semi_col}              {fprintf(yyout, "Semi Colon: %s\n",yytext);       return yytext;}
-{comma}                 {fprintf(yyout, "Comma: %s\n",yytext);            return yytext;}
+{curly}                 {fprintf(yyout, "Curly: %s\n",yytext);            return yytext[0];}
+{parenthesis}           {fprintf(yyout, "Parenthesis: %s\n",yytext);      return yytext[0];}
+{square}                {fprintf(yyout, "Square Bracket: %s\n",yytext);   return yytext[0];}
+{semi_col}              {fprintf(yyout, "Semi Colon: %s\n",yytext);       return yytext[0];}
+{comma}                 {fprintf(yyout, "Comma: %s\n",yytext);            return yytext[0];}
 
 {blank}                 {/* Ignore spaces and tabs*/ }
 {newline}               { line_count++; }
