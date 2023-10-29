@@ -76,8 +76,8 @@ LocalStatement: loop
               | Non_assign // Non Assignment Statement
               | Assign     // Assignment Statement
 
-loop    : UNTIL '(' Predicate ')' REPEAT '{' LocalStatement '}'
-        | REPEAT '{' LocalStatement '}' UNTIL '(' Predicate ')'
+loop    : UNTIL '(' Predicate ')' REPEAT '{' LoopStatement '}'
+        | REPEAT '{' LoopStatement '}' UNTIL '(' Predicate ')'
 
 conditional : IF '(' Predicate ')' '{' LocalStatement '}' otherwise
 
@@ -85,9 +85,12 @@ otherwise   : ELSE '{' LocalStatement '}'
             | 
 
 Non_assign  : Decl ';'
-            | FunCall ';'
-            | BREAK ';'
-            | CONTINUE ';'  // ADD MORE NON- ASSIGNMENT STATEMENT
+            | FunCall ';' // ADD MORE NON- ASSIGNMENT STATEMENT
+
+
+LoopStatement : LocalStatement
+              | BREAK ';'
+              | CONTINUE ';'  
 
 FunCall     : IDENTIFIER '(' Arguments ')'
 
@@ -101,6 +104,7 @@ Predicate   : ';'
 Assign      : lhs '=' rhs
 
 lhs         : IDENTIFIER
+
 rhs         : ';'
 
 
