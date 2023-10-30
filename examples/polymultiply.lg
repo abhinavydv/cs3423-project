@@ -21,7 +21,8 @@ func int main(){
     return 0;
 }
 
-func complex FFT(curve f,int degree){ // return type [number of return variable][type]
+func complex FFT(curve f,int degree)
+{ // return type [number of return variable][type]
 
     // Zeros of Unity
 
@@ -30,6 +31,8 @@ func complex FFT(curve f,int degree){ // return type [number of return variable]
     curve y_poly(x) = f(zeroes(x)) ;
 
     degree += 1;
+
+    a.b();
 
     vector<complex> y(degree);
 

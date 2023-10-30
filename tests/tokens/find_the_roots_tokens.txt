@@ -1,0 +1,107 @@
+func: func
+Data Type: int
+Identifier: main
+Parenthesis: (
+Parenthesis: )
+Curly: {
+Data Type: int
+Identifier: n
+Arithmetic Bin Op: =
+Number Constant: 10
+Semi Colon: ;
+Curve: curve
+Identifier: g
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Arithmetic Bin Op: =
+Identifier: x
+Arithmetic Bin Op: ^
+Number Constant: 2
+Arithmetic Bin Op: +
+Number Constant: 1
+Semi Colon: ;
+Curve: curve
+Identifier: f
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Semi Colon: ;
+Loop: for
+Identifier: i
+Loop IN: in
+Number Constant: 0
+Dots: ..
+Identifier: n
+Curly: {
+Identifier: f
+Augmented Assignment: +=
+Identifier: g
+Parenthesis: (
+Identifier: i
+Parenthesis: )
+Arithmetic Bin Op: *
+Identifier: x
+Arithmetic Bin Op: ^
+Identifier: i
+Semi Colon: ;
+Curly: }
+Data Type: real
+Identifier: start
+Arithmetic Bin Op: =
+Number Constant: 0.0
+Semi Colon: ;
+Data Type: real
+Identifier: epsilon
+Arithmetic Bin Op: =
+Number Constant: 0.0001
+Semi Colon: ;
+Loop Conditional: until
+Parenthesis: (
+Identifier: abs
+Parenthesis: (
+Identifier: f
+Parenthesis: (
+Identifier: start
+Parenthesis: )
+Parenthesis: )
+Relational Op: <
+Identifier: epsilon
+Parenthesis: )
+Loop: repeat
+Curly: {
+Identifier: g
+Arithmetic Bin Op: =
+diff: D
+Square Bracket: [
+Identifier: f
+Comma: ,
+Identifier: x
+Square Bracket: ]
+Semi Colon: ;
+Identifier: start
+Arithmetic Bin Op: =
+Identifier: start
+Arithmetic Bin Op: -
+Identifier: f
+Parenthesis: (
+Identifier: start
+Parenthesis: )
+Arithmetic Bin Op: /
+Identifier: g
+Parenthesis: (
+Identifier: start
+Parenthesis: )
+Semi Colon: ;
+Curly: }
+Identifier: print
+Parenthesis: (
+String Constant: "One of the roots of the equation is "
+Comma: ,
+Identifier: start
+Parenthesis: )
+Semi Colon: ;
+Return: return
+Number Constant: 0
+Semi Colon: ;
+Curly: }

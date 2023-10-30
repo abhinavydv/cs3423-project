@@ -1,0 +1,205 @@
+Struct: struct
+Identifier: Hello
+Curly: {
+Data Type: int
+Identifier: a
+Comma: ,
+Identifier: b
+Semi Colon: ;
+Curve: curve
+Identifier: c
+Semi Colon: ;
+Curve: curve
+Arithmetic Bin Op: *
+Identifier: c
+Square Bracket: [
+Number Constant: 10
+Square Bracket: ]
+Semi Colon: ;
+Data Type: int
+Arithmetic Bin Op: *
+Identifier: a
+Square Bracket: [
+Number Constant: 10
+Square Bracket: ]
+Semi Colon: ;
+Curly: }
+func: func
+Data Type: int
+Identifier: main
+Parenthesis: (
+Parenthesis: )
+Curly: {
+Data Type: int
+Arithmetic Bin Op: *
+Arithmetic Bin Op: *
+Arithmetic Bin Op: *
+Identifier: a
+Arithmetic Bin Op: =
+Number Constant: 1
+Semi Colon: ;
+Data Type: int
+Arithmetic Bin Op: *
+Identifier: b
+Square Bracket: [
+Number Constant: 1
+Square Bracket: ]
+Arithmetic Bin Op: =
+Number Constant: 2
+Semi Colon: ;
+Data Type: int
+Identifier: c
+Arithmetic Bin Op: =
+Number Constant: 3
+Semi Colon: ;
+Data Type: int
+Identifier: d
+Arithmetic Bin Op: =
+Number Constant: 4
+Semi Colon: ;
+Identifier: d
+Arithmetic Bin Op: =
+Number Constant: 6
+Semi Colon: ;
+Conditional: if
+Parenthesis: (
+Identifier: a
+Logical Op: &&
+Number Constant: 1
+Parenthesis: )
+Curly: {
+Identifier: a
+Augmented Assignment: +=
+Number Constant: 2
+Semi Colon: ;
+Curly: }
+Identifier: c
+Arithmetic Bin Op: =
+Identifier: a
+Arithmetic Bin Op: +
+Identifier: b
+Arithmetic Bin Op: -
+Identifier: d
+Arithmetic Bin Op: *
+Identifier: e
+Arithmetic Bin Op: /
+Identifier: f
+Arithmetic Bin Op: %
+Identifier: c
+Arithmetic Uni Op: --
+Semi Colon: ;
+Return: return
+Number Constant: 0
+Semi Colon: ;
+Curly: }
+func: func
+Data Type: int
+Identifier: hehe
+Parenthesis: (
+Data Type: int
+Arithmetic Bin Op: *
+Identifier: a
+Square Bracket: [
+Number Constant: 2
+Square Bracket: ]
+Comma: ,
+Curve: curve
+Arithmetic Bin Op: *
+Arithmetic Bin Op: *
+Identifier: b
+Parenthesis: )
+Curly: {
+Return: return
+Identifier: a
+Log/Rel Uni Op: !
+Arithmetic Bin Op: +
+Log/Rel Uni Op: !
+Identifier: b
+Semi Colon: ;
+Curve: curve
+Arithmetic Bin Op: *
+Identifier: a
+Arithmetic Bin Op: =
+Number Constant: 1
+Semi Colon: ;
+Conditional: if
+Parenthesis: (
+Bool True: true
+Parenthesis: )
+Curly: {
+Conditional: if
+Parenthesis: (
+Bool True: true
+Parenthesis: )
+Curly: {
+Curly: }
+Conditional: else
+Curly: {
+Curly: }
+Curly: }
+Conditional: else
+Conditional: if
+Parenthesis: (
+Bool False: false
+Parenthesis: )
+Curly: {
+Loop: for
+Identifier: i
+Loop IN: in
+Number Constant: 1
+Dots: ..
+Number Constant: 100
+Dots: ..
+Number Constant: 10
+Curly: {
+Conditional: if
+Parenthesis: (
+Bool True: true
+Parenthesis: )
+Curly: {
+Curly: }
+Conditional: else
+Curly: {
+Curly: }
+Curly: }
+Curly: }
+Conditional: else
+Curly: {
+Curly: }
+Loop Conditional: until
+Parenthesis: (
+Bool True: true
+Parenthesis: )
+Loop: repeat
+Curly: {
+Conditional: if
+Parenthesis: (
+Bool True: true
+Parenthesis: )
+Curly: {
+Curly: }
+Conditional: else
+Curly: {
+Curly: }
+Break: break
+Semi Colon: ;
+Curly: }
+Loop: repeat
+Curly: {
+Conditional: if
+Parenthesis: (
+Bool True: true
+Parenthesis: )
+Curly: {
+Curly: }
+Conditional: else
+Curly: {
+Curly: }
+Break: break
+Semi Colon: ;
+Curly: }
+Loop Conditional: until
+Parenthesis: (
+Bool True: true
+Parenthesis: )
+Curly: }

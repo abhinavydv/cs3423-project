@@ -4,17 +4,20 @@
     #include <stdlib.h>
     #define YYSTYPE double /* double type for yacc stack */
 
-    extern FILE  * yyin, *yyout;
+    extern FILE  * yyin, *yyout, *parsed_file;
     int yylex();
     void yyerror(char * msg);
 
+    void label(char * msg){
+        fprintf(parsed_file," /* %s */ ",msg);
+    }
 %}
 
 %token DATA_TYPE IDENTIFIER STRING IN DOTS
 %token CHAR RETURN INTEGER CURVE
 %token FOR STRUCT AUG_ASSIGN DIFF
 %token VOID ARROW COMPARE AND OR SHIFT DECREMENT INCREMENT
-%token REAL NEWLINE IF ELSE
+%token REAL NEWLINE IF ELSE DOT
 %token REPEAT UNTIL BREAK CONTINUE IMPORT TRUE FALSE FUNC
 
 %%
@@ -33,16 +36,16 @@ global_decl     :  decl_only ';'
                 |  import
 
 // struct defs
-struct          :  STRUCT IDENTIFIER '{' declarations '}'
+struct          :  STRUCT IDENTIFIER {label("Struct def");} '{' declarations '}'
 
 // function defs
 function        :  FUNC funcDef block
 
 // function header defs
-funcDef         :  type IDENTIFIER '(' parameters ')'
-                |  type IDENTIFIER '(' ')'
-                |  CURVE IDENTIFIER '(' parameters ')'
-                |  CURVE IDENTIFIER '(' ')'
+funcDef         :  type IDENTIFIER '(' parameters ')' {label("Function def");}
+                |  type IDENTIFIER '(' ')' {label("Function def");}
+                |  CURVE IDENTIFIER '(' parameters ')' {label("Function def");}
+                |  CURVE IDENTIFIER '(' ')' {label("Function def");}
 
 // function parameters
 parameters      :  type_defs
@@ -70,25 +73,25 @@ statements      :  statement statements
                 |
 
 // Following are all the statements allowed
-statement       :  decl_assgn ';'
-                |  multi_assign ';'
-                |  augAssign ';'
-                |  ret
+statement       :  decl_assgn ';'   {label("Declaration");}
+                |  multi_assign ';' {label("Assignment");}
+                |  augAssign ';'    {label("Augmented Assignment");}
+                |  ret              {label("Return");}
                 |  conditional
                 |  loop
                 |  forLoop
-                |  call ';'
-                |  obj_call ';'
+                |  call ';'         {label("Function Call");}
+                |  obj_call ';'     {label("Object Function Call");}
                 |  block
-                |  BREAK ';'
-                |  CONTINUE ';'
+                |  BREAK ';'        {label("Break");}
+                |  CONTINUE ';'     {label("Continue");}
                 |  ';'
 
 // import statements
 import          :  IMPORT STRING ';'
 
 // list of declarations (for structs)
-declarations    :  decl_only ';' declarations
+declarations    :  decl_only ';' {label("Declaration");} declarations
                 |
 
 // declarations only. No assignment (for global declration)
@@ -245,6 +248,7 @@ call            :  IDENTIFIER '(' arglist ')'
 
 // Function Call with object
 obj_call        :  name ARROW IDENTIFIER '(' arglist ')'
+                |  name DOT IDENTIFIER '(' arglist ')'
 
 // List of arguments for a function call
 arglist         :  rhs
@@ -253,6 +257,7 @@ arglist         :  rhs
 
 // Object reference
 name            :  name ARROW IDENTIFIER
+                |  name DOT IDENTIFIER
                 |  name '[' rhs ']'
                 |  IDENTIFIER
                 |  starred_name
@@ -268,20 +273,20 @@ differentiate   :  DIFF '[' rhs ',' rhs ']'
 // Conditional Statements
 // TODO: add suport for one line without block
 conditional     :  ifBlock
-                |  ifBlock ELSE statement
+                |  ifBlock ELSE {label("Else stetement");} statement
 
 // If Statement
-ifBlock         :  IF '(' rhs ')' block
+ifBlock         :  IF '(' rhs ')' {label("If statement");} block
 
 // Loop Statements
-loop            :  UNTIL '(' rhs ')' REPEAT block
-                |  REPEAT block UNTIL '(' rhs ')'
+loop            :  UNTIL '(' rhs ')' REPEAT {label("Loop");} block
+                |  REPEAT {label("Loop");} block UNTIL '(' rhs ')'
 
 // For Loop
-forLoop         :  FOR IDENTIFIER IN loopVals DOTS loopVals block
-                |  FOR IDENTIFIER IN loopVals DOTS loopVals DOTS loopVals block
-                |  FOR IDENTIFIER IN '(' rhs ')' statement
-                |  FOR IDENTIFIER IN value statement
+forLoop         :  FOR IDENTIFIER IN loopVals DOTS loopVals {label("For loop");} statement
+                |  FOR IDENTIFIER IN loopVals DOTS loopVals DOTS loopVals {label("For loop");} statement
+                |  FOR IDENTIFIER IN '(' rhs ')' {label("For loop");} statement
+                |  FOR IDENTIFIER IN value {label("For loop");} statement
 
 loopVals        :  value
                 |  '(' rhs ')'
@@ -290,22 +295,24 @@ loopVals        :  value
 
 void yyerror(char * msg){
     printf("%s\n",msg);
+    exit(1);
 }
 
 int main(int argc, char *argv[]){
 
-
-    if (argc != 3){
-        printf("Format not Used: [executable] [input file] [c output file]\n");
-        assert(0);
+    if (argc != 4){
+        printf("Format not Used: [executable] [input file] [token file] [parsed file]\n");
+        exit(1);
     }
- 
- 
+
     yyin = fopen(argv[1], "r");
     yyout = fopen(argv[2],"w");
+    parsed_file = fopen(argv[3],"w");
 
     yyparse();
 
-    
+    fclose(yyin);
+    fclose(yyout);
+    fclose(parsed_file);
     return 0;
 }

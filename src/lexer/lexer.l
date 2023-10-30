@@ -5,8 +5,10 @@
     #include <assert.h>
     #include "y.tab.h"
 
-    FILE *yyin, *yyout;
+    FILE *yyin, *yyout, *parsed_file;
     int line_count;
+
+    #define ECHO fprintf(parsed_file, "%s", yytext)
 %}
 
 
@@ -21,19 +23,20 @@ character       [^\\\']*(\\.)?
 blank           [ \t]
 newline         (\n)
 
-/* TODO: Add int8, 16, 32 etc */
 /*Datatype*/
 string          (string)
 char            (char)
-int             (int)
+int             (int|int8|int16|int32|int64)
+uint             (uint|uint8|uint16|uint32|uint64)
 bool            (bool)
-real            (real)
+real            (real|real32|real64)
 complex         (complex)
 curve           (curve)
 void            (void)
 vector          (vector)
+matrix          (matrix)
 rational        (rational)
-data_type       {string}|{char}|{int}|{bool}|{real}|{complex}|{void}|{vector}|{rational}
+data_type       {string}|{char}|{int}|{uint}|{bool}|{real}|{complex}|{void}|{vector}|{matrix}|{rational}
 
 /*Keywords*/
 struct          (struct)
@@ -95,56 +98,57 @@ int line_count = 1;
 %%
 
 
-[\"]{strings}*[\"]      {fprintf(yyout, "String Constant: %s\n",yytext);      return STRING;}
-[\']{character}*[\']    {fprintf(yyout, "Character Constant: %s\n",yytext);   return CHAR;}
-{number}+               {fprintf(yyout, "Number Constant: %s\n",yytext);      return INTEGER;}
-{number}+(\.{number}+)? {fprintf(yyout, "Number Constant: %s\n",yytext);      return REAL;}
+[\"]{strings}*[\"]      {ECHO; fprintf(yyout, "String Constant: %s\n",yytext);      return STRING;}
+[\']{character}*[\']    {ECHO; fprintf(yyout, "Character Constant: %s\n",yytext);   return CHAR;}
+{number}+               {ECHO; fprintf(yyout, "Number Constant: %s\n",yytext);      return INTEGER;}
+{number}+(\.{number}+)? {ECHO; fprintf(yyout, "Number Constant: %s\n",yytext);      return REAL;}
 
-{data_type}             {fprintf(yyout, "Data Type: %s\n",yytext);           return DATA_TYPE;}
-{curve}                 {fprintf(yyout, "Curve: %s\n",yytext);               return CURVE;}
-{struct}                {fprintf(yyout, "Struct: %s\n",yytext);              return STRUCT;}
+{data_type}             {ECHO; fprintf(yyout, "Data Type: %s\n",yytext);           return DATA_TYPE;}
+{curve}                 {ECHO; fprintf(yyout, "Curve: %s\n",yytext);               return CURVE;}
+{struct}                {ECHO; fprintf(yyout, "Struct: %s\n",yytext);              return STRUCT;}
 
-{if}                    {fprintf(yyout, "Conditional: %s\n",yytext);      return IF;}
-{else}                  {fprintf(yyout, "Conditional: %s\n",yytext);      return ELSE;}
-{repeat}                {fprintf(yyout, "Loop: %s\n",yytext);             return REPEAT;}
-{until}                 {fprintf(yyout, "Loop Conditional: %s\n",yytext); return UNTIL;}
-{for}                   {fprintf(yyout, "Loop: %s\n",yytext);             return FOR;}
-{in}                    {fprintf(yyout, "Loop IN: %s\n",yytext);          return IN;}
-{dots}                  {fprintf(yyout, "Dots: %s\n",yytext);             return DOTS;}
-{break}                 {fprintf(yyout, "Break: %s\n",yytext);            return BREAK;}
-{continue}              {fprintf(yyout, "Continue: %s\n",yytext);         return CONTINUE;}
-{return}                {fprintf(yyout, "Return: %s\n",yytext);           return RETURN;}
-{import}                {fprintf(yyout, "Import: %s\n",yytext);           return IMPORT;}
-{true}                  {fprintf(yyout, "Bool True: %s\n",yytext);        return TRUE;}
-{false}                 {fprintf(yyout, "Bool False: %s\n",yytext);       return FALSE;}
-{func}                  {fprintf(yyout, "func: %s\n",yytext);             return FUNC;}
-{diff}                  {fprintf(yyout, "diff: %s\n",yytext);             return DIFF;}
+{if}                    {ECHO; fprintf(yyout, "Conditional: %s\n",yytext);      return IF;}
+{else}                  {ECHO; fprintf(yyout, "Conditional: %s\n",yytext);      return ELSE;}
+{repeat}                {ECHO; fprintf(yyout, "Loop: %s\n",yytext);             return REPEAT;}
+{until}                 {ECHO; fprintf(yyout, "Loop Conditional: %s\n",yytext); return UNTIL;}
+{for}                   {ECHO; fprintf(yyout, "Loop: %s\n",yytext);             return FOR;}
+{in}                    {ECHO; fprintf(yyout, "Loop IN: %s\n",yytext);          return IN;}
+{dots}                  {ECHO; fprintf(yyout, "Dots: %s\n",yytext);             return DOTS;}
+\.                      {ECHO; fprintf(yyout, "Dots: %s\n",yytext);             return DOT;}
+{break}                 {ECHO; fprintf(yyout, "Break: %s\n",yytext);            return BREAK;}
+{continue}              {ECHO; fprintf(yyout, "Continue: %s\n",yytext);         return CONTINUE;}
+{return}                {ECHO; fprintf(yyout, "Return: %s\n",yytext);           return RETURN;}
+{import}                {ECHO; fprintf(yyout, "Import: %s\n",yytext);           return IMPORT;}
+{true}                  {ECHO; fprintf(yyout, "Bool True: %s\n",yytext);        return TRUE;}
+{false}                 {ECHO; fprintf(yyout, "Bool False: %s\n",yytext);       return FALSE;}
+{func}                  {ECHO; fprintf(yyout, "func: %s\n",yytext);             return FUNC;}
+{diff}                  {ECHO; fprintf(yyout, "diff: %s\n",yytext);             return DIFF;}
 
-{arithmetic_binaryOp}   {fprintf(yyout, "Arithmetic Bin Op: %s\n",yytext);       return yytext[0];}
-{increment}             {fprintf(yyout, "Arithmetic Uni Op: %s\n",yytext);       return INCREMENT;}
-{decrement}             {fprintf(yyout, "Arithmetic Uni Op: %s\n",yytext);       return DECREMENT;}
-{arrow}                 {fprintf(yyout, "Arrow: %s\n",yytext);                return ARROW;}
-{rel_Op}                {fprintf(yyout, "Relational Op: %s\n",yytext);        return COMPARE;}
-{bit_Op}                {fprintf(yyout, "Boolean Op: %s\n",yytext);           return yytext[0];}
-{shift}                 {fprintf(yyout, "Shift Op: %s\n",yytext);             return SHIFT;}
-"&&"                    {fprintf(yyout, "Logical Op: %s\n",yytext);           return AND;}
-"||"                    {fprintf(yyout, "Logical Op: %s\n",yytext);           return OR;}
-{fact_n_not}            {fprintf(yyout, "Log/Rel Uni Op: %s\n",yytext);       return yytext[0];}
-{gt}                    {fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext[0];}
-{lt}                    {fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext[0];}
-{augAssign}             {fprintf(yyout, "Augmented Assignment: %s\n",yytext); return AUG_ASSIGN;}
+{arithmetic_binaryOp}   {ECHO; fprintf(yyout, "Arithmetic Bin Op: %s\n",yytext);       return yytext[0];}
+{increment}             {ECHO; fprintf(yyout, "Arithmetic Uni Op: %s\n",yytext);       return INCREMENT;}
+{decrement}             {ECHO; fprintf(yyout, "Arithmetic Uni Op: %s\n",yytext);       return DECREMENT;}
+{arrow}                 {ECHO; fprintf(yyout, "Arrow: %s\n",yytext);                return ARROW;}
+{rel_Op}                {ECHO; fprintf(yyout, "Relational Op: %s\n",yytext);        return COMPARE;}
+{bit_Op}                {ECHO; fprintf(yyout, "Boolean Op: %s\n",yytext);           return yytext[0];}
+{shift}                 {ECHO; fprintf(yyout, "Shift Op: %s\n",yytext);             return SHIFT;}
+"&&"                    {ECHO; fprintf(yyout, "Logical Op: %s\n",yytext);           return AND;}
+"||"                    {ECHO; fprintf(yyout, "Logical Op: %s\n",yytext);           return OR;}
+{fact_n_not}            {ECHO; fprintf(yyout, "Log/Rel Uni Op: %s\n",yytext);       return yytext[0];}
+{gt}                    {ECHO; fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext[0];}
+{lt}                    {ECHO; fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext[0];}
+{augAssign}             {ECHO; fprintf(yyout, "Augmented Assignment: %s\n",yytext); return AUG_ASSIGN;}
 
-{identifier}            {fprintf(yyout, "Identifier: %s\n",yytext);     return IDENTIFIER;}
+{identifier}            {ECHO; fprintf(yyout, "Identifier: %s\n",yytext);     return IDENTIFIER;}
 
 
-{curly}                 {fprintf(yyout, "Curly: %s\n",yytext);            return yytext[0];}
-{parenthesis}           {fprintf(yyout, "Parenthesis: %s\n",yytext);      return yytext[0];}
-{square}                {fprintf(yyout, "Square Bracket: %s\n",yytext);   return yytext[0];}
-{semi_col}              {fprintf(yyout, "Semi Colon: %s\n",yytext);       return yytext[0];}
-{comma}                 {fprintf(yyout, "Comma: %s\n",yytext);            return yytext[0];}
+{curly}                 {ECHO; fprintf(yyout, "Curly: %s\n",yytext);            return yytext[0];}
+{parenthesis}           {ECHO; fprintf(yyout, "Parenthesis: %s\n",yytext);      return yytext[0];}
+{square}                {ECHO; fprintf(yyout, "Square Bracket: %s\n",yytext);   return yytext[0];}
+{semi_col}              {ECHO; fprintf(yyout, "Semi Colon: %s\n",yytext);       return yytext[0];}
+{comma}                 {ECHO; fprintf(yyout, "Comma: %s\n",yytext);            return yytext[0];}
 
-{blank}                 {/* Ignore spaces and tabs*/ }
-{newline}               { line_count++; }
+{blank}                 {ECHO;}
+{newline}               {ECHO; line_count++; }
 {comment}               {/* Ignore comments*/ }
 .                       {printf("Lexer Error at Line Number %d\n",line_count); fflush(yyout); exit(0);}
 

@@ -79,14 +79,15 @@ extern int yydebug;
     NEWLINE = 280,                 /* NEWLINE  */
     IF = 281,                      /* IF  */
     ELSE = 282,                    /* ELSE  */
-    REPEAT = 283,                  /* REPEAT  */
-    UNTIL = 284,                   /* UNTIL  */
-    BREAK = 285,                   /* BREAK  */
-    CONTINUE = 286,                /* CONTINUE  */
-    IMPORT = 287,                  /* IMPORT  */
-    TRUE = 288,                    /* TRUE  */
-    FALSE = 289,                   /* FALSE  */
-    FUNC = 290                     /* FUNC  */
+    DOT = 283,                     /* DOT  */
+    REPEAT = 284,                  /* REPEAT  */
+    UNTIL = 285,                   /* UNTIL  */
+    BREAK = 286,                   /* BREAK  */
+    CONTINUE = 287,                /* CONTINUE  */
+    IMPORT = 288,                  /* IMPORT  */
+    TRUE = 289,                    /* TRUE  */
+    FALSE = 290,                   /* FALSE  */
+    FUNC = 291                     /* FUNC  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -120,14 +121,15 @@ extern int yydebug;
 #define NEWLINE 280
 #define IF 281
 #define ELSE 282
-#define REPEAT 283
-#define UNTIL 284
-#define BREAK 285
-#define CONTINUE 286
-#define IMPORT 287
-#define TRUE 288
-#define FALSE 289
-#define FUNC 290
+#define DOT 283
+#define REPEAT 284
+#define UNTIL 285
+#define BREAK 286
+#define CONTINUE 287
+#define IMPORT 288
+#define TRUE 289
+#define FALSE 290
+#define FUNC 291
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

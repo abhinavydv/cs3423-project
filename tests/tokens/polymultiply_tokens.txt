@@ -155,6 +155,12 @@ Identifier: degree
 Augmented Assignment: +=
 Number Constant: 1
 Semi Colon: ;
+Identifier: a
+Dots: .
+Identifier: b
+Parenthesis: (
+Parenthesis: )
+Semi Colon: ;
 Data Type: vector
 Relational Op: <
 Data Type: complex

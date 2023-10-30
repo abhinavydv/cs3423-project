@@ -1,0 +1,134 @@
+func: func
+Data Type: int
+Identifier: main
+Parenthesis: (
+Parenthesis: )
+Curly: {
+Curve: curve
+Identifier: f
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Comma: ,
+Identifier: g
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Semi Colon: ;
+Identifier: f
+Arithmetic Bin Op: =
+Identifier: input_poly
+Parenthesis: (
+Number Constant: 5
+Parenthesis: )
+Semi Colon: ;
+Identifier: g
+Arithmetic Bin Op: =
+Identifier: input_poly
+Parenthesis: (
+Number Constant: 7
+Parenthesis: )
+Semi Colon: ;
+Curve: curve
+Identifier: h
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Semi Colon: ;
+Identifier: h
+Arithmetic Bin Op: =
+diff: D
+Square Bracket: [
+Identifier: f
+Arithmetic Bin Op: *
+Identifier: g
+Comma: ,
+Identifier: x
+Square Bracket: ]
+Semi Colon: ;
+Identifier: f
+Arithmetic Bin Op: =
+Identifier: sin
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Arithmetic Bin Op: *
+Identifier: cos
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Arithmetic Bin Op: +
+Identifier: x
+Arithmetic Bin Op: *
+Identifier: sin
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Semi Colon: ;
+Identifier: g
+Arithmetic Bin Op: =
+diff: D
+Square Bracket: [
+Identifier: f
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Comma: ,
+Identifier: x
+Square Bracket: ]
+Semi Colon: ;
+Conditional: if
+Parenthesis: (
+Identifier: g
+Relational Op: !=
+Identifier: cos
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Arithmetic Bin Op: *
+Identifier: cos
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Arithmetic Bin Op: -
+Identifier: sin
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Arithmetic Bin Op: *
+Identifier: six
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Arithmetic Bin Op: +
+Identifier: sin
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Arithmetic Bin Op: +
+Identifier: x
+Arithmetic Bin Op: *
+Identifier: cos
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Parenthesis: )
+Curly: {
+Identifier: print
+Parenthesis: (
+String Constant: "Error in differentiation\n"
+Parenthesis: )
+Semi Colon: ;
+Curly: }
+Conditional: else
+Identifier: print
+Parenthesis: (
+String Constant: "Differentiation is correct\n"
+Parenthesis: )
+Semi Colon: ;
+Identifier: print_poly
+Parenthesis: (
+Identifier: h
+Parenthesis: )
+Semi Colon: ;
+Curly: }
