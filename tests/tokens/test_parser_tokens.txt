@@ -79,14 +79,22 @@ Identifier: a
 Arithmetic Bin Op: +
 Identifier: b
 Arithmetic Bin Op: -
+Parenthesis: (
 Identifier: d
 Arithmetic Bin Op: *
 Identifier: e
+Parenthesis: )
 Arithmetic Bin Op: /
+Parenthesis: (
 Identifier: f
 Arithmetic Bin Op: %
+Arithmetic Bin Op: *
 Identifier: c
+Square Bracket: [
+Number Constant: 1
+Square Bracket: ]
 Arithmetic Uni Op: --
+Parenthesis: )
 Semi Colon: ;
 Return: return
 Number Constant: 0

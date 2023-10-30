@@ -1092,7 +1092,7 @@ case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
 #line 152 "src/lexer/lexer.l"
-{/* Ignore comments*/ }
+{fprintf(parsed_file, " ");}    // print a space instead of comment
 	YY_BREAK
 case 46:
 YY_RULE_SETUP

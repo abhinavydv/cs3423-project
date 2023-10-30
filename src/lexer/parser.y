@@ -42,10 +42,11 @@ struct          :  STRUCT IDENTIFIER {label("Struct def");} '{' declarations '}'
 function        :  FUNC funcDef block
 
 // function header defs
-funcDef         :  type IDENTIFIER '(' parameters ')' {label("Function def");}
-                |  type IDENTIFIER '(' ')' {label("Function def");}
-                |  CURVE IDENTIFIER '(' parameters ')' {label("Function def");}
-                |  CURVE IDENTIFIER '(' ')' {label("Function def");}
+funcDef         :  ret_type IDENTIFIER '(' parameters ')' {label("Function def");}
+                |  ret_type IDENTIFIER '(' ')' {label("Function def");}
+
+ret_type        :  type
+                |  CURVE
 
 // function parameters
 parameters      :  type_defs
@@ -207,18 +208,20 @@ shift           :  shift SHIFT power
 power           :  power '^' unary_op
                 |  unary_op
 
+unary_op        :  unary_op_only
+                |  final
+
 // Unary Operators
-unary_op        :  '~' final
+unary_op_only   :  '~' final
                 |  '-' final
                 // TODO: Figure out starred expressions
                 /* |  '*' '(' rhs ')' */
                 |  '!' final
                 |  final '!'
-                |  INCREMENT final
-                |  final INCREMENT
-                |  DECREMENT final
-                |  final DECREMENT
-                |  final
+                |  INCREMENT name   // only names are allowed
+                |  name INCREMENT   // only names are allowed
+                |  DECREMENT name   // only names are allowed
+                |  name DECREMENT   // only names are allowed
 
 final           :  value
                 |  '(' rhs ')'
@@ -270,17 +273,18 @@ starred_name    :  '*' '(' name ')'
 differentiate   :  DIFF '[' rhs ',' rhs ']'
                 |  DIFF '[' rhs ',' rhs ',' INTEGER ']'
 
-// Conditional Statements
-// TODO: add suport for one line without block
+// Conditional Statement
+// This line has an SR conflict. This is because of the dangling else problem.
+// but it is correctly resolved by default.
 conditional     :  ifBlock
                 |  ifBlock ELSE {label("Else stetement");} statement
 
 // If Statement
-ifBlock         :  IF '(' rhs ')' {label("If statement");} block
+ifBlock         :  IF '(' rhs ')' {label("If statement");} statement
 
 // Loop Statements
-loop            :  UNTIL '(' rhs ')' REPEAT {label("Loop");} block
-                |  REPEAT {label("Loop");} block UNTIL '(' rhs ')'
+loop            :  UNTIL '(' rhs ')' REPEAT {label("Loop");} statement
+                |  REPEAT {label("Loop");} statement UNTIL '(' rhs ')'
 
 // For Loop
 forLoop         :  FOR IDENTIFIER IN loopVals DOTS loopVals {label("For loop");} statement
@@ -290,6 +294,7 @@ forLoop         :  FOR IDENTIFIER IN loopVals DOTS loopVals {label("For loop");}
 
 loopVals        :  value
                 |  '(' rhs ')'
+                |  unary_op_only
 
 %%
 

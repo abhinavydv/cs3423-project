@@ -149,7 +149,7 @@ int line_count = 1;
 
 {blank}                 {ECHO;}
 {newline}               {ECHO; line_count++; }
-{comment}               {/* Ignore comments*/ }
+{comment}               {fprintf(parsed_file, " ");}    // print a space instead of comment
 .                       {printf("Lexer Error at Line Number %d\n",line_count); fflush(yyout); exit(0);}
 
 %%

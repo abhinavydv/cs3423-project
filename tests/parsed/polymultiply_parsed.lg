@@ -1,9 +1,9 @@
-
+ 
 
 func int main() /* Function def */ {
-    curve f(x), g(x); /* Declaration */  
-    f = input_poly(10); /* Assignment */  
-    g = input_poly(9); /* Assignment */   
+    curve f(x), g(x); /* Declaration */   
+    f = input_poly(10); /* Assignment */   
+    g = input_poly(9); /* Assignment */    
 
     complex<real, real> y_f[11], y_g[11]; /* Declaration */ 
 
@@ -12,19 +12,19 @@ func int main() /* Function def */ {
 
     complex y[11]; /* Declaration */ 
 
-    y = y_f * y_g; /* Assignment */  
+    y = y_f * y_g; /* Assignment */   
 
-    curve c(k) = InverseFFT(y,11); /* Declaration */  
+    curve c(k) = InverseFFT(y,11); /* Declaration */   
 
-    print("Curve is ", c(t)); /* Function Call */  
+    print("Curve is ", c(t)); /* Function Call */   
     
     return 0; /* Return */ 
 }
 
 func complex FFT(curve f,int degree) /* Function def */ 
-{ 
+{  
 
-    
+     
 
     curve zeroes(k) = e^(2*k*_i_*pi/(degree + 1)); /* Declaration */ 
 
@@ -48,11 +48,11 @@ func complex FFT(curve f,int degree) /* Function def */
 
 func curve InverseFFT(complex y,int degree) /* Function def */ {
     
-    
+     
 
     curve zeroes(k) = e^(-2*k*_i_*pi/(degree + 1)); /* Declaration */ 
 
-    
+     
     curve y_poly(x); /* Declaration */ 
 
     for k in 0 .. degree { /* For loop */ 
@@ -67,7 +67,7 @@ func curve InverseFFT(complex y,int degree) /* Function def */ {
 
     }
 
-    
+     
     curve c(x); /* Declaration */ 
     for k in 0..degree { /* For loop */ 
         c += y_poly(zeroes(i)) * x^i; /* Augmented Assignment */ 

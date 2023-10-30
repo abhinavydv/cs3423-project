@@ -4,10 +4,10 @@ func int main() /* Function def */ {
     g = input_poly(7); /* Assignment */ 
 
     curve h(x); /* Declaration */ 
-    h = D[f * g, x]; /* Assignment */    
+    h = D[f * g, x]; /* Assignment */     
 
     f = sin(x) * cos(x) + x * sin(x); /* Assignment */ 
-    g = D[f(x), x]; /* Assignment */           
+    g = D[f(x), x]; /* Assignment */            
 
     if (g != cos(x) * cos(x) - sin(x) * six(x) + sin(x) + x * cos(x)) /* If statement */ {
         print("Error in differentiation\n"); /* Function Call */ 
