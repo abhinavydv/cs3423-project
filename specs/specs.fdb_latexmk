@@ -1,6 +1,8 @@
-# Fdb version 4
-["pdflatex"] 1698167426 "/mnt/Sagittarius/Semesters/Semester5/Compiler2/Project/cs3423-project/specs/specs.tex" "specs.pdf" "specs" 1698167427 0
-  "/mnt/Sagittarius/Semesters/Semester5/Compiler2/Project/cs3423-project/specs/specs.tex" 1698167426 4394 1d191b44b30d4337f7a79f1e87f365c3 ""
+# Fdb version 3
+["pdflatex"] 1698610859 "/mnt/MyDrive/Abhinav/Study/BTechCSEResources/Sem5/Compilers-II-CS3423/Assignments/Project/cs3423-project/specs/specs.tex" "specs.pdf" "specs" 1698610860
+  "/etc/texmf/web2c/texmf.cnf" 1668290612 475 c0e671620eb5563b2130f56340a5fde8 ""
+  "/mnt/MyDrive/Abhinav/Study/BTechCSEResources/Sem5/Compilers-II-CS3423/Assignments/Project/cs3423-project/specs/specs.tex" 1698610859 4371 10dd60731451ac3b82faf4b459e28ad7 ""
+  "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1136768653 1524 4414a8315f39513458b80dfc63bff03a ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm" 1136768653 1512 f21f83efb36853c0b70002322c1ab3ad ""
@@ -17,19 +19,19 @@
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb" 1248133631 36741 fa121aac0049305630cf160b86157ee4 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1248133631 32722 d7379af29a190c3f453aba36302ff5a9 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb" 1248133631 24252 1e4e051947e12dfb50fee0b7f4e26e3a ""
-  "/usr/share/texlive/texmf-dist/tex/latex/base/article.cls" 1681430400 20144 7555b7429d80bef287ebb82117811acc ""
-  "/usr/share/texlive/texmf-dist/tex/latex/base/size12.clo" 1681430400 8449 7fbdc9c8596083427317c1e525489c81 ""
+  "/usr/share/texlive/texmf-dist/tex/latex/base/article.cls" 1636758526 20144 8a7de377ae7a11ee924a7499611f5a9d ""
+  "/usr/share/texlive/texmf-dist/tex/latex/base/size12.clo" 1636758526 8449 bc7344e882df4d7e51c046514dee83e4 ""
   "/usr/share/texlive/texmf-dist/tex/latex/float/float.sty" 1137110151 6749 16d2656a1984957e674b149555f1ea1d ""
-  "/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def" 1666901542 30426 f2fb69fcda4dc35ed0b7dee211bce679 ""
-  "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1681430400 40335 3addf1824e6777bf26eeeda15c6ac121 ""
-  "/usr/share/texlive/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1683447804 1073085 d5e2f7859718805e829a6bc8afd10650 ""
-  "/usr/share/texlive/texmf-var/web2c/pdftex/pdflatex.fmt" 1683362814 6483788 960040eb69ac6b272ae1376a3292879f ""
-  "specs.aux" 1698167427 3349 3fbc93f1534c724327b101ac018d7fb2 "pdflatex"
-  "specs.tex" 1698167426 4394 1d191b44b30d4337f7a79f1e87f365c3 ""
-  "specs.toc" 1698167427 2046 a8db62757f04c3178850b325d5cec528 "pdflatex"
+  "/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def" 1642022539 29921 f0f4f870357ebfb8fe58ed9ed4ee9b92 ""
+  "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
+  "/usr/share/texmf/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
+  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1668291346 4379155 98693266ff65f58d9f98aff394de12d2 ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1685779164 2800276 8a60346528ac0c94aef7d3f632f3adb2 ""
+  "specs.aux" 1698610860 3349 3fbc93f1534c724327b101ac018d7fb2 "pdflatex"
+  "specs.tex" 1698610859 4371 10dd60731451ac3b82faf4b459e28ad7 ""
+  "specs.toc" 1698610860 2046 a8db62757f04c3178850b325d5cec528 "pdflatex"
   (generated)
   "specs.aux"
   "specs.log"
   "specs.pdf"
   "specs.toc"
-  (rewritten before read)

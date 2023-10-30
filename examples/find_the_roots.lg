@@ -1,0 +1,27 @@
+// Finding one of the roots of the function f(x)
+
+func int main(){
+    int n = 10;
+    curve g(x) = x^2 + 1; // default output real (curve g(x) = curve real g(x))
+    // curve f(x) = sum(i=0, n, true, g(i) * x^i);  // sum (start (inclusive), end (inclusive), condition, term) 
+
+    curve f(x);
+
+    for i in 0..n {
+        f += g(i) * x^i;
+    }
+
+    // Newton Raphson 
+    real start = 0.0; 
+    real epsilon = 0.0001;
+
+    until ( abs(f(start)) < epsilon ) repeat
+    {
+        g = D[f, x];
+        start = start - f(start)/g(start);
+    }
+
+    print("One of the roots of the equation is ",start);
+
+    return 0;
+}

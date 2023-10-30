@@ -1,18 +1,19 @@
-fun int main(){
+func int main(){
     curve f(x), g(x);
-    f(x) = input_poly(5);
-    g(x) = input_poly(7);
+    f = input_poly(5);
+    g = input_poly(7);
 
     curve h(x);
-    h(x) = D[f(x) * g(x), x];   // differentiate f(x) * g(x) w.r.t. x
+    h = D[f * g, x];   // differentiate f(x) * g(x) w.r.t. x
 
-    f(x) = sin(x) * cos(x) + x * sin(x);
-    g(x) = D[f(x), x];          // differentiate f(x) w.r.t. x
+    f = sin(x) * cos(x) + x * sin(x);
+    g = D[f(x), x];          // differentiate f(x) w.r.t. x
 
-    if (g(x) != cos(x) * cos(x) - sin(x) * six(x) + sin(x) + x * cos(x))
-        print("Error in differentiation\n")
+    if (g != cos(x) * cos(x) - sin(x) * six(x) + sin(x) + x * cos(x)){
+        print("Error in differentiation\n");
+    }
     else
-        print("Differentiation is correct\n")
+        print("Differentiation is correct\n");
 
-    print_poly(h(x));
+    print_poly(h);
 }

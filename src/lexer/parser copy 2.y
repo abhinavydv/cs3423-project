@@ -11,10 +11,10 @@
 %}
 
 %token DATA_TYPE IDENTIFIER STRING IN DOTS
-%token CHAR RETURN INTEGER CURVE
-%token FOR STRUCT AUG_ASSIGN DIFF
+%token CHAR RETURN INTEGER CURVE UNARY_OP
+%token FOR BIN_OP STRUCT AUG_ASSIGN POWER
 %token VOID ARROW COMPARE AND OR SHIFT DECREMENT INCREMENT
-%token REAL NEWLINE IF ELSE
+%token TRUE_FALSE REAL NEWLINE IF ELSE
 %token REPEAT UNTIL BREAK CONTINUE IMPORT TRUE FALSE FUNC
 
 %%
@@ -27,7 +27,6 @@ program         :  global_decl program
 global_decl     :  decl_only ';'
                 |  function
                 |  struct
-                |  import
 
 struct          :  STRUCT IDENTIFIER '{' declarations '}'
 
@@ -35,16 +34,14 @@ function        :  FUNC funcDef block
 
 funcDef         :  type IDENTIFIER '(' parameters ')'
                 |  type IDENTIFIER '(' ')'
-                |  CURVE IDENTIFIER '(' parameters ')'
-                |  CURVE IDENTIFIER '(' ')'
 
 parameters      :  type_defs
                 |  parameters ',' type_defs
 
 type_defs       :  type IDENTIFIER
                 |  type '*' IDENTIFIER
-                |  CURVE curve_decl
-                |  CURVE '*' curve_decl
+                |  CURVE IDENTIFIER
+                |  CURVE '*' IDENTIFIER
 
 type            :  DATA_TYPE parameter
                 |  IDENTIFIER
@@ -65,11 +62,11 @@ statement       :  decl_assgn ';'
                 |  multi_assign ';'
                 |  augAssign ';'
                 |  ret
+                |  import
                 |  conditional
                 |  loop
                 |  forLoop
-                |  call ';'
-                |  obj_call ';'
+                |  rhs ';'
                 |  block
                 |  BREAK ';'
                 |  CONTINUE ';'
@@ -81,13 +78,8 @@ declarations    :  decl_only ';' declarations
                 |
 
 decl_only       :  type decl_id_list
-                |  CURVE curve_decl_list
-
-curve_decl      :  IDENTIFIER '(' idlist ')'
-                |  IDENTIFIER
-
-curve_decl_list :  curve_decl_list ',' curve_decl
-                |  curve_decl
+                |  CURVE IDENTIFIER '(' idlist ')'
+                |  CURVE IDENTIFIER
 
 decl_id_list    :  decl_id_list ',' decl_id
                 |  decl_id
@@ -98,25 +90,14 @@ decl_id         :  decl_id '[' INTEGER ']'
 decl_id2        :  '*' decl_id2
                 |  IDENTIFIER
 
-// Assignment with declaration
 decl_assgn      :  type assignList
-                |  CURVE curveAssignList
+                |  CURVE IDENTIFIER '(' idlist ')' '=' rhs
+                |  CURVE IDENTIFIER '=' rhs
 
-curveAssignList :  curveAssignList ',' curve_assign
-                |  curve_assign
-
-curve_assign    :  curve_decl '=' rhs
-                |  curve_decl
-
-assignList      :  assignList ',' assign_decl
-                |  assign_decl
-                |  assignList ',' decl_id
-                |  decl_id
-                |  assignList ',' IDENTIFIER '(' arglist ')'
-                |  IDENTIFIER '(' arglist ')'
-
-assign_decl     :  decl_id '=' rhs
-                |  decl_id '=' '{' initializerList '}'
+assignList      :  assignList ',' assign
+                |  assign
+                |  assignList ',' IDENTIFIER
+                |  IDENTIFIER
 
 assign          :  lhs '=' rhs
                 |  lhs '=' '{' initializerList '}'
@@ -134,36 +115,28 @@ idlist          :  IDENTIFIER
 
 lhs             :  name
 
-// Logical Operators
 rhs             :  rhs OR and
                 |  and
 
 and             :  and AND comparision
                 |  comparision
 
-comparision     :  comparision compare_op plus
+comparision     :  comparision COMPARE plus
                 |  plus
 
-compare_op      :  '<'
-                |  '>'
-                |  COMPARE
+plus            :  plus '+' term
+                |  plus '-' term
+                |  term
 
-// Arithmetic Operators
-plus            :  plus '+' product
-                |  plus '-' product
-                |  product
-
-product         :  product '*' mod
-                |  mod
-
-mod             :  mod '%' division
-                |  division
-
-division        :  division '/' bit_or
+term            :  term '*' bit_or
+                |  term '/' bit_or
+                |  term '%' bit_or
                 |  bit_or
 
-// Bitwise Operators
-bit_or          :  bit_or '|' bit_and
+bit_or          :  bit_or '|' bit_xor
+                |  bit_xor
+
+bit_xor         :  bit_xor '^' bit_and
                 |  bit_and
 
 bit_and         :  bit_and '&' shift
@@ -172,14 +145,13 @@ bit_and         :  bit_and '&' shift
 shift           :  shift SHIFT power
                 |  power
 
-power           :  power '^' unary_op
+power           :  power POWER unary_op
                 |  unary_op
 
-// Unary Operators
+// TODO: Figure out starred expressions
 unary_op        :  '~' final
                 |  '-' final
-                // TODO: Figure out starred expressions
-                /* |  '*' '(' rhs ')' */
+                /* |  '*' final */
                 |  '!' final
                 |  final '!'
                 |  INCREMENT final
@@ -192,6 +164,7 @@ final           :  value
                 |  '(' rhs ')'
 
 value           :  number
+                |  TRUE_FALSE
                 |  STRING
                 |  CHAR
                 |  TRUE
@@ -217,7 +190,6 @@ obj_call        :  name ARROW IDENTIFIER '(' arglist ')'
 
 name            :  name ARROW IDENTIFIER
                 |  name '[' rhs ']'
-                |  IDENTIFIER
                 |  starred_name
 
 starred_name    :  '*' '(' name ')'
@@ -228,8 +200,8 @@ arglist         :  rhs
                 |  arglist ',' rhs
                 |
 
-differentiate   :  DIFF '[' rhs ',' rhs ']'
-                |  DIFF '[' rhs ',' rhs ',' INTEGER ']'
+differentiate   :  'D' '[' rhs ',' rhs ']'
+                |  'D' '[' rhs ',' rhs ',' INTEGER ']'
 
 // TODO: add suport for one line without block
 conditional     :  ifBlock
@@ -240,8 +212,8 @@ ifBlock         :  IF '(' rhs ')' block
 loop            :  UNTIL '(' rhs ')' REPEAT block
                 |  REPEAT block UNTIL '(' rhs ')'
 
-forLoop         :  FOR IDENTIFIER IN loopVals DOTS loopVals block
-                |  FOR IDENTIFIER IN loopVals DOTS loopVals DOTS loopVals block
+forLoop         :  FOR IDENTIFIER IN loopVals DOTS loopVals statement
+                |  FOR IDENTIFIER IN loopVals DOTS loopVals DOTS loopVals statement
                 |  FOR IDENTIFIER IN IDENTIFIER statement
 
 loopVals        :  INTEGER

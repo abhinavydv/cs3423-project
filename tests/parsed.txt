@@ -1,0 +1,317 @@
+func: func
+Data Type: int
+Identifier: main
+Parenthesis: (
+Parenthesis: )
+Curly: {
+Curve: curve
+Identifier: f
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Comma: ,
+Identifier: g
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Semi Colon: ;
+Identifier: f
+Arithmetic Bin Op: =
+Identifier: input_poly
+Parenthesis: (
+Number Constant: 10
+Parenthesis: )
+Semi Colon: ;
+Identifier: g
+Arithmetic Bin Op: =
+Identifier: input_poly
+Parenthesis: (
+Number Constant: 9
+Parenthesis: )
+Semi Colon: ;
+Data Type: complex
+Relational Op: <
+Data Type: real
+Comma: ,
+Data Type: real
+Relational Op: >
+Identifier: y_f
+Square Bracket: [
+Number Constant: 11
+Square Bracket: ]
+Comma: ,
+Identifier: y_g
+Square Bracket: [
+Number Constant: 11
+Square Bracket: ]
+Semi Colon: ;
+Identifier: y_f
+Arithmetic Bin Op: =
+Identifier: FFT
+Parenthesis: (
+Identifier: f
+Comma: ,
+Number Constant: 10
+Parenthesis: )
+Semi Colon: ;
+Identifier: y_g
+Arithmetic Bin Op: =
+Identifier: FFT
+Parenthesis: (
+Identifier: g
+Comma: ,
+Number Constant: 10
+Parenthesis: )
+Semi Colon: ;
+Data Type: complex
+Identifier: y
+Square Bracket: [
+Number Constant: 11
+Square Bracket: ]
+Semi Colon: ;
+Identifier: y
+Arithmetic Bin Op: =
+Identifier: y_f
+Arithmetic Bin Op: *
+Identifier: y_g
+Semi Colon: ;
+Curve: curve
+Identifier: c
+Parenthesis: (
+Identifier: k
+Parenthesis: )
+Arithmetic Bin Op: =
+Identifier: InverseFFT
+Parenthesis: (
+Identifier: y
+Comma: ,
+Number Constant: 11
+Parenthesis: )
+Semi Colon: ;
+Identifier: print
+Parenthesis: (
+String Constant: "Curve is "
+Comma: ,
+Identifier: c
+Parenthesis: (
+Identifier: t
+Parenthesis: )
+Parenthesis: )
+Semi Colon: ;
+Return: return
+Number Constant: 0
+Semi Colon: ;
+Curly: }
+func: func
+Data Type: complex
+Identifier: FFT
+Parenthesis: (
+Curve: curve
+Identifier: f
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Comma: ,
+Data Type: int
+Identifier: degree
+Parenthesis: )
+Curly: {
+Curve: curve
+Identifier: zeroes
+Parenthesis: (
+Identifier: k
+Parenthesis: )
+Arithmetic Bin Op: =
+Identifier: e
+Arithmetic Bin Op: ^
+Parenthesis: (
+Number Constant: 2
+Arithmetic Bin Op: *
+Identifier: k
+Arithmetic Bin Op: *
+Identifier: _i_
+Arithmetic Bin Op: *
+Identifier: pi
+Arithmetic Bin Op: /
+Parenthesis: (
+Identifier: degree
+Arithmetic Bin Op: +
+Number Constant: 1
+Parenthesis: )
+Parenthesis: )
+Semi Colon: ;
+Curve: curve
+Identifier: y_poly
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Arithmetic Bin Op: =
+Identifier: f
+Parenthesis: (
+Identifier: zeroes
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Parenthesis: )
+Semi Colon: ;
+Identifier: degree
+Augmented Assignment: +=
+Number Constant: 1
+Semi Colon: ;
+Data Type: vector
+Relational Op: <
+Data Type: complex
+Relational Op: >
+Identifier: y
+Parenthesis: (
+Identifier: degree
+Parenthesis: )
+Semi Colon: ;
+Loop: for
+Identifier: k
+Loop IN: in
+Number Constant: 0
+Dots: ..
+Identifier: degree
+Curly: {
+Identifier: y
+Square Bracket: [
+Identifier: i
+Square Bracket: ]
+Arithmetic Bin Op: =
+Identifier: y_poly
+Parenthesis: (
+Identifier: i
+Parenthesis: )
+Semi Colon: ;
+Curly: }
+Return: return
+Identifier: y
+Semi Colon: ;
+Curly: }
+func: func
+Curve: curve
+Identifier: InverseFFT
+Parenthesis: (
+Data Type: complex
+Identifier: y
+Comma: ,
+Data Type: int
+Identifier: degree
+Parenthesis: )
+Curly: {
+Curve: curve
+Identifier: zeroes
+Parenthesis: (
+Identifier: k
+Parenthesis: )
+Arithmetic Bin Op: =
+Identifier: e
+Arithmetic Bin Op: ^
+Parenthesis: (
+Arithmetic Bin Op: -
+Number Constant: 2
+Arithmetic Bin Op: *
+Identifier: k
+Arithmetic Bin Op: *
+Identifier: _i_
+Arithmetic Bin Op: *
+Identifier: pi
+Arithmetic Bin Op: /
+Parenthesis: (
+Identifier: degree
+Arithmetic Bin Op: +
+Number Constant: 1
+Parenthesis: )
+Parenthesis: )
+Semi Colon: ;
+Curve: curve
+Identifier: y_poly
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Semi Colon: ;
+Loop: for
+Identifier: k
+Loop IN: in
+Number Constant: 0
+Dots: ..
+Identifier: degree
+Curly: {
+Identifier: y_poly
+Augmented Assignment: +=
+Identifier: y
+Parenthesis: (
+Identifier: i
+Parenthesis: )
+Arithmetic Bin Op: *
+Identifier: x
+Arithmetic Bin Op: ^
+Identifier: i
+Semi Colon: ;
+Curly: }
+Data Type: vector
+Relational Op: <
+Data Type: complex
+Relational Op: >
+Identifier: y
+Parenthesis: (
+Identifier: degree
+Parenthesis: )
+Semi Colon: ;
+Loop: for
+Identifier: k
+Loop IN: in
+Number Constant: 0
+Dots: ..
+Identifier: degree
+Curly: {
+Identifier: y
+Square Bracket: [
+Identifier: i
+Square Bracket: ]
+Arithmetic Bin Op: =
+Identifier: y_poly
+Parenthesis: (
+Identifier: zeroes
+Parenthesis: (
+Identifier: i
+Parenthesis: )
+Parenthesis: )
+Semi Colon: ;
+Curly: }
+Curve: curve
+Identifier: c
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Semi Colon: ;
+Loop: for
+Identifier: k
+Loop IN: in
+Number Constant: 0
+Dots: ..
+Identifier: degree
+Curly: {
+Identifier: c
+Augmented Assignment: +=
+Identifier: y_poly
+Parenthesis: (
+Identifier: zeroes
+Parenthesis: (
+Identifier: i
+Parenthesis: )
+Parenthesis: )
+Arithmetic Bin Op: *
+Identifier: x
+Arithmetic Bin Op: ^
+Identifier: i
+Semi Colon: ;
+Curly: }
+Return: return
+Identifier: c
+Parenthesis: (
+Identifier: x
+Parenthesis: )
+Semi Colon: ;
+Curly: }

@@ -7,7 +7,6 @@
 
     FILE *yyin, *yyout;
     int line_count;
-    
 %}
 
 
@@ -18,14 +17,11 @@ alphaNumber     {number}|{alpha}
 strings         [^\\\"]*(\\.)?
 character       [^\\\']*(\\.)?
 
-/*Defined Variables (Add more) */
-defined_const   (e|pi)   
-defined_func    (sum|product)
-
 /*Spaces and Newline*/
 blank           [ \t]
 newline         (\n)
 
+/* TODO: Add int8, 16, 32 etc */
 /*Datatype*/
 string          (string)
 char            (char)
@@ -36,14 +32,17 @@ complex         (complex)
 curve           (curve)
 void            (void)
 vector          (vector)
-struct          (struct)
+rational        (rational)
+data_type       {string}|{char}|{int}|{bool}|{real}|{complex}|{void}|{vector}|{rational}
 
 /*Keywords*/
+struct          (struct)
 if              (if)
+else            (else)
 repeat          (repeat)
 until           (until)
 for             (for)
-else            (else)
+in              (in)
 return          (return)
 break           (break)
 continue        (continue)
@@ -51,27 +50,37 @@ true            (true)
 false           (false)
 import          (import)
 func            (func)
+dots            ".."
+diff            (D)
 
-/*Logical Operator*/
+/*Arithmetic Operator*/
 fact_n_not      (!)
+arithmetic_binaryOp    [-+/*=%^]
 
-log_binaryOp    [-+/*=^]|("->")
-log_uniaryOp    ("++")|("--") 
+arrow           "->"
+decrement       "++"
+increment       "--"
 
 /*Relational Operator*/
-rel_Op          ("==")|("!=")|(">=")|("<=")|("&&")|("||")
+rel_Op          ("==")|("!=")|(">=")|("<=")
 gt              (">")
 lt              ("<")
 
-/*Boolean Operator*/
-bool_Op         (~)|(&)|("|")|(>>)|(<<)|(^^)
+augAssign       ("+=")|("-=")|("*=")|("/=")|("%=")
+
+/*Bitwise Operator*/
+bit_Op         (~)|(&)|("|")
+shift           (<<)|(>>)
+
+/*Logical Operator*/
+and_or          ("&&")|("||")
 
 /*Identifier*/
 identifier      {alpha}{alphaNumber}*
 
 /*Comments*/
-mline_comment   \/\*([^*]|\*(?!\/))*\*\/
-sline_comment   \/\/[^(?<!\\)\\(?=n)]\\n
+mline_comment   \/\*([^*]|\*[^\/])*\*\/
+sline_comment   \/\/[^\n]*
 comment         {mline_comment}|{sline_comment}
 
 /*Others*/
@@ -89,48 +98,44 @@ int line_count = 1;
 %%
 
 
-[\"]{strings}*[\"]      {fprintf(yyout, "String Constant: %s\n",yytext);      return STRING_CONST;}
-[\']{character}*[\']    {fprintf(yyout, "Character Constant: %s\n",yytext);   return CHAR_CONST;}
-{number}+(\.{number}*)? {fprintf(yyout, "Number Constant: %s\n",yytext);      return NUM_CONST;}
+[\"]{strings}*[\"]      {fprintf(yyout, "String Constant: %s\n",yytext);      return STRING;}
+[\']{character}*[\']    {fprintf(yyout, "Character Constant: %s\n",yytext);   return CHAR;}
+{number}+               {fprintf(yyout, "Number Constant: %s\n",yytext);      return INTEGER;}
+{number}+(\.{number}+)? {fprintf(yyout, "Number Constant: %s\n",yytext);      return REAL;}
 
-
-{int}                   {fprintf(yyout, "Integer Datatype: %s\n",yytext);     return INT;}
-{string}                {fprintf(yyout, "String Datatype: %s\n",yytext);      return STRING;}
-{char}                  {fprintf(yyout, "Char Dataype: %s\n",yytext);         return CHAR;}
-{bool}                  {fprintf(yyout, "Bool Datatype: %s\n",yytext);        return BOOL;}
-{real}                  {fprintf(yyout, "Real Datatype: %s\n",yytext);        return REAL;}
-{complex}               {fprintf(yyout, "Complex Datatype: %s\n",yytext);     return COMPLEX;}
-{curve}                 {fprintf(yyout, "Curve Datatype: %s\n",yytext);       return CURVE;}
-{void}                  {fprintf(yyout, "Void Datatype: %s\n",yytext);        return VOID;}
-{vector}                {fprintf(yyout, "Vector Datatype: %s\n",yytext);      return VECTOR;}
-{struct}                {fprintf(yyout, "Struct Datatype: %s\n",yytext);      return STRUCT;}
-
+{data_type}             {fprintf(yyout, "Data Type: %s\n",yytext);           return DATA_TYPE;}
+{curve}                 {fprintf(yyout, "Curve: %s\n",yytext);               return CURVE;}
+{struct}                {fprintf(yyout, "Struct: %s\n",yytext);              return STRUCT;}
 
 {if}                    {fprintf(yyout, "Conditional: %s\n",yytext);      return IF;}
 {else}                  {fprintf(yyout, "Conditional: %s\n",yytext);      return ELSE;}
 {repeat}                {fprintf(yyout, "Loop: %s\n",yytext);             return REPEAT;}
 {until}                 {fprintf(yyout, "Loop Conditional: %s\n",yytext); return UNTIL;}
 {for}                   {fprintf(yyout, "Loop: %s\n",yytext);             return FOR;}
+{in}                    {fprintf(yyout, "Loop IN: %s\n",yytext);          return IN;}
+{dots}                  {fprintf(yyout, "Dots: %s\n",yytext);             return DOTS;}
 {break}                 {fprintf(yyout, "Break: %s\n",yytext);            return BREAK;}
 {continue}              {fprintf(yyout, "Continue: %s\n",yytext);         return CONTINUE;}
 {return}                {fprintf(yyout, "Return: %s\n",yytext);           return RETURN;}
 {import}                {fprintf(yyout, "Import: %s\n",yytext);           return IMPORT;}
-{true}                  {fprintf(yyout, "Bool True: %s\n",yytext);        return _TRUE;}
-{false}                 {fprintf(yyout, "Bool False: %s\n",yytext);       return _FALSE;}
+{true}                  {fprintf(yyout, "Bool True: %s\n",yytext);        return TRUE;}
+{false}                 {fprintf(yyout, "Bool False: %s\n",yytext);       return FALSE;}
 {func}                  {fprintf(yyout, "func: %s\n",yytext);             return FUNC;}
+{diff}                  {fprintf(yyout, "diff: %s\n",yytext);             return DIFF;}
 
-
-{defined_const}         {fprintf(yyout, "Defined Constant: %s\n",yytext);   return DEF_CONST;}
-{defined_func}          {fprintf(yyout, "Defined Function: %s\n",yytext);   return DEF_FUNC;}
-
-
-{log_binaryOp}          {fprintf(yyout, "Logical Bin Op: %s\n",yytext);       return LOG_BIN_OP;}
-{log_uniaryOp}          {fprintf(yyout, "Logical Uni Op: %s\n",yytext);       return LOG_UNI_OP;}
-{rel_Op}                {fprintf(yyout, "Relational Op: %s\n",yytext);        return REL_OP;}
-{bool_Op}               {fprintf(yyout, "Boolean Op: %s\n",yytext);           return BOOL_OP;}
+{arithmetic_binaryOp}   {fprintf(yyout, "Arithmetic Bin Op: %s\n",yytext);       return yytext[0];}
+{increment}             {fprintf(yyout, "Arithmetic Uni Op: %s\n",yytext);       return INCREMENT;}
+{decrement}             {fprintf(yyout, "Arithmetic Uni Op: %s\n",yytext);       return DECREMENT;}
+{arrow}                 {fprintf(yyout, "Arrow: %s\n",yytext);                return ARROW;}
+{rel_Op}                {fprintf(yyout, "Relational Op: %s\n",yytext);        return COMPARE;}
+{bit_Op}               {fprintf(yyout, "Boolean Op: %s\n",yytext);           return yytext[0];}
+{shift}                 {fprintf(yyout, "Shift Op: %s\n",yytext);             return SHIFT;}
+"&&"                    {fprintf(yyout, "Logical Op: %s\n",yytext);           return AND;}
+"||"                    {fprintf(yyout, "Logical Op: %s\n",yytext);           return OR;}
 {fact_n_not}            {fprintf(yyout, "Log/Rel Uni Op: %s\n",yytext);       return yytext[0];}
 {gt}                    {fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext[0];}
 {lt}                    {fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext[0];}
+{augAssign}             {fprintf(yyout, "Augmented Assignment: %s\n",yytext); return AUG_ASSIGN;}
 
 {identifier}            {fprintf(yyout, "Identifier: %s\n",yytext);     return IDENTIFIER;}
 
@@ -143,7 +148,8 @@ int line_count = 1;
 
 {blank}                 {/* Ignore spaces and tabs*/ }
 {newline}               { line_count++; }
-.                       {printf("Syntax Error at Line Number %d\n",line_count); fflush(yyout); return ERROR;}
+{comment}               {/* Ignore comments*/ }
+.                       {printf("Syntax Error at Line Number %d\n",line_count); fflush(yyout); exit(0);}
 
 %%
 

@@ -1,0 +1,75 @@
+// Multiply two polynomial
+
+func int main(){
+    curve f(x), g(x); // real polynomial
+    f = input_poly(10); // Takes 11 input [a0,a1,...,a10] to form 10 degree poly ( a0 + a1x^1 ... + a10x^10)  
+    g = input_poly(9);  // Takes 10 input [a0,a1,...,a9] to form 9 degree poly ( a0 + a1x^1 ... + a9x^9)
+
+    complex<real, real> y_f[11], y_g[11];
+
+    y_f = FFT(f,10);
+    y_g = FFT(g,10);
+
+    complex y[11];
+
+    y = y_f * y_g; // Overloading
+
+    curve c(k) = InverseFFT(y,11); // output can be of form x, but should be converted into k
+
+    print("Curve is ", c(t)); // print should display the curve in form of t
+    
+    return 0;
+}
+
+func complex FFT(curve f(x),int degree){ // return type [number of return variable][type]
+
+    // Zeros of Unity
+
+    curve zeroes(k) = e^(2*k*_i_*pi/(degree + 1));
+
+    curve y_poly(x) = f(zeroes(x)) ;
+
+    degree += 1;
+
+    vector<complex> y(degree);
+
+
+    for k in 0 .. degree {
+
+        y[i] = y_poly(i);
+
+    }
+
+    return y;
+}
+
+func curve InverseFFT(complex y,int degree){
+    
+    // Inverse Zeros of Unity
+
+    curve zeroes(k) = e^(-2*k*_i_*pi/(degree + 1));
+
+    // curve y_poly(x) = sum(0,degree,true, y[i]* x^i);
+    curve y_poly(x);
+
+    for k in 0 .. degree {
+        y_poly += y(i) * x^i;
+    }
+
+    vector<complex> y(degree);
+
+    for k in 0..degree {
+
+        y[i] = y_poly( zeroes(i) );
+
+    }
+
+    // curve c(x) = sum(0, degree, true, y_poly(zeroes(i)) * x^i );
+    curve c(x);
+    for k in 0..degree {
+        c += y_poly(zeroes(i)) * x^i;
+    }
+
+    return c(x);
+
+}

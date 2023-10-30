@@ -1,8 +1,9 @@
-PWD /mnt/Sagittarius/Semesters/Semester5/Compiler2/Project/cs3423-project/specs
+PWD /mnt/MyDrive/Abhinav/Study/BTechCSEResources/Sem5/Compilers-II-CS3423/Assignments/Project/cs3423-project/specs
+INPUT /etc/texmf/web2c/texmf.cnf
+INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
-INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
-INPUT /usr/share/texlive/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT /mnt/Sagittarius/Semesters/Semester5/Compiler2/Project/cs3423-project/specs/specs.tex
+INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
+INPUT /mnt/MyDrive/Abhinav/Study/BTechCSEResources/Sem5/Compilers-II-CS3423/Assignments/Project/cs3423-project/specs/specs.tex
 OUTPUT specs.log
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -19,6 +20,7 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/base/size12.clo
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/size12.clo
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/size12.clo
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/size12.clo
+INPUT /usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
 INPUT /usr/share/texlive/texmf-dist/tex/latex/float/float.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/float/float.sty
@@ -67,7 +69,7 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm
 OUTPUT specs.pdf
-INPUT /usr/share/texlive/texmf-var/fonts/map/pdftex/updmap/pdftex.map
+INPUT /var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map
 OUTPUT specs.toc
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmtt12.tfm
 INPUT specs.aux

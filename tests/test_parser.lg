@@ -1,0 +1,16 @@
+func int main(){
+    int ***a = 1;
+    int *b[1] = 2;
+    int c = 3;
+    int d = 4;
+    d = 6;
+
+    if (a && 1)
+    {
+        a = 2;
+    }
+
+    c = a + b - d * e / f % c--;
+
+    return 0;
+}
