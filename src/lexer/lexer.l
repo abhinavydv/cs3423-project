@@ -56,10 +56,10 @@ diff            (D)
 /*Arithmetic Operator*/
 fact_n_not      (!)
 arithmetic_binaryOp    [-+/*=%^]
-
 arrow           "->"
 decrement       "++"
 increment       "--"
+
 
 /*Relational Operator*/
 rel_Op          ("==")|("!=")|(">=")|("<=")
@@ -71,9 +71,6 @@ augAssign       ("+=")|("-=")|("*=")|("/=")|("%=")
 /*Bitwise Operator*/
 bit_Op         (~)|(&)|("|")
 shift           (<<)|(>>)
-
-/*Logical Operator*/
-and_or          ("&&")|("||")
 
 /*Identifier*/
 identifier      {alpha}{alphaNumber}*
@@ -87,8 +84,8 @@ comment         {mline_comment}|{sline_comment}
 semi_col        (;)
 comma           (,)
 curly           [}{]
-square          [\[\]]
 parenthesis     [)(]
+square          [\[\]]
 
 
 %{
@@ -128,7 +125,7 @@ int line_count = 1;
 {decrement}             {fprintf(yyout, "Arithmetic Uni Op: %s\n",yytext);       return DECREMENT;}
 {arrow}                 {fprintf(yyout, "Arrow: %s\n",yytext);                return ARROW;}
 {rel_Op}                {fprintf(yyout, "Relational Op: %s\n",yytext);        return COMPARE;}
-{bit_Op}               {fprintf(yyout, "Boolean Op: %s\n",yytext);           return yytext[0];}
+{bit_Op}                {fprintf(yyout, "Boolean Op: %s\n",yytext);           return yytext[0];}
 {shift}                 {fprintf(yyout, "Shift Op: %s\n",yytext);             return SHIFT;}
 "&&"                    {fprintf(yyout, "Logical Op: %s\n",yytext);           return AND;}
 "||"                    {fprintf(yyout, "Logical Op: %s\n",yytext);           return OR;}
@@ -149,7 +146,7 @@ int line_count = 1;
 {blank}                 {/* Ignore spaces and tabs*/ }
 {newline}               { line_count++; }
 {comment}               {/* Ignore comments*/ }
-.                       {printf("Syntax Error at Line Number %d\n",line_count); fflush(yyout); exit(0);}
+.                       {printf("Lexer Error at Line Number %d\n",line_count); fflush(yyout); exit(0);}
 
 %%
 

@@ -19,48 +19,57 @@
 
 %%
 start           :  program
-                |  NEWLINE {printf(" : invalid program"); exit(0);}
+                |  NEWLINE {printf(" : invalid program\n"); exit(0);}
 
+// the program
 program         :  global_decl program
                 |
 
+// all global statements allowed
 global_decl     :  decl_only ';'
                 |  function
+                |  FUNC funcDef ';'
                 |  struct
                 |  import
 
+// struct defs
 struct          :  STRUCT IDENTIFIER '{' declarations '}'
 
+// function defs
 function        :  FUNC funcDef block
 
+// function header defs
 funcDef         :  type IDENTIFIER '(' parameters ')'
                 |  type IDENTIFIER '(' ')'
                 |  CURVE IDENTIFIER '(' parameters ')'
                 |  CURVE IDENTIFIER '(' ')'
 
+// function parameters
 parameters      :  type_defs
                 |  parameters ',' type_defs
 
-type_defs       :  type IDENTIFIER
-                |  type '*' IDENTIFIER
-                |  CURVE curve_decl
-                |  CURVE '*' curve_decl
+// type definitions for function parameters
+type_defs       :  type decl_id
+                |  CURVE decl_id
 
-type            :  DATA_TYPE parameter
+type            :  DATA_TYPE temp_params
                 |  IDENTIFIER
                 |  VOID
 
-parameter       :  '<' typelist '>'
+// template paramaters
+temp_params       :  '<' typelist '>'
                 |
 
 typelist        :  type
                 |  typelist ',' type
 
+// block of statements
 block           : '{' statements '}'
 
 statements      :  statement statements
                 |
 
+// Following are all the statements allowed
 statement       :  decl_assgn ';'
                 |  multi_assign ';'
                 |  augAssign ';'
@@ -75,63 +84,81 @@ statement       :  decl_assgn ';'
                 |  CONTINUE ';'
                 |  ';'
 
+// import statements
 import          :  IMPORT STRING ';'
 
+// list of declarations (for structs)
 declarations    :  decl_only ';' declarations
                 |
 
+// declarations only. No assignment (for global declration)
 decl_only       :  type decl_id_list
                 |  CURVE curve_decl_list
 
-curve_decl      :  IDENTIFIER '(' idlist ')'
-                |  IDENTIFIER
-
+// list of curve identifiers
 curve_decl_list :  curve_decl_list ',' curve_decl
                 |  curve_decl
 
+// identifier for a curve
+curve_decl      :  IDENTIFIER '(' idlist ')'
+                |  decl_id
+
+// list of declaration identifiers.
 decl_id_list    :  decl_id_list ',' decl_id
                 |  decl_id
 
-decl_id         :  decl_id '[' INTEGER ']'
+// declaration identifier with star
+decl_id         :  '*' decl_id
                 |  decl_id2
 
-decl_id2        :  '*' decl_id2
+// declaration identifier with square brackets
+decl_id2        :  decl_id2 '[' INTEGER ']'
                 |  IDENTIFIER
 
-// Assignment with declaration
+// Declaration with/without assignment
 decl_assgn      :  type assignList
                 |  CURVE curveAssignList
 
+// list of IDs/assignments for curves for declarations
 curveAssignList :  curveAssignList ',' curve_assign
                 |  curve_assign
 
+// ID/Assignment for a curve
 curve_assign    :  curve_decl '=' rhs
                 |  curve_decl
 
+// list of IDs/assignments for declarations
 assignList      :  assignList ',' assign_decl
                 |  assign_decl
                 |  assignList ',' decl_id
                 |  decl_id
-                |  assignList ',' IDENTIFIER '(' arglist ')'
-                |  IDENTIFIER '(' arglist ')'
+                /* |  assignList ',' IDENTIFIER '(' arglist ')'
+                |  IDENTIFIER '(' arglist ')' */
 
+// ID/Assignment for a declaration
 assign_decl     :  decl_id '=' rhs
                 |  decl_id '=' '{' initializerList '}'
 
+// Assignment
 assign          :  lhs '=' rhs
                 |  lhs '=' '{' initializerList '}'
 
+// Augmented Assignment
 augAssign       :  lhs AUG_ASSIGN rhs
 
+// Initializer List like in C/Cpp, i.e., {1,2,3}
 initializerList :  initializerList ',' rhs
                 |  rhs
 
+// Assign a rhs to multiple variables;
 multi_assign    :  lhs '=' multi_assign
                 |  assign
 
+// list of identifiers
 idlist          :  IDENTIFIER
                 |  idlist ',' IDENTIFIER
 
+// LHS of an assignment
 lhs             :  name
 
 // Logical Operators
@@ -141,6 +168,7 @@ rhs             :  rhs OR and
 and             :  and AND comparision
                 |  comparision
 
+// Comparison Operators
 comparision     :  comparision compare_op plus
                 |  plus
 
@@ -172,6 +200,7 @@ bit_and         :  bit_and '&' shift
 shift           :  shift SHIFT power
                 |  power
 
+// Power Operator
 power           :  power '^' unary_op
                 |  unary_op
 
@@ -191,6 +220,8 @@ unary_op        :  '~' final
 final           :  value
                 |  '(' rhs ')'
 
+// Values: Numbers, Strings, Booleans, Identifiers, Calls, Object Calls, Differentiate
+// i.e. everything without an operator
 value           :  number
                 |  STRING
                 |  CHAR
@@ -201,51 +232,59 @@ value           :  number
                 |  obj_call
                 |  differentiate
 
+// Numbers: Real and Integer
 number          :  REAL
                 |  INTEGER
 
+// Return Statement
 ret             :  RETURN rhs ';'
                 |  RETURN ';'
 
+// Function Call
 call            :  IDENTIFIER '(' arglist ')'
 
+// Function Call with object
 obj_call        :  name ARROW IDENTIFIER '(' arglist ')'
 
-/* non_star_name   :  non_star_name ARROW IDENTIFIER
-                |  non_star_name '[' rhs ']'
-                |  IDENTIFIER */
+// List of arguments for a function call
+arglist         :  rhs
+                |  arglist ',' rhs
+                |
 
+// Object reference
 name            :  name ARROW IDENTIFIER
                 |  name '[' rhs ']'
                 |  IDENTIFIER
                 |  starred_name
 
+// Starred object reference
 starred_name    :  '*' '(' name ')'
                 |  '*' starred_name
                 |  '*' IDENTIFIER
 
-arglist         :  rhs
-                |  arglist ',' rhs
-                |
-
 differentiate   :  DIFF '[' rhs ',' rhs ']'
                 |  DIFF '[' rhs ',' rhs ',' INTEGER ']'
 
+// Conditional Statements
 // TODO: add suport for one line without block
 conditional     :  ifBlock
                 |  ifBlock ELSE statement
 
+// If Statement
 ifBlock         :  IF '(' rhs ')' block
 
+// Loop Statements
 loop            :  UNTIL '(' rhs ')' REPEAT block
                 |  REPEAT block UNTIL '(' rhs ')'
 
+// For Loop
 forLoop         :  FOR IDENTIFIER IN loopVals DOTS loopVals block
                 |  FOR IDENTIFIER IN loopVals DOTS loopVals DOTS loopVals block
-                |  FOR IDENTIFIER IN IDENTIFIER statement
+                |  FOR IDENTIFIER IN '(' rhs ')' statement
+                |  FOR IDENTIFIER IN value statement
 
-loopVals        :  INTEGER
-                |  IDENTIFIER
+loopVals        :  value
+                |  '(' rhs ')'
 
 %%
 

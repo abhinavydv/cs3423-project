@@ -14,3 +14,8 @@ func int main(){
 
     return 0;
 }
+
+func int hehe(int *a[2], curve **b){
+    return a!+!b;
+    curve *a = 1;
+}
