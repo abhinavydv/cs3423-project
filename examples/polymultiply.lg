@@ -21,7 +21,7 @@ func int main(){
     return 0;
 }
 
-func complex FFT(curve f(x),int degree){ // return type [number of return variable][type]
+func complex FFT(curve f,int degree){ // return type [number of return variable][type]
 
     // Zeros of Unity
 

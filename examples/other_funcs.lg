@@ -1,7 +1,7 @@
 import "funcs.lg";
 
 
-fun int main(){
+func int main(){
     rational <int, int> c = {1, 2};
     curve y (x, a, b) = a * sin(x) + b * cos(x) ^ 2 + a * b;
     curve w (x) = x^4 + 3*x^2 - 2*x;

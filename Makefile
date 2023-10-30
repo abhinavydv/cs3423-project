@@ -27,7 +27,7 @@ test_expr_base:
 
 test_parser: parser
 	$(call yellow, "Testing parser")
-	./bin/parser tests/test_parser.lg tests/parsed.txt
+	./bin/parser examples/polymultiply.lg tests/parsed.txt
 	$(call green, "Parser test passed")
 	echo
 

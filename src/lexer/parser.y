@@ -132,8 +132,8 @@ assignList      :  assignList ',' assign_decl
                 |  assign_decl
                 |  assignList ',' decl_id
                 |  decl_id
-                /* |  assignList ',' IDENTIFIER '(' arglist ')'
-                |  IDENTIFIER '(' arglist ')' */
+                |  assignList ',' IDENTIFIER '(' arglist ')'
+                |  IDENTIFIER '(' arglist ')'
 
 // ID/Assignment for a declaration
 assign_decl     :  decl_id '=' rhs
