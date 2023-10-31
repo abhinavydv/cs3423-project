@@ -5,7 +5,9 @@ func int main(){
 
     curve h(x);
     h = D[f * g, $x];   // differentiate f(x) * g(x) w.r.t. x
-    
+
+    D[h, $x];
+
     f = sin($x) * cos($x) + $x * sin($x) * $y;
     g = D[f($x), $x];          // differentiate f(x) w.r.t. x
 

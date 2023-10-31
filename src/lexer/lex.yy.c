@@ -1,6 +1,6 @@
-#line 1 "src/lexer/lex.yy.c"
+#line 2 "src/lexer/lex.yy.c"
 
-#line 3 "src/lexer/lex.yy.c"
+#line 4 "src/lexer/lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -576,7 +576,7 @@ char *yytext;
     int line_count;
 
     #define ECHO fprintf(parsed_file, "%s", yytext)
-#line 579 "src/lexer/lex.yy.c"
+#line 580 "src/lexer/lex.yy.c"
 /*Constant*/
 /*Spaces and Newline*/
 /*Datatype*/
@@ -589,8 +589,8 @@ char *yytext;
 /*Others*/
 #line 97 "src/lexer/lexer.l"
 int line_count = 1;
-#line 592 "src/lexer/lex.yy.c"
 #line 593 "src/lexer/lex.yy.c"
+#line 594 "src/lexer/lex.yy.c"
 
 #define INITIAL 0
 
@@ -811,7 +811,7 @@ YY_DECL
 
 
 
-#line 814 "src/lexer/lex.yy.c"
+#line 815 "src/lexer/lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1112,7 +1112,7 @@ YY_RULE_SETUP
 #line 159 "src/lexer/lexer.l"
 ECHO;
 	YY_BREAK
-#line 1115 "src/lexer/lex.yy.c"
+#line 1116 "src/lexer/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 

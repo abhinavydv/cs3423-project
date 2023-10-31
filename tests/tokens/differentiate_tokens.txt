@@ -48,6 +48,13 @@ Comma: ,
 Dollar: $x
 Square Bracket: ]
 Semi Colon: ;
+diff: D
+Square Bracket: [
+Identifier: h
+Comma: ,
+Dollar: $x
+Square Bracket: ]
+Semi Colon: ;
 Identifier: f
 Arithmetic Bin Op: =
 Identifier: sin

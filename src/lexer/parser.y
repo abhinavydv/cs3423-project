@@ -83,6 +83,7 @@ statement       :  decl_assgn ';'   {label("Declaration");}
                 |  forLoop
                 |  call ';'         {label("Function Call");}
                 |  obj_call ';'     {label("Object Function Call");}
+                |  differentiate ';' {label("Differentiate");}
                 |  block
                 |  BREAK ';'        {label("Break");}
                 |  CONTINUE ';'     {label("Continue");}
@@ -216,8 +217,8 @@ unary_op_only   :  '~' final
                 |  '-' final
                 // TODO: Figure out starred expressions
                 /* |  '*' '(' rhs ')' */
-                |  '!' final
-                |  final '!'
+                |  '!' final        // logical not
+                |  final '!'        // factorial
                 |  INCREMENT name   // only names are allowed
                 |  name INCREMENT   // only names are allowed
                 |  DECREMENT name   // only names are allowed

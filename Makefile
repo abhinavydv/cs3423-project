@@ -5,9 +5,9 @@
 .SILENT: test_parser
 .SILENT: test_parser_only
 
-yellow = echo -e $(2) "\033[01;33m$(1)\033[01;0m"
-green = echo -e $(2) "\033[01;32m$(1)\033[01;0m"
-red = echo -e $(2) "\033[01;31m$(1)\033[01;0m"
+yellow = echo $(2) "\033[01;33m$(1)\033[01;0m"
+green = echo $(2) "\033[01;32m$(1)\033[01;0m"
+red = echo $(2) "\033[01;31m$(1)\033[01;0m"
 
 test_parser_at = $(call yellow,Testing at $(1),-n); ./bin/parser $(1) tests/tokens/$(2) tests/parsed/$(3) > /dev/null && $(call green, \tOK) || $(call red, \tFailed)
 
