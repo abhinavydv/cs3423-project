@@ -15,7 +15,7 @@ Parenthesis: (
 Identifier: x
 Parenthesis: )
 Arithmetic Bin Op: =
-Identifier: x
+Dollar: $x
 Arithmetic Bin Op: ^
 Number Constant: 2
 Arithmetic Bin Op: +
@@ -41,7 +41,7 @@ Parenthesis: (
 Identifier: i
 Parenthesis: )
 Arithmetic Bin Op: *
-Identifier: x
+Dollar: $x
 Arithmetic Bin Op: ^
 Identifier: i
 Semi Colon: ;
@@ -76,7 +76,7 @@ diff: D
 Square Bracket: [
 Identifier: f
 Comma: ,
-Identifier: x
+Dollar: $x
 Square Bracket: ]
 Semi Colon: ;
 Identifier: start

@@ -16,7 +16,7 @@ func int main(){
 
     curve c(k) = InverseFFT(y,11); // output can be of form x, but should be converted into k
 
-    print("Curve is ", c(t)); // print should display the curve in form of t
+    print("Curve is ", c($t)); // print should display the curve in form of t
     
     return 0;
 }
@@ -37,7 +37,7 @@ func complex FFT(curve f,int degree)
     vector<complex> y(degree);
 
 
-    for k in 0 .. degree {
+    for i in 0 .. degree {
 
         y[i] = y_poly(i);
 
@@ -52,7 +52,7 @@ func curve InverseFFT(complex y,int degree){
 
     curve zeroes(k) = e^(-2*k*_i_*pi/(degree + 1));
 
-    // curve y_poly(x) = sum(0,degree,true, y[i]* x^i);
+   
     curve y_poly(x);
 
     for k in 0 .. degree {
@@ -67,7 +67,6 @@ func curve InverseFFT(complex y,int degree){
 
     }
 
-    // curve c(x) = sum(0, degree, true, y_poly(zeroes(i)) * x^i );
     curve c(x);
     for k in 0..degree {
         c += y_poly(zeroes(i)) * x^i;

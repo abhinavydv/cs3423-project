@@ -14,7 +14,7 @@
 %}
 
 %token DATA_TYPE IDENTIFIER STRING IN DOTS
-%token CHAR RETURN INTEGER CURVE
+%token CHAR RETURN INTEGER CURVE DOLLAR_ID
 %token FOR STRUCT AUG_ASSIGN DIFF
 %token VOID ARROW COMPARE AND OR SHIFT DECREMENT INCREMENT
 %token REAL NEWLINE IF ELSE DOT
@@ -237,6 +237,7 @@ value           :  number
                 |  call
                 |  obj_call
                 |  differentiate
+                |  DOLLAR_ID
 
 // Numbers: Real and Integer
 number          :  REAL
@@ -274,13 +275,11 @@ differentiate   :  DIFF '[' rhs ',' rhs ']'
                 |  DIFF '[' rhs ',' rhs ',' INTEGER ']'
 
 // Conditional Statement
-// This line has an SR conflict. This is because of the dangling else problem.
-// but it is correctly resolved by default.
 conditional     :  ifBlock
                 |  ifBlock ELSE {label("Else stetement");} statement
 
 // If Statement
-ifBlock         :  IF '(' rhs ')' {label("If statement");} statement
+ifBlock         :  IF '(' rhs ')' {label("If statement");} block
 
 // Loop Statements
 loop            :  UNTIL '(' rhs ')' REPEAT {label("Loop");} statement

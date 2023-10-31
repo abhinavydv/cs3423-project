@@ -1,15 +1,15 @@
 func int main(){
-    curve f(x), g(x);
+    curve f(x,y), g(x);
     f = input_poly(5);
     g = input_poly(7);
 
     curve h(x);
-    h = D[f * g, x];   // differentiate f(x) * g(x) w.r.t. x
+    h = D[f * g, $x];   // differentiate f(x) * g(x) w.r.t. x
+    
+    f = sin($x) * cos($x) + $x * sin($x) * $y;
+    g = D[f($x), $x];          // differentiate f(x) w.r.t. x
 
-    f = sin(x) * cos(x) + x * sin(x);
-    g = D[f(x), x];          // differentiate f(x) w.r.t. x
-
-    if (g != cos(x) * cos(x) - sin(x) * six(x) + sin(x) + x * cos(x)){
+    if (g != cos($x) * cos($x) - sin($x) * six($x) + sin($x) + $x * cos($x)){
         print("Error in differentiation\n");
     }
     else

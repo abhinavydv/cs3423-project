@@ -2,13 +2,11 @@
 
 func int main(){
     int n = 10;
-    curve g(x) = x^2 + 1; // default output real (curve g(x) = curve real g(x))
-    // curve f(x) = sum(i=0, n, true, g(i) * x^i);  // sum (start (inclusive), end (inclusive), condition, term) 
-
+    curve g(x) = $x^2 + 1; // default output real (curve g(x) = curve real g(x))
     curve f(x);
 
     for i in 0..n {
-        f += g(i) * x^i;
+        f += g(i) * $x^i;
     }
 
     // Newton Raphson 
@@ -17,7 +15,7 @@ func int main(){
 
     until ( abs(f(start)) < epsilon ) repeat
     {
-        g = D[f, x];
+        g = D[f, $x];
         start = start - f(start)/g(start);
     }
 

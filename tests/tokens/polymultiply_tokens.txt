@@ -94,7 +94,7 @@ String Constant: "Curve is "
 Comma: ,
 Identifier: c
 Parenthesis: (
-Identifier: t
+Dollar: $t
 Parenthesis: )
 Parenthesis: )
 Semi Colon: ;
@@ -171,7 +171,7 @@ Identifier: degree
 Parenthesis: )
 Semi Colon: ;
 Loop: for
-Identifier: k
+Identifier: i
 Loop IN: in
 Number Constant: 0
 Dots: ..

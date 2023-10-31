@@ -35,14 +35,14 @@ Identifier: a
 Arithmetic Bin Op: *
 Identifier: sin
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
 Arithmetic Bin Op: +
 Identifier: b
 Arithmetic Bin Op: *
 Identifier: cos
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
 Arithmetic Bin Op: ^
 Number Constant: 2
@@ -57,22 +57,25 @@ Parenthesis: (
 Identifier: x
 Parenthesis: )
 Arithmetic Bin Op: =
-Identifier: x
+Dollar: $x
 Arithmetic Bin Op: ^
 Number Constant: 4
 Arithmetic Bin Op: +
 Number Constant: 3
 Arithmetic Bin Op: *
-Identifier: x
+Dollar: $x
 Arithmetic Bin Op: ^
 Number Constant: 2
 Arithmetic Bin Op: -
 Number Constant: 2
 Arithmetic Bin Op: *
-Identifier: x
+Dollar: $x
 Semi Colon: ;
 Curve: curve
 Identifier: z
+Parenthesis: (
+Identifier: y
+Parenthesis: )
 Arithmetic Bin Op: =
 Identifier: input_poly
 Parenthesis: (
@@ -80,13 +83,19 @@ Number Constant: 5
 Parenthesis: )
 Arithmetic Bin Op: /
 Identifier: w
+Parenthesis: (
+Dollar: $y
+Parenthesis: )
 Semi Colon: ;
 Curve: curve
 Identifier: z2
+Parenthesis: (
+Identifier: y
+Parenthesis: )
 Arithmetic Bin Op: =
 Identifier: z
 Arithmetic Bin Op: *
-Identifier: y
+Dollar: $y
 Semi Colon: ;
 Curve: curve
 Identifier: y1

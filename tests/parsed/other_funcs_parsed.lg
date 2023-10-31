@@ -3,12 +3,12 @@ import "funcs.lg";
 
 func int main() /* Function def */ {
     rational <int, int> c = {1, 2}; /* Declaration */ 
-    curve y (x, a, b) = a * sin(x) + b * cos(x) ^ 2 + a * b; /* Declaration */ 
-    curve w (x) = x^4 + 3*x^2 - 2*x; /* Declaration */ 
+    curve y (x, a, b) = a * sin($x) + b * cos($x) ^ 2 + a * b; /* Declaration */ 
+    curve w (x) = $x^4 + 3*$x^2 - 2*$x; /* Declaration */ 
 
-    curve z = input_poly(5) / w; /* Declaration */ 
+    curve z(y) = input_poly(5) / w($y); /* Declaration */   
 
-    curve z2 = z * y; /* Declaration */ 
+    curve z2(y) = z * $y; /* Declaration */  
 
     curve y1 = D[y, x]; /* Declaration */ 
 

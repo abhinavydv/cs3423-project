@@ -63,73 +63,35 @@ extern int yydebug;
     RETURN = 264,                  /* RETURN  */
     INTEGER = 265,                 /* INTEGER  */
     CURVE = 266,                   /* CURVE  */
-    FOR = 267,                     /* FOR  */
-    STRUCT = 268,                  /* STRUCT  */
-    AUG_ASSIGN = 269,              /* AUG_ASSIGN  */
-    DIFF = 270,                    /* DIFF  */
-    VOID = 271,                    /* VOID  */
-    ARROW = 272,                   /* ARROW  */
-    COMPARE = 273,                 /* COMPARE  */
-    AND = 274,                     /* AND  */
-    OR = 275,                      /* OR  */
-    SHIFT = 276,                   /* SHIFT  */
-    DECREMENT = 277,               /* DECREMENT  */
-    INCREMENT = 278,               /* INCREMENT  */
-    REAL = 279,                    /* REAL  */
-    NEWLINE = 280,                 /* NEWLINE  */
-    IF = 281,                      /* IF  */
-    ELSE = 282,                    /* ELSE  */
-    DOT = 283,                     /* DOT  */
-    REPEAT = 284,                  /* REPEAT  */
-    UNTIL = 285,                   /* UNTIL  */
-    BREAK = 286,                   /* BREAK  */
-    CONTINUE = 287,                /* CONTINUE  */
-    IMPORT = 288,                  /* IMPORT  */
-    TRUE = 289,                    /* TRUE  */
-    FALSE = 290,                   /* FALSE  */
-    FUNC = 291                     /* FUNC  */
+    DOLLAR_ID = 267,               /* DOLLAR_ID  */
+    FOR = 268,                     /* FOR  */
+    STRUCT = 269,                  /* STRUCT  */
+    AUG_ASSIGN = 270,              /* AUG_ASSIGN  */
+    DIFF = 271,                    /* DIFF  */
+    VOID = 272,                    /* VOID  */
+    ARROW = 273,                   /* ARROW  */
+    COMPARE = 274,                 /* COMPARE  */
+    AND = 275,                     /* AND  */
+    OR = 276,                      /* OR  */
+    SHIFT = 277,                   /* SHIFT  */
+    DECREMENT = 278,               /* DECREMENT  */
+    INCREMENT = 279,               /* INCREMENT  */
+    REAL = 280,                    /* REAL  */
+    NEWLINE = 281,                 /* NEWLINE  */
+    IF = 282,                      /* IF  */
+    ELSE = 283,                    /* ELSE  */
+    DOT = 284,                     /* DOT  */
+    REPEAT = 285,                  /* REPEAT  */
+    UNTIL = 286,                   /* UNTIL  */
+    BREAK = 287,                   /* BREAK  */
+    CONTINUE = 288,                /* CONTINUE  */
+    IMPORT = 289,                  /* IMPORT  */
+    TRUE = 290,                    /* TRUE  */
+    FALSE = 291,                   /* FALSE  */
+    FUNC = 292                     /* FUNC  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Token kinds.  */
-#define YYEMPTY -2
-#define YYEOF 0
-#define YYerror 256
-#define YYUNDEF 257
-#define DATA_TYPE 258
-#define IDENTIFIER 259
-#define STRING 260
-#define IN 261
-#define DOTS 262
-#define CHAR 263
-#define RETURN 264
-#define INTEGER 265
-#define CURVE 266
-#define FOR 267
-#define STRUCT 268
-#define AUG_ASSIGN 269
-#define DIFF 270
-#define VOID 271
-#define ARROW 272
-#define COMPARE 273
-#define AND 274
-#define OR 275
-#define SHIFT 276
-#define DECREMENT 277
-#define INCREMENT 278
-#define REAL 279
-#define NEWLINE 280
-#define IF 281
-#define ELSE 282
-#define DOT 283
-#define REPEAT 284
-#define UNTIL 285
-#define BREAK 286
-#define CONTINUE 287
-#define IMPORT 288
-#define TRUE 289
-#define FALSE 290
-#define FUNC 291
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

@@ -1,15 +1,15 @@
 func int main() /* Function def */ {
-    curve f(x), g(x); /* Declaration */ 
+    curve f(x,y), g(x); /* Declaration */ 
     f = input_poly(5); /* Assignment */ 
     g = input_poly(7); /* Assignment */ 
 
     curve h(x); /* Declaration */ 
-    h = D[f * g, x]; /* Assignment */     
+    h = D[f * g, $x]; /* Assignment */     
+    
+    f = sin($x) * cos($x) + $x * sin($x) * $y; /* Assignment */ 
+    g = D[f($x), $x]; /* Assignment */            
 
-    f = sin(x) * cos(x) + x * sin(x); /* Assignment */ 
-    g = D[f(x), x]; /* Assignment */            
-
-    if (g != cos(x) * cos(x) - sin(x) * six(x) + sin(x) + x * cos(x)) /* If statement */ {
+    if (g != cos($x) * cos($x) - sin($x) * six($x) + sin($x) + $x * cos($x)) /* If statement */ {
         print("Error in differentiation\n"); /* Function Call */ 
     }
     else /* Else stetement */ 

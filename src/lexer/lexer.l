@@ -64,6 +64,7 @@ decrement       "++"
 increment       "--"
 
 
+
 /*Relational Operator*/
 rel_Op          ("==")|("!=")|(">=")|("<=")
 gt              (">")
@@ -77,6 +78,7 @@ shift           (<<)|(>>)
 
 /*Identifier*/
 identifier      {alpha}{alphaNumber}*
+dollar          "$"
 
 /*Comments*/
 mline_comment   \/\*([^*]|\*[^\/])*\*\/
@@ -138,7 +140,9 @@ int line_count = 1;
 {lt}                    {ECHO; fprintf(yyout, "Relational Op: %s\n",yytext);        return yytext[0];}
 {augAssign}             {ECHO; fprintf(yyout, "Augmented Assignment: %s\n",yytext); return AUG_ASSIGN;}
 
+
 {identifier}            {ECHO; fprintf(yyout, "Identifier: %s\n",yytext);     return IDENTIFIER;}
+{dollar}{identifier}    {ECHO; fprintf(yyout, "Dollar: %s\n",yytext);         return DOLLAR_ID;}
 
 
 {curly}                 {ECHO; fprintf(yyout, "Curly: %s\n",yytext);            return yytext[0];}

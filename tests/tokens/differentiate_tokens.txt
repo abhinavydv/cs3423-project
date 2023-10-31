@@ -8,6 +8,8 @@ Curve: curve
 Identifier: f
 Parenthesis: (
 Identifier: x
+Comma: ,
+Identifier: y
 Parenthesis: )
 Comma: ,
 Identifier: g
@@ -43,27 +45,29 @@ Identifier: f
 Arithmetic Bin Op: *
 Identifier: g
 Comma: ,
-Identifier: x
+Dollar: $x
 Square Bracket: ]
 Semi Colon: ;
 Identifier: f
 Arithmetic Bin Op: =
 Identifier: sin
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
 Arithmetic Bin Op: *
 Identifier: cos
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
 Arithmetic Bin Op: +
-Identifier: x
+Dollar: $x
 Arithmetic Bin Op: *
 Identifier: sin
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
+Arithmetic Bin Op: *
+Dollar: $y
 Semi Colon: ;
 Identifier: g
 Arithmetic Bin Op: =
@@ -71,10 +75,10 @@ diff: D
 Square Bracket: [
 Identifier: f
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
 Comma: ,
-Identifier: x
+Dollar: $x
 Square Bracket: ]
 Semi Colon: ;
 Conditional: if
@@ -83,34 +87,34 @@ Identifier: g
 Relational Op: !=
 Identifier: cos
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
 Arithmetic Bin Op: *
 Identifier: cos
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
 Arithmetic Bin Op: -
 Identifier: sin
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
 Arithmetic Bin Op: *
 Identifier: six
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
 Arithmetic Bin Op: +
 Identifier: sin
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
 Arithmetic Bin Op: +
-Identifier: x
+Dollar: $x
 Arithmetic Bin Op: *
 Identifier: cos
 Parenthesis: (
-Identifier: x
+Dollar: $x
 Parenthesis: )
 Parenthesis: )
 Curly: {

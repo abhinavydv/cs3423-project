@@ -2,13 +2,11 @@
 
 func int main() /* Function def */ {
     int n = 10; /* Declaration */ 
-    curve g(x) = x^2 + 1; /* Declaration */   
-     
-
+    curve g(x) = $x^2 + 1; /* Declaration */   
     curve f(x); /* Declaration */ 
 
     for i in 0..n { /* For loop */ 
-        f += g(i) * x^i; /* Augmented Assignment */ 
+        f += g(i) * $x^i; /* Augmented Assignment */ 
     }
 
      
@@ -17,7 +15,7 @@ func int main() /* Function def */ {
 
     until ( abs(f(start)) < epsilon ) repeat /* Loop */ 
     {
-        g = D[f, x]; /* Assignment */ 
+        g = D[f, $x]; /* Assignment */ 
         start = start - f(start)/g(start); /* Assignment */ 
     }
 

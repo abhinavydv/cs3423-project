@@ -16,7 +16,7 @@ func int main() /* Function def */ {
 
     curve c(k) = InverseFFT(y,11); /* Declaration */   
 
-    print("Curve is ", c(t)); /* Function Call */   
+    print("Curve is ", c($t)); /* Function Call */   
     
     return 0; /* Return */ 
 }
@@ -37,7 +37,7 @@ func complex FFT(curve f,int degree) /* Function def */
     vector<complex> y(degree); /* Declaration */ 
 
 
-    for k in 0 .. degree { /* For loop */ 
+    for i in 0 .. degree { /* For loop */ 
 
         y[i] = y_poly(i); /* Assignment */ 
 
@@ -52,7 +52,7 @@ func curve InverseFFT(complex y,int degree) /* Function def */ {
 
     curve zeroes(k) = e^(-2*k*_i_*pi/(degree + 1)); /* Declaration */ 
 
-     
+   
     curve y_poly(x); /* Declaration */ 
 
     for k in 0 .. degree { /* For loop */ 
@@ -67,7 +67,6 @@ func curve InverseFFT(complex y,int degree) /* Function def */ {
 
     }
 
-     
     curve c(x); /* Declaration */ 
     for k in 0..degree { /* For loop */ 
         c += y_poly(zeroes(i)) * x^i; /* Augmented Assignment */ 
