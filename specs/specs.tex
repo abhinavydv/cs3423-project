@@ -95,7 +95,16 @@ curve f(x) = x^2+1;
     \subsection{Expression}
     \subsubsection{Curve}
     \begin{enumerate}
-        \item [Some restiction on Curve]
+        \item Curve evaluation syntax is similar to call
+            \begin{itemize}
+                \item Assume declaration is \textbf{curve f(x, y)}
+                \item \textbf{f(a)}: Curve f is called with value of x. Is similar to f(x=x)
+                \item \textbf{f(a,b)}: Curve f is called with value of x and y
+                \item \textbf{f(a,b,c)}: Error. Excess number of arguments
+                \item \textbf{f(x=a, y=b)}: Curve f is called with value of x as a and y as b.
+                \item \textbf{f(x=a, y=b, z=c)}: Curve f is called with value of x as a, y as b and z as c. \textbf{No Error:}
+                    z will be substituted be with c. If there is no z then there will be no effect of z=c;
+            \end{itemize}
     \end{enumerate}
     \subsubsection{Non-Curve}
     Similar to C

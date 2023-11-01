@@ -43,4 +43,4 @@ test_parser_only: create_folders
 	$(call test_parser_at,tests/test_parser.lg,test_parser_tokens.txt,test_parser_parsed.lg)
 
 clean:
-	rm -rf bin/* tests/parsed/* tests/tokens/* src/lexer/y.tab.c src/lexer/lex.yy.c src/lexer/y.tab.h
+	rm -rf bin/* tests/parsed/* tests/tokens/* src/parser/y.tab.c src/lexer/lex.yy.c include/y.tab.h

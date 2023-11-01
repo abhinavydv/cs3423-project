@@ -1,8 +1,9 @@
 # Fdb version 3
-["pdflatex"] 1698610859 "/mnt/MyDrive/Abhinav/Study/BTechCSEResources/Sem5/Compilers-II-CS3423/Assignments/Project/cs3423-project/specs/specs.tex" "specs.pdf" "specs" 1698610860
+["pdflatex"] 1698839293 "/mnt/MyDrive/Abhinav/Study/BTechCSEResources/Sem5/Compilers-II-CS3423/Assignments/Project/cs3423-project/specs/specs.tex" "specs.pdf" "specs" 1698839294
   "/etc/texmf/web2c/texmf.cnf" 1668290612 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/mnt/MyDrive/Abhinav/Study/BTechCSEResources/Sem5/Compilers-II-CS3423/Assignments/Project/cs3423-project/specs/specs.tex" 1698610859 4371 10dd60731451ac3b82faf4b459e28ad7 ""
+  "/mnt/MyDrive/Abhinav/Study/BTechCSEResources/Sem5/Compilers-II-CS3423/Assignments/Project/cs3423-project/specs/specs.tex" 1698839293 5084 3e19e0d03c84c1deb3469dcd9a60df84 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1136768653 1524 4414a8315f39513458b80dfc63bff03a ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm" 1136768653 1512 f21f83efb36853c0b70002322c1ab3ad ""
@@ -24,12 +25,14 @@
   "/usr/share/texlive/texmf-dist/tex/latex/float/float.sty" 1137110151 6749 16d2656a1984957e674b149555f1ea1d ""
   "/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def" 1642022539 29921 f0f4f870357ebfb8fe58ed9ed4ee9b92 ""
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
+  "/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1636152094 2900 1537cc8184ad1792082cd229ecc269f4 ""
+  "/usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb" 1668291233 136101 f533469f523533d38317ab5729d00c8a ""
   "/usr/share/texmf/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1668291346 4379155 98693266ff65f58d9f98aff394de12d2 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1685779164 2800276 8a60346528ac0c94aef7d3f632f3adb2 ""
-  "specs.aux" 1698610860 3349 3fbc93f1534c724327b101ac018d7fb2 "pdflatex"
-  "specs.tex" 1698610859 4371 10dd60731451ac3b82faf4b459e28ad7 ""
-  "specs.toc" 1698610860 2046 a8db62757f04c3178850b325d5cec528 "pdflatex"
+  "specs.aux" 1698839293 3349 4be0c9267dcde94e1f9a9b14af6b58b3 "pdflatex"
+  "specs.tex" 1698839293 5084 3e19e0d03c84c1deb3469dcd9a60df84 ""
+  "specs.toc" 1698839293 2046 2fad59ea86ca7507aabbd04938544f23 "pdflatex"
   (generated)
   "specs.aux"
   "specs.log"
