@@ -211,3 +211,63 @@ Parenthesis: (
 Bool True: true
 Parenthesis: )
 Curly: }
+func: func
+Data Type: void
+Identifier: foo
+Parenthesis: (
+Data Type: int
+Identifier: a
+Parenthesis: )
+Curly: {
+Curve: curve
+Identifier: f
+Parenthesis: (
+Identifier: x
+Comma: ,
+Identifier: y
+Parenthesis: )
+Arithmetic Bin Op: =
+Dollar: $x
+Arithmetic Bin Op: ^
+Number Constant: 4
+Arithmetic Bin Op: +
+Number Constant: 3
+Arithmetic Bin Op: *
+Dollar: $x
+Semi Colon: ;
+Identifier: f
+Arithmetic Bin Op: =
+Identifier: f
+Parenthesis: (
+Identifier: x
+Arithmetic Bin Op: =
+Dollar: $r
+Parenthesis: )
+Semi Colon: ;
+Curve: curve
+Identifier: g
+Parenthesis: (
+Identifier: q
+Comma: ,
+Identifier: r
+Parenthesis: )
+Arithmetic Bin Op: =
+Identifier: f
+Parenthesis: (
+Dollar: $q
+Comma: ,
+Dollar: $r
+Parenthesis: )
+Semi Colon: ;
+Identifier: f
+Parenthesis: (
+Identifier: r
+Arithmetic Bin Op: =
+Number Constant: 2
+Comma: ,
+Identifier: x
+Arithmetic Bin Op: =
+Number Constant: 5
+Parenthesis: )
+Semi Colon: ;
+Curly: }

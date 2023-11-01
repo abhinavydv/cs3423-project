@@ -62,3 +62,10 @@ func int hehe(int *a[2], curve **b){
         break;
     } until (true)
 }
+
+func void foo(int a){
+    curve f(x, y) = $x^4 + 3*$x;
+    f = f(x=$r);
+    curve g(q, r) = f($q, $r);
+    f(r=2, x=5);
+}

@@ -257,8 +257,12 @@ obj_call        :  name ARROW IDENTIFIER '(' arglist ')'
 
 // List of arguments for a function call
 arglist         :  rhs
-                |  arglist ',' rhs
+                |  rhs ',' arglist
+                |  assign_arg_list
                 |
+
+assign_arg_list :  IDENTIFIER '=' rhs
+                |  assign_arg_list ',' IDENTIFIER '=' rhs
 
 // Object reference
 name            :  name ARROW IDENTIFIER

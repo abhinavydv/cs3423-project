@@ -62,3 +62,10 @@ func int hehe(int *a[2], curve **b) /* Function def */ {
         break; /* Break */ 
     } until (true)
 }
+
+func void foo(int a) /* Function def */ {
+    curve f(x, y) = $x^4 + 3*$x; /* Declaration */ 
+    f = f(x=$r); /* Assignment */ 
+    curve g(q, r) = f($q, $r); /* Declaration */ 
+    f(r=2, x=5); /* Function Call */ 
+}

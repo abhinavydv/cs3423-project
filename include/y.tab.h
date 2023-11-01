@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_SRC_LEXER_Y_TAB_H_INCLUDED
-# define YY_YY_SRC_LEXER_Y_TAB_H_INCLUDED
+#ifndef YY_YY_SRC_PARSER_Y_TAB_H_INCLUDED
+# define YY_YY_SRC_PARSER_Y_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -92,6 +92,46 @@ extern int yydebug;
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
+/* Token kinds.  */
+#define YYEMPTY -2
+#define YYEOF 0
+#define YYerror 256
+#define YYUNDEF 257
+#define DATA_TYPE 258
+#define IDENTIFIER 259
+#define STRING 260
+#define IN 261
+#define DOTS 262
+#define CHAR 263
+#define RETURN 264
+#define INTEGER 265
+#define CURVE 266
+#define DOLLAR_ID 267
+#define FOR 268
+#define STRUCT 269
+#define AUG_ASSIGN 270
+#define DIFF 271
+#define VOID 272
+#define ARROW 273
+#define COMPARE 274
+#define AND 275
+#define OR 276
+#define SHIFT 277
+#define DECREMENT 278
+#define INCREMENT 279
+#define REAL 280
+#define NEWLINE 281
+#define IF 282
+#define ELSE 283
+#define DOT 284
+#define REPEAT 285
+#define UNTIL 286
+#define BREAK 287
+#define CONTINUE 288
+#define IMPORT 289
+#define TRUE 290
+#define FALSE 291
+#define FUNC 292
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -107,4 +147,4 @@ extern YYSTYPE yylval;
 int yyparse (void);
 
 
-#endif /* !YY_YY_SRC_LEXER_Y_TAB_H_INCLUDED  */
+#endif /* !YY_YY_SRC_PARSER_Y_TAB_H_INCLUDED  */

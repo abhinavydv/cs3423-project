@@ -16,9 +16,10 @@ create_folders:
 
 parser: create_folders
 	$(call yellow,Building parser,-n)
-	bison -d src/lexer/parser.y -o src/lexer/y.tab.c
+	yacc -d src/parser/parser.y -o src/parser/y.tab.c
+	mv src/parser/y.tab.h include/y.tab.h
 	lex -o src/lexer/lex.yy.c src/lexer/lexer.l
-	gcc src/lexer/y.tab.c src/lexer/lex.yy.c -o bin/parser
+	gcc src/parser/y.tab.c src/lexer/lex.yy.c -o bin/parser -Iinclude
 	$(call green, DONE)
 	echo
 
