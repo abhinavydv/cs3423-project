@@ -27,7 +27,7 @@ test: create_folders test_expr_base
 
 test_expr_base: create_folders
 	$(call yellow,Testing expr_base)
-	g++ src/conversion/expr_base.cpp tests/test_expr_base.cpp -Iinclude/ -o bin/test_expr_base
+	g++ lib/expr_base.cpp tests/test_expr_base.cpp -Iinclude/ -o bin/test_expr_base
 	./bin/test_expr_base
 	$(call green,expr_base test passed)
 	echo

@@ -52,3 +52,8 @@ Mkfile.old
 dkms.conf
 
 bin
+src/lexer/lex.yy.c
+src/parser/y.tab.c
+include/y.tab.h
+tests/parsed
+tests/tokens
