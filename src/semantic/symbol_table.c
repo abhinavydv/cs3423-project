@@ -1,5 +1,6 @@
-#include "symbol_table.h"
+// #include "symbol_table.h"
 
-void add_symtab_entry(symbol_table *table, st_entry *entry){
+// void add_symtab_entry(symbol_table *table, st_entry *entry){
     
-}
+// }
+

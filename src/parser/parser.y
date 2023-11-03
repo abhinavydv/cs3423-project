@@ -32,11 +32,11 @@ program         :  global_decl program
 global_decl     :  decl_only ';'
                 |  function
                 |  FUNC funcDef ';'
-                |  struct
+                |  struct           
                 |  import
 
 // struct defs
-struct          :  STRUCT IDENTIFIER {label("Struct def");} '{' declarations '}'
+struct          :  STRUCT IDENTIFIER {label("Struct def");} '{' declarations '}'  // Store the struct with the list of all of its identifier in the declaration
 
 // function defs
 function        :  FUNC funcDef block
