@@ -2,7 +2,15 @@
     #include <stdio.h>
     #include <assert.h>
     #include <stdlib.h>
-    #define YYSTYPE double /* double type for yacc stack */
+    #include "symbol_table2.h"
+    typedef struct state {
+
+        SymbolTable curTable;  // Symbol table
+
+    } State ; 
+    
+    #define YYSTYPE State
+    // $$
 
     extern FILE  * yyin, *yyout, *parsed_file;
     int yylex();
@@ -21,16 +29,16 @@
 %token REPEAT UNTIL BREAK CONTINUE IMPORT TRUE FALSE FUNC
 
 %%
-start           :  program
+start           :  program       {printf("hello lodu");}  // Intialisation and deletion of Symbol Table
                 |  NEWLINE {printf(" : invalid program\n"); exit(0);}
 
 // the program
-program         :  global_decl program
+program         :  global_decl program // Passing Symbol Table to Global_DECL
                 |
 
 // all global statements allowed
-global_decl     :  decl_only ';'
-                |  function
+global_decl     :  decl_only ';' {}
+                |  function 
                 |  FUNC funcDef ';'
                 |  struct           
                 |  import

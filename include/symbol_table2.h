@@ -1,10 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+typedef struct symbol_table *SymbolTable ;
+
 enum Type {
     STRUCT,
     FUNCTION,
-    IMPORT,
     GLOBAL,
     SCOPEBLOCK // if, repeat or any other scope block
 };
@@ -23,8 +24,8 @@ enum ID_Type {
 
 typedef struct datatype {
 
-    ID_Type id_type;
-    ID_Type return_type;
+    enum ID_Type id_type;
+    enum ID_Type return_type;
     size_t offset;
     char * dtname;
 
@@ -35,7 +36,7 @@ typedef struct datatype {
 typedef struct symbol_table_data{
 
     size_t ST_id;
-    Type type;
+    enum Type type;
     DataType datatype;
     char * name;
 
@@ -44,11 +45,11 @@ typedef struct symbol_table_data{
 
 } *SymbolTableData;
 
-typedef struct symbol_table {
+struct symbol_table {
 
     SymbolTableData * SymbolTableDatalist;
     size_t nextp;
     size_t maxlistsize;
     struct symbol_table * ParentSymbolTable;
 
-} *SymbolTable ;
+};
