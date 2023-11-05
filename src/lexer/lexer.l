@@ -8,6 +8,7 @@
     FILE *yyin, *yyout, *parsed_file;
     int line_count;
 
+    
     #define ECHO fprintf(parsed_file, "%s", yytext)
 %}
 

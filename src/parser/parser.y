@@ -9,7 +9,7 @@
 
     } State ; 
     
-    #define YYSTYPE State
+    #define YYSTYPE State 
     // $$
 
     extern FILE  * yyin, *yyout, *parsed_file;
@@ -29,7 +29,7 @@
 %token REPEAT UNTIL BREAK CONTINUE IMPORT TRUE FALSE FUNC
 
 %%
-start           :  program       {printf("hello lodu");}  // Intialisation and deletion of Symbol Table
+start           :  program         // Intialisation and deletion of Symbol Table
                 |  NEWLINE {printf(" : invalid program\n"); exit(0);}
 
 // the program
