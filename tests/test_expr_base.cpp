@@ -98,5 +98,7 @@ int main(){
     cout << x / y * y << "\n";
     cout << x / y * y / y << "\n";
 
-    cout << (x+y*x)/(x-z+x*(x+y)) << "\n";
+    cout << ((x+y*x).evaluate({{"x", 1}, {"y", 2}, {"z", 3}})/(x-z+x*(x+y)).evaluate({{"x", 1}, {"y", 2}, {"z", 3}})) << "\n";
+    cout << (2*x).evaluate({{"x", 1}, {"y", 2}, {"z", 3}}) << "\n";
+    cout << (x+y).evaluate({{"x", 1}, {"y", 2}}).getCoeff() << "\n";
 }

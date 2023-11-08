@@ -1,5 +1,6 @@
 #include "expr_base.hpp"
 #include <algorithm>
+#include <math.h>
 
 
 using namespace std;
@@ -27,14 +28,13 @@ BugException::BugException(std::string message){
 
 map<Operator, std::string> Expression::operators = {
     {PLUS, "+"},
-    {MINUS, "-"},
     {MULTIPLY, "*"},
     {DIVIDE, "/"},
 };
 
 map<Function, std::string> Expression::functions = {
-    {Function::SIN, "sin"},
-    {Function::COS, "cos"},
+    {SIN, "sin"},
+    {COS, "cos"},
 };
 
 
@@ -62,7 +62,7 @@ void Expression::validate_symbol(std::string value){
 // check if an expression has a single expression as its child.
 // if yes then return the child expression
 Expression fix_singlet(Expression expr){
-    if (expr.size() == 1 && expr.func == Function::NO_FUNCTION){
+    if (expr.size() == 1 && expr.func == NO_FUNCTION){
         Expression exp = expr[0];
         exp.coeff *= expr.coeff;
         exp.pow *= expr.pow;
@@ -86,7 +86,7 @@ Expression::Expression(std::string value){
 
 Expression::Expression(double val){
     this->init();
-    this->type = Type::CONSTANT;
+    this->type = CONSTANT;
     this->coeff = val;
 }
 
@@ -102,13 +102,14 @@ Expression::Expression(std::string value, double coeff){
 Expression::Expression(Operator op){
     this->init();
     this->op = op;
+    this->type = OPERATOR;
 }
 
 
 Expression::Expression(Function func, string value){
     this->validate_symbol(value);
     this->init();
-    this->type = Type::FUNCTION;
+    this->type = FUNCTION;
     this->func = func;
     this->exprs.push_back(Expression(value));
 }
@@ -116,7 +117,7 @@ Expression::Expression(Function func, string value){
 
 Expression::Expression(Function func, Expression expr){
     this->init();
-    this->type = Type::FUNCTION;
+    this->type = FUNCTION;
     this->func = func;
     this->exprs.push_back(expr);
 }
@@ -126,9 +127,9 @@ void Expression::init(){
     this->value = "";
     this->coeff = 1.0;
     this->pow = 1;
-    this->type = Type::SYMBOL;
+    this->type = SYMBOL;
     this->op = NO_OPERATOR;
-    this->func = Function::NO_FUNCTION;
+    this->func = NO_FUNCTION;
     this->degree = -1;
 }
 
@@ -213,7 +214,7 @@ double Expression::getCoeff(){
 // returns the degree of the expression
 double Expression::getDegree(){
     this->degree = 0;
-    if (this->type == Type::CONSTANT);
+    if (this->type == CONSTANT);
     else if (this->exprs.size() <= 1)
         this->degree = this->pow;
     else if (this->op == MULTIPLY)
@@ -222,6 +223,63 @@ double Expression::getDegree(){
     else if(this->op == DIVIDE || this->op == PLUS)
         return (*this)[0].getDegree();
     return this->degree;
+}
+
+
+// apply the function on the exprs vector
+template <typename T>
+Expression Expression::reduce(const T func, Expression init){
+    Expression res = init;
+    for (auto expr: *this){
+        res = func(res, expr);
+    }
+    return res;
+}
+
+
+Expression Expression::evaluate(map<string, double> values){
+    if (this->type == CONSTANT)
+        return *this;
+    else if (this->type == SYMBOL)
+        if (values.find(value) == values.end())
+            return *this;
+        else
+            return Expression(this->coeff * values[this->value]);
+    else if (this->type == FUNCTION){
+        Expression expr = this->exprs[0].evaluate(values);
+        if (expr.type == CONSTANT){
+            if (this->func == SIN)
+                return sin(expr.coeff);
+            else if (this->func == COS)
+                return cos(expr.coeff);
+            else if (this->func == TAN)
+                return tan(expr.coeff);
+            else if (this->func == COSEC)
+                return 1/sin(expr.coeff);
+            else if (this->func == SEC)
+                return 1/cos(expr.coeff);
+            else if (this->func == COT)
+                return 1/tan(expr.coeff);
+            else if (this->func == GIF)
+                return floor(expr.coeff);
+            else if (this->func == SIF)
+                return ceil(expr.coeff);
+            else if (this->func == ABS)
+                return abs(expr.coeff);
+            else
+                throw BugException("Function not implemented");
+        } else {
+            return Expression(this->func, this->coeff * expr);
+        }
+    }
+    else if (this->op == PLUS){
+        return this->coeff * reduce([values](Expression& left, Expression& right){return left.evaluate(values) + right.evaluate(values);}, Expression(0));
+    }
+    else if (this->op == MULTIPLY)
+        return this->coeff * reduce([values](Expression& left, Expression& right){return left.evaluate(values) * right.evaluate(values);}, Expression(1));
+    else if (this->op == DIVIDE)
+        return this->coeff * this->exprs[0].evaluate(values) / this->exprs[1].evaluate(values);
+    return 0;
 }
 
 
@@ -244,7 +302,7 @@ std::string operator<<(std::string str, const Expression& expr){
         ret += expr.functions[expr.func] + ("(" << expr.exprs[0]) + ")";
     }
     // if it is a constant then print the coefficient
-    else if (expr.type == Type::CONSTANT){
+    else if (expr.type == CONSTANT){
         ret += without_trail_0(expr.coeff);
     }
     // if it consists of multiple parts then print everything one by one
@@ -324,7 +382,7 @@ std::string operator<<(std::string str, const Expression& expr){
     if (expr.coeff!=1.0)
         if (expr.coeff == -1.0)
             ret = "-" + ret;
-        else if(expr.type != Type::CONSTANT)
+        else if(expr.type != CONSTANT)
             ret = without_trail_0(expr.coeff) + "*" + ret;
 
     // add the power part
@@ -351,9 +409,9 @@ void after_push_plus(int index, vector<Expression>& exprs){
         Expression expr;
         // size == 0: It is constant or a symbol
         if (exprs[index].size() == 0)
-            if (exprs[index].type == Type::CONSTANT)
+            if (exprs[index].type == CONSTANT)
                 expr = {exprs[index].coeff+exprs[index-1].coeff};
-            // else if (exprs[index].func != Function::NO_FUNCTION){
+            // else if (exprs[index].func != NO_FUNCTION){
             //     expr = {exprs[index].value, exprs[index].func};
             //     expr.coeff = exprs[index].coeff+exprs[index-1].coeff;
             // }
@@ -373,9 +431,9 @@ void after_push_plus(int index, vector<Expression>& exprs){
     else if(exprs[index] == exprs[index+1]){
         Expression expr;
         if (exprs[index].size() == 0)
-            if (exprs[index].type == Type::CONSTANT)
+            if (exprs[index].type == CONSTANT)
                 expr = {exprs[index].value+exprs[index+1].value};
-            // else if (exprs[index].func != Function::NO_FUNCTION){
+            // else if (exprs[index].func != NO_FUNCTION){
             //     expr = {exprs[index].value, exprs[index].func};
             //     expr.coeff = exprs[index].coeff+exprs[index+1].coeff;
             // }
@@ -480,7 +538,7 @@ void after_push_mult(int index, vector<Expression>& exprs){
                 expr.coeff = exprs[index].coeff * exprs[i].coeff;
 
                 // if expr is not constant then only add the powers
-                if (exprs[index].type != Type::CONSTANT)
+                if (exprs[index].type != CONSTANT)
                     expr.pow = exprs[index].pow + exprs[i].pow;
                 exprs.erase(exprs.begin()+max(index, i));
                 exprs.erase(exprs.begin()+min(index, i));
@@ -497,13 +555,13 @@ Expression multiply(Expression expr1, Expression expr2, bool broadcast=false){
 
     // if both are constant then return a constant expr
     // with coeff = coeff1 * coeff2
-    if (expr1.type == Type::CONSTANT && expr2.type == Type::CONSTANT){
-        ret.type = Type::CONSTANT;
+    if (expr1.type == CONSTANT && expr2.type == CONSTANT){
+        ret.type = CONSTANT;
         ret.coeff = expr1.coeff * expr2.coeff;
         ret.op = NO_OPERATOR;
     }
     // if this is constant and other is not then
-    else if (expr1.type == Type::CONSTANT && expr2.type != Type::CONSTANT){
+    else if (expr1.type == CONSTANT && expr2.type != CONSTANT){
         // if operator is PLUS then multiply the constant to coeffs of all
         // the elements of the exprs
         if (expr2.op == PLUS){
@@ -519,7 +577,7 @@ Expression multiply(Expression expr1, Expression expr2, bool broadcast=false){
             ret.coeff *= expr1.coeff;
         }
     }
-    else if (expr1.type != Type::CONSTANT && expr2.type == Type::CONSTANT){
+    else if (expr1.type != CONSTANT && expr2.type == CONSTANT){
         ret = expr2 * (expr1);
     }
     // TODONE: if they are NO_OPS then they can be funcs too
@@ -769,6 +827,9 @@ Expression Expression::operator/(Expression expr){
         }
     } else if (expr.op == DIVIDE) {
         ret = expr / *this;
+    } else if (expr.type == CONSTANT) {
+        ret = *this;
+        ret.coeff /= expr.coeff;
     } else {
         Expression exp = *this;
         exp.coeff = 1;
@@ -782,7 +843,10 @@ Expression Expression::operator/(Expression expr){
         ret.coeff = this->coeff / expr.coeff;
     }
 
-    cancel_commons(ret.exprs[0], ret.exprs[1], ret, true);
+    if (ret.op == DIVIDE){
+        cancel_commons(ret.exprs[0], ret.exprs[1], ret, true);
+        cancel_commons(ret.exprs[0], ret.exprs[1], ret, true);
+    }
 
     return ret;
 }
@@ -793,7 +857,7 @@ bool eq_without_pow(Expression expr1, Expression expr2, bool check_coeff=false){
 
     if (check_coeff && expr1.coeff != expr2.coeff)
         return false;
-    if (expr1.type == Type::CONSTANT && expr2.type == Type::CONSTANT)
+    if (expr1.type == CONSTANT && expr2.type == CONSTANT)
         return true;
     if (expr1.size() != expr2.size() || expr1.op != expr2.op || 
             expr1.func != expr2.func)
@@ -896,15 +960,15 @@ bool Expression::operator<(Expression expr){
         return false;
     if (this->type == CONSTANT && expr.type == CONSTANT)
         return this->coeff < expr.coeff;
-    if (this->type == Type::CONSTANT && expr.type != Type::CONSTANT)
+    if (this->type == CONSTANT && expr.type != CONSTANT)
         return false;
-    if (this->type != Type::CONSTANT && expr.type == Type::CONSTANT)
+    if (this->type != CONSTANT && expr.type == CONSTANT)
         return true;
-    if (this->func != Function::NO_FUNCTION && expr.func == Function::NO_FUNCTION)
+    if (this->func != NO_FUNCTION && expr.func == NO_FUNCTION)
         return false;
-    if (this->func == Function::NO_FUNCTION && expr.func != Function::NO_FUNCTION)
+    if (this->func == NO_FUNCTION && expr.func != NO_FUNCTION)
         return true;
-    if (this->func != Function::NO_FUNCTION && expr.func != Function::NO_FUNCTION)
+    if (this->func != NO_FUNCTION && expr.func != NO_FUNCTION)
         // compare the powers
         if (this->pow != expr.pow)
             return this->pow > expr.pow;
@@ -953,3 +1017,68 @@ void Expression::convert_sum_of_divs_to_single_div(){
 }
 
 
+Expression sin(Expression& expr){
+    if (expr.getType() == CONSTANT)
+        return sin(expr.getCoeff());
+    Expression exp = {SIN, expr};
+    return exp;
+}
+
+Expression cos(Expression& expr){
+    if (expr.getType() == CONSTANT)
+        return cos(expr.getCoeff());
+    Expression exp = {COS, expr};
+    return exp;
+}
+
+Expression tan(Expression& expr){
+    if (expr.getType() == CONSTANT)
+        return tan(expr.getCoeff());
+    Expression exp = {TAN, expr};
+    return exp;
+}
+
+Expression cosec(Expression& expr){
+    if (expr.getType() == CONSTANT)
+        return 1/sin(expr.getCoeff());
+    Expression exp = {COSEC, expr};
+    return exp;
+}
+
+Expression sec(Expression& expr){
+    if (expr.getType() == CONSTANT)
+        return 1/cos(expr.getCoeff());
+    Expression exp = {SEC, expr};
+    return exp;
+}
+
+Expression cot(Expression& expr){
+    if (expr.getType() == CONSTANT)
+        return 1/tan(expr.getCoeff());
+    Expression exp = {COT, expr};
+    return exp;
+}
+
+
+Expression floor(Expression& expr){
+    if (expr.getType() == CONSTANT)
+        return floor(expr.getCoeff());
+    Expression exp = {GIF, expr};
+    return exp;
+}
+
+
+Expression ceil(Expression& expr){
+    if (expr.getType() == CONSTANT)
+        return ceil(expr.getCoeff());
+    Expression exp = {SIF, expr};
+    return exp;
+}
+
+
+Expression abs(Expression& expr){
+    if (expr.getType() == CONSTANT)
+        return abs(expr.getCoeff());
+    Expression exp = {ABS, expr};
+    return exp;
+}

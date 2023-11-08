@@ -19,7 +19,6 @@ enum Type {
 enum Operator {
     NO_OPERATOR,
     PLUS,
-    MINUS,
     MULTIPLY,
     DIVIDE,
 };
@@ -39,23 +38,23 @@ enum Function {
 };
 
 
-class BadSymbolException: public std::exception{
+class BadSymbolException: public exception{
     public:
     BadSymbolException();
-    BadSymbolException(std::string);
+    BadSymbolException(string);
 };
 
 
-class BugException: public std::exception{
+class BugException: public exception{
     public:
         BugException();
-        BugException(std::string);
+        BugException(string);
 };
 
 
 class Expression {
     private:
-    std::string value;
+    string value;
     vector<Expression> exprs;
     Type type;
     Operator op;
@@ -69,37 +68,39 @@ class Expression {
 
     // Initialisers
     Expression();
-    Expression(std::string);
+    Expression(string);
     Expression(double);
-    Expression(std::string, double);
+    Expression(string, double);
     Expression(Operator);
-    Expression(Function, std::string);
+    Expression(Function, string);
     Expression(Function, Expression);
 
     // public static variables
-    static map<Operator, std::string> operators;
-    static map<Function, std::string> functions;
+    static map<Operator, string> operators;
+    static map<Function, string> functions;
 
     // functions
     void init();
-    std::vector<Expression, std::allocator<Expression>>::const_iterator begin();
-    std::vector<Expression, std::allocator<Expression>>::const_iterator end();
+    vector<Expression, allocator<Expression>>::const_iterator begin();
+    vector<Expression, allocator<Expression>>::const_iterator end();
     int push(Expression&, void (*)(int, vector<Expression>&));
     void push_all(Expression&, void (*)(int, vector<Expression>&));
-    std::string getValue();
+    string getValue();
     double getCoeff();
     Type getType();
     Operator getOperator();
     Function getFunction();
-    std::size_t size();
+    size_t size();
     void simplify();
     bool ltWithoutFunc(Expression&);
-    void validate_symbol(std::string);
+    void validate_symbol(string);
     double getDegree();
+    template <typename T> Expression reduce(const T, Expression);
+    Expression evaluate(map<string, double>);
 
     // operator overloads
     friend ostream& operator<<(ostream&, const Expression&);
-    friend std::string operator<<(std::string, const Expression&);
+    friend string operator<<(string, const Expression&);
     Expression operator+(Expression);
     Expression operator+(double);
     friend Expression operator+(double, Expression);
@@ -142,11 +143,12 @@ TODO: Create a class for these functions as some of them would
 conflict with standard math functions
 */
 // functions
-Expression gif(const Expression&);
-Expression sif(const Expression&);
-Expression sin(const Expression&);
-Expression cos(const Expression&);
-Expression tan(const Expression&);
-Expression cosec(const Expression&);
-Expression sec(const Expression&);
-Expression cot(const Expression&);
+Expression sin(Expression&);
+Expression cos(Expression&);
+Expression tan(Expression&);
+Expression cosec(Expression&);
+Expression sec(Expression&);
+Expression cot(Expression&);
+Expression floor(Expression&);
+Expression ceil(Expression&);
+Expression abs(Expression&);

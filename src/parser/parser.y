@@ -1,18 +1,20 @@
 %{
+    #include "symbol_table.h"
+    #define YYSTYPE state 
+
     #include <stdio.h>
     #include <assert.h>
     #include <stdlib.h>
-    #include "symbol_table2.h"
-    typedef struct state {
 
-        SymbolTable curTable;  // Symbol table
 
-    } State ; 
-    
-    #define YYSTYPE State 
-    // $$
-
+    // variables
+    extern int line_count;
     extern FILE  * yyin, *yyout, *parsed_file;
+    symbol_table *global_table;
+    symbol_table *curr_table;
+    state yylval;
+
+    // functions
     int yylex();
     void yyerror(char * msg);
 
@@ -37,11 +39,12 @@ program         :  global_decl program // Passing Symbol Table to Global_DECL
                 |
 
 // all global statements allowed
-global_decl     :  decl_only ';' {}
-                |  function 
+global_decl     :  decl_only ';'
+                |  function
                 |  FUNC funcDef ';'
-                |  struct           
+                |  struct
                 |  import
+                |  ';'
 
 // struct defs
 struct          :  STRUCT IDENTIFIER {label("Struct def");} '{' declarations '}'  // Store the struct with the list of all of its identifier in the declaration
@@ -53,8 +56,17 @@ function        :  FUNC funcDef block
 funcDef         :  ret_type IDENTIFIER '(' parameters ')' {label("Function def");}
                 |  ret_type IDENTIFIER '(' ')' {label("Function def");}
 
-ret_type        :  type
-                |  CURVE
+ret_type        :  type     {
+                    $$ = $1;
+                }
+                |  CURVE    {
+                    init_var_type(&$$.type);
+                    $$.type.type = CURVE;
+                }
+                |  VOID     {
+                    init_var_type(&$$.type);
+                    $$.type.name = $1.text;
+                }
 
 // function parameters
 parameters      :  type_defs
@@ -64,16 +76,41 @@ parameters      :  type_defs
 type_defs       :  type decl_id
                 |  CURVE decl_id
 
-type            :  DATA_TYPE temp_params
-                |  IDENTIFIER
-                |  VOID
+type            :  DATA_TYPE temp_params {
+                    init_var_type(&$$.type);
+                    $$.type.name = $1.text;
+                    $$.type.num_args = $2.type.num_args;
+                    $$.type.args = $2.type.args;
+                }
+                |  IDENTIFIER   {
+                    init_var_type(&$$.type);
+                    $$.type.name = $1.text;
+                }
 
 // template paramaters
-temp_params       :  '<' typelist '>'
-                |
+temp_params     :  '<' typelist '>' {
+                    $$.type.num_args = $2.type.num_args;
+                    $$.type.args = $2.type.args;
+                }
+                |   {
+                    $$.type.num_args = 0;
+                    $$.type.args = NULL;
+                }
 
-typelist        :  type
-                |  typelist ',' type
+typelist        :  type {
+                    $$.type.num_args = 1;
+                    $$.type.args = (var_type *)malloc(sizeof(var_type));
+                    $$.type.args[0] = $1.type;
+                }
+                |  type ',' typelist    {
+                    $$.type.num_args = $3.type.num_args + 1;
+                    $$.type.args = (var_type *)malloc($$.type.num_args * sizeof(var_type));
+                    $$.type.args[0] = $1.type;
+                    for (int i = 0; i < $3.type.num_args; i++){
+                        $$.type.args[i+1] = $3.type.args[i];
+                    }
+                    free($3.type.args);
+                }
 
 // block of statements
 block           : '{' statements '}'
@@ -105,7 +142,9 @@ declarations    :  decl_only ';' {label("Declaration");} declarations
                 |
 
 // declarations only. No assignment (for global declration)
-decl_only       :  type decl_id_list
+decl_only       :  type decl_id_list    {
+                    st_insert_vars(curr_table, $2.curr_id_list, $1.type);
+                }
                 |  CURVE curve_decl_list
 
 // list of curve identifiers
@@ -117,22 +156,49 @@ curve_decl      :  IDENTIFIER '(' idlist ')'
                 |  decl_id
 
 // list of declaration identifiers.
-decl_id_list    :  decl_id_list ',' decl_id
-                |  decl_id
+decl_id_list    :  decl_id ',' decl_id_list {
+                    $$.curr_id_list = $1.curr_id_list;
+                    $$.curr_id_list->next = $3.curr_id_list;
+                }
+                |  decl_id  {
+                    $$.curr_id_list = $1.curr_id_list;
+                }
 
 // declaration identifier with star
-decl_id         :  '*' decl_id
-                |  decl_id2
+decl_id         :  '*' decl_id  {
+                    $$ = $2;
+                    $$.curr_id_list->id.num_stars++;
+                }
+                |  decl_id2     {
+                    $$ = $1;
+                }
 
 // declaration identifier with square brackets
-decl_id2        :  decl_id2 '[' INTEGER ']'
-                |  IDENTIFIER
+decl_id2        :  decl_id2 '[' INTEGER ']' {
+                    $$ = $1;
+                    $$.curr_id_list->id.num_braks++;
+                    if ($$.curr_id_list->id.num_braks == 1){
+                        $$.curr_id_list->id.brak_vals = (int *)malloc(sizeof(int));
+                    }
+                    else{
+                        $$.curr_id_list->id.brak_vals = (int *)realloc($$.curr_id_list->id.brak_vals, $$.curr_id_list->id.num_braks * sizeof(int));
+                    }
+                    $$.curr_id_list->id.brak_vals[$$.curr_id_list->id.num_braks - 1] = atoi($3.text);
+                }
+                |  IDENTIFIER   {
+                    $$.curr_id_list = (id_list *)malloc(sizeof(id_list));
+                    $$.curr_id_list->next = 0;
+                    $$.curr_id_list->id.id = $1.text;
+                    $$.curr_id_list->id.num_stars = 0;
+                    $$.curr_id_list->id.num_braks = 0;
+                    $$.curr_id_list->id.brak_vals = 0;
+                }
 
 // Declaration with/without assignment
 decl_assgn      :  type assignList
                 |  CURVE curveAssignList
 
-// list of IDs/assignments for curves for declarations
+// list of IDs/assignments of curves for declarations
 curveAssignList :  curveAssignList ',' curve_assign
                 |  curve_assign
 
@@ -145,7 +211,9 @@ assignList      :  assignList ',' assign_decl
                 |  assign_decl
                 |  assignList ',' decl_id
                 |  decl_id
-                |  assignList ',' IDENTIFIER '(' arglist ')'
+                |  assignList ',' IDENTIFIER '(' arglist ')' {
+                    
+                }
                 |  IDENTIFIER '(' arglist ')'
 
 // ID/Assignment for a declaration
@@ -289,7 +357,7 @@ differentiate   :  DIFF '[' rhs ',' rhs ']'
 
 // Conditional Statement
 conditional     :  ifBlock
-                |  ifBlock ELSE {label("Else stetement");} statement
+                |  ifBlock ELSE {label("Else statement");} statement
 
 // If Statement
 ifBlock         :  IF '(' rhs ')' {label("If statement");} block
@@ -326,7 +394,12 @@ int main(int argc, char *argv[]){
     yyout = fopen(argv[2],"w");
     parsed_file = fopen(argv[3],"w");
 
+    global_table = st_create(8, 0, false);
+    curr_table = global_table;
+
     yyparse();
+
+    st_print_table(global_table);
 
     fclose(yyin);
     fclose(yyout);

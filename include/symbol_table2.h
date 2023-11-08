@@ -3,6 +3,13 @@
 
 typedef struct symbol_table *SymbolTable ;
 
+
+typedef struct state {
+    int num_stars;
+    int num_braks;
+    int *brak_vals;
+} state;
+
 enum Type {
     STRUCT,
     FUNCTION,
@@ -14,7 +21,7 @@ enum ID_Type {
 
     INT,
     REAL,
-    CURVE,
+    CURVE_T,
     COMPLEX,
     VECTOR,
     MATRIX,
