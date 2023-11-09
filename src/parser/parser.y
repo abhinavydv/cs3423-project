@@ -1,6 +1,6 @@
 %{
     #include "symbol_table.h"
-    #define YYSTYPE state 
+    #define YYSTYPE state
 
     #include <stdio.h>
     #include <assert.h>
@@ -47,21 +47,47 @@ global_decl     :  decl_only ';'
                 |  ';'
 
 // struct defs
-struct          :  STRUCT IDENTIFIER {label("Struct def");} '{' declarations '}'  // Store the struct with the list of all of its identifier in the declaration
+struct          :  STRUCT IDENTIFIER {
+                    label("Struct def");
+                    symbol_table *new_table = st_create(8, curr_table->level+1, false);
+                    st_insert_struct(curr_table, $2.text, new_table);
+                    new_table->parent = curr_table;
+                    curr_table = new_table;
+                } '{' declarations '}' {
+                    curr_table = curr_table->parent;
+                }
 
 // function defs
-function        :  FUNC funcDef block
+function        :  FUNC funcDef block {
+                    curr_table = curr_table->parent;    // exit the parameter table
+                }
 
 // function header defs
-funcDef         :  ret_type IDENTIFIER '(' parameters ')' {label("Function def");}
-                |  ret_type IDENTIFIER '(' ')' {label("Function def");}
+funcDef         :  starred_rettype IDENTIFIER {
+                    symbol_table *new_table = st_create(8, curr_table->level+1, false);
+                    st_insert_func(curr_table, $2.text, $1.type, new_table);
+                    new_table->parent = curr_table;
+                    curr_table = new_table;
+                    curr_table->parameters = true;
+                } '(' params ')' {
+                    label("Function def");
+                }
+
+starred_rettype :  starred_rettype '*' {
+                    $$.type.type = POINTER;
+                    $$.type.subtype = malloc(sizeof(var_type));
+                    *$$.type.subtype = $1.type;
+                }
+                |  ret_type {
+                    $$ = $1;
+                }
 
 ret_type        :  type     {
                     $$ = $1;
                 }
                 |  CURVE    {
                     init_var_type(&$$.type);
-                    $$.type.type = CURVE;
+                    $$.type.type = CURVE_T;
                 }
                 |  VOID     {
                     init_var_type(&$$.type);
@@ -69,12 +95,18 @@ ret_type        :  type     {
                 }
 
 // function parameters
-parameters      :  type_defs
-                |  parameters ',' type_defs
+params          :  param_list
+                |
+param_list      :  type_defs
+                |  param_list ',' type_defs
 
 // type definitions for function parameters
-type_defs       :  type decl_id
-                |  CURVE decl_id
+type_defs       :  type decl_id {
+                    st_insert_var(curr_table, $2.curr_id_list->id, $1.type);
+                }
+                |  CURVE decl_id    {
+                    st_insert_curve(curr_table, $2.curr_id_list->id.id, NULL, 0);
+                }
 
 type            :  DATA_TYPE temp_params {
                     init_var_type(&$$.type);
@@ -152,8 +184,15 @@ curve_decl_list :  curve_decl_list ',' curve_decl
                 |  curve_decl
 
 // identifier for a curve
-curve_decl      :  IDENTIFIER '(' idlist ')'
-                |  decl_id
+curve_decl      :  IDENTIFIER '(' idlist ')'    {
+                    st_insert_curve(curr_table, $1.text, $3.curr_id_list, $3.count);
+                }
+                |  decl_id  {
+                    var_type type;
+                    init_var_type(&type);
+                    type.type = CURVE_T;
+                    st_insert_vars(curr_table, $1.curr_id_list, type);
+                }
 
 // list of declaration identifiers.
 decl_id_list    :  decl_id ',' decl_id_list {
@@ -188,10 +227,8 @@ decl_id2        :  decl_id2 '[' INTEGER ']' {
                 |  IDENTIFIER   {
                     $$.curr_id_list = (id_list *)malloc(sizeof(id_list));
                     $$.curr_id_list->next = 0;
+                    init_id(&$$.curr_id_list->id);
                     $$.curr_id_list->id.id = $1.text;
-                    $$.curr_id_list->id.num_stars = 0;
-                    $$.curr_id_list->id.num_braks = 0;
-                    $$.curr_id_list->id.brak_vals = 0;
                 }
 
 // Declaration with/without assignment
@@ -236,8 +273,19 @@ multi_assign    :  lhs '=' multi_assign
                 |  assign
 
 // list of identifiers
-idlist          :  IDENTIFIER
-                |  idlist ',' IDENTIFIER
+idlist          :  IDENTIFIER   {
+                    $$.curr_id_list = (id_list *)malloc(sizeof(id_list));
+                    init_id(&$$.curr_id_list->id);
+                    $$.curr_id_list->id.id = $1.text;
+                    $$.count = 1;
+                }
+                |  IDENTIFIER ',' idlist    {
+                    $$.curr_id_list = (id_list *)malloc(sizeof(id_list));
+                    init_id(&$$.curr_id_list->id);
+                    $$.curr_id_list->id.id = $1.text;
+                    $$.curr_id_list->next = $3.curr_id_list;
+                    $$.count = 1 + $3.count;
+                }
 
 // LHS of an assignment
 lhs             :  name

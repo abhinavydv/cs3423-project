@@ -70,6 +70,7 @@ struct state {
     char* text;
     var_type type;
     id_list *curr_id_list;
+    int count;
 };
 
 
@@ -79,8 +80,12 @@ symbol_table *st_create(int size, int level, bool parameters);
 void st_insert(symbol_table *st, st_entry entry);
 void st_insert_vars(symbol_table*, id_list*, var_type);
 void st_insert_var(symbol_table*, id, var_type);
+void st_insert_curve(symbol_table*, char*, id_list*, int);
+void st_insert_struct(symbol_table*, char *name, symbol_table*);
+void st_insert_func(symbol_table*, char*, var_type, symbol_table*);
 bool is_iterable();
 void init_var_type(var_type*);
+void init_id(id*);
 void st_print_type(var_type*, int);
 void st_print_entry(st_entry*, int);
 void st_print_table(symbol_table *);
@@ -88,5 +93,12 @@ void st_print_table(symbol_table *);
 bool struct_type_defined(st_entry *entry); // checks if struct is defined
 st_entry *struct_ptr(); //returns struct declaration entry
 void myprintf(int level, char *format, ...);
+int is_convertible(var_type *type1, var_type *type2);   // return 0 if not convertible, return 1 if 1st to 2nd else return 2
+var_type *get_type_of_var(symbol_table *st, char *name);    // return pointer to variable type if found else return NULL
+
+// return 0 if matched
+// return 1 if length problem
+// return n+1 if nth argument has wrong type
+int is_function_matched(char*, var_type*, int); // checks if function is matched
 
 #endif

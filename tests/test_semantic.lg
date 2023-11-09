@@ -2,4 +2,16 @@ int a, **b, c[1][2], **d[1][4];
 
 struct s {
   int a;
+  int b, **c;
 };
+
+char** df;
+curve **f[2], g, *h;
+
+curve crv(x, y, z), *crvp;
+
+func int** main(int *a, curve b, curve **c[1][2]){
+    
+}
+
+int** a;

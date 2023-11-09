@@ -28,12 +28,21 @@ void init_var_type(var_type *type) {
 }
 
 
+void init_id(id *id) {
+    id->id = NULL;
+    id->num_stars = 0;
+    id->num_braks = 0;
+    id->brak_vals = NULL;
+}
+
+
 symbol_table *st_create(int size, int level, bool parameters) {
     symbol_table *st = malloc(sizeof(symbol_table));
     st->size = size;
     st->level = level;
     st->parameters = parameters;
     st->entries = malloc(sizeof(st_entry) * size);
+    st->parent = NULL;
     return st;
 }
 
@@ -85,6 +94,48 @@ void st_insert_vars(symbol_table *st, id_list* list, var_type type) {
 }
 
 
+void st_insert_struct(symbol_table *st, char *name, symbol_table *subtable) {
+    st_entry entry;
+    entry.name = strdup(name);
+    entry.type = malloc(sizeof(var_type));
+    init_var_type(entry.type);
+    entry.type->type = STRUCT_T;
+    entry.subtable = subtable;
+    st_insert(st, entry);
+}
+
+
+void st_insert_curve(symbol_table *st, char *name, id_list *list, int count){
+    st_entry entry;
+    entry.name = strdup(name);
+    entry.type = malloc(sizeof(var_type));
+    init_var_type(entry.type);
+    entry.type->type = CURVE_T;
+    entry.type->num_vars = count;
+    if (count)
+        entry.type->vars = malloc(sizeof(char*) * count);
+    for (int i = 0; i < count; i++){
+        entry.type->vars[i] = strdup(list->id.id);
+        list = list->next;
+    }
+    entry.subtable = NULL;
+    st_insert(st, entry);
+}
+
+
+void st_insert_func(symbol_table *st, char *name, var_type type, symbol_table* subtable){
+    st_entry entry;
+    entry.name = strdup(name);
+    entry.type = malloc(sizeof(var_type));
+    init_var_type(entry.type);
+    entry.type->type = FUNCTION;
+    id new_id = {name, 0, 0, 0};
+    entry.type->subtype = gen_type(new_id, type);
+    entry.subtable = subtable;
+    st_insert(st, entry);
+}
+
+
 void st_print_type(var_type *type, int level) {
     // printf("type: %d\n", type->type);
     // printf("type_name: %s\n", type->name);
@@ -130,7 +181,6 @@ void st_print_type(var_type *type, int level) {
             break;
         case STRUCT_T:
             myprintf(level, "struct:\n");
-            myprintf(level, "name: %s\n", type->name);
             break;
         case FUNCTION:
             myprintf(level, "function:\n");
@@ -139,9 +189,11 @@ void st_print_type(var_type *type, int level) {
             st_print_type(type->subtype, level+1);
             break;
         case CURVE_T:
-            myprintf(level, "curve:\n");
-            myprintf(level, "num_vars: %d\n", type->num_vars);
-            myprintf(level, "vars: ");
+            myprintf(level, "curve:");
+            if (type->num_vars){
+                myprintf(level, "\nnum_vars: %d\n", type->num_vars);
+                myprintf(level, "vars: ");
+            }
             for (int i = 0; i < type->num_vars; i++) {
                 myprintf(level, "%s ", type->vars[i]);
             }
@@ -163,7 +215,7 @@ void st_print_entry(st_entry *entry, int level) {
 
 
 void st_print_table(symbol_table *st) {
-    myprintf(st->level, "Symbol table (level %d, %d entrie(s)):\n", st->level, st->filled);
+    myprintf(st->level, "Symbol table (level %d, %d entries):\n", st->level, st->filled);
     for (int i = 0; i < st->filled; i++) {
         st_print_entry(&st->entries[i], st->level);
         printf("\n");

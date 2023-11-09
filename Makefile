@@ -9,7 +9,7 @@ yellow = echo $(2) "\033[01;33m$(1)\033[01;0m"
 green = echo $(2) "\033[01;32m$(1)\033[01;0m"
 red = echo $(2) "\033[01;31m$(1)\033[01;0m"
 
-test_parser_at = $(call yellow,Testing at $(1),-n); ./bin/parser $(1) tests/tokens/$(2) tests/parsed/$(3) && $(call green, \tOK) || $(call red, \tFailed)
+test_parser_at = $(call yellow,Testing at $(1),-n); ./bin/parser $(1) tests/tokens/$(2) tests/parsed/$(3) > tests/logs/$(4) && $(call green, \tOK) || $(call red, \tFailed)
 
 create_folders:
 	@mkdir -p bin tests/parsed tests/tokens tests/logs
@@ -36,11 +36,11 @@ test_parser: create_folders parser test_parser_only
 
 test_parser_only: create_folders
 	$(call yellow,Testing parser)
-	# $(call test_parser_at,examples/polymultiply.lg,polymultiply_tokens.txt,polymultiply_parsed.lg,polymultiply_log.txt)
-	# $(call test_parser_at,examples/find_the_roots.lg,find_the_roots_tokens.txt,find_the_roots_parsed.lg,find_the_roots_log.txt)
-	# $(call test_parser_at,examples/differentiate.lg,differentiate_tokens.txt,differentiate_parsed.lg,differentiate_log.txt)
-	# $(call test_parser_at,examples/other_funcs.lg,other_funcs_tokens.txt,other_funcs_parsed.lg,other_funcs_log.txt)
-	# $(call test_parser_at,tests/test_parser.lg,test_parser_tokens.txt,test_parser_parsed.lg,test_parser_log.txt)
+	$(call test_parser_at,examples/polymultiply.lg,polymultiply_tokens.txt,polymultiply_parsed.lg,polymultiply_log.txt)
+	$(call test_parser_at,examples/find_the_roots.lg,find_the_roots_tokens.txt,find_the_roots_parsed.lg,find_the_roots_log.txt)
+	$(call test_parser_at,examples/differentiate.lg,differentiate_tokens.txt,differentiate_parsed.lg,differentiate_log.txt)
+	$(call test_parser_at,examples/other_funcs.lg,other_funcs_tokens.txt,other_funcs_parsed.lg,other_funcs_log.txt)
+	$(call test_parser_at,tests/test_parser.lg,test_parser_tokens.txt,test_parser_parsed.lg,test_parser_log.txt)
 	$(call test_parser_at,tests/test_semantic.lg,test_semantic_tokens.txt,test_semantic_parsed.lg,test_semantic_log.txt)
 
 clean:
