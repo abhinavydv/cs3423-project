@@ -5,6 +5,7 @@
     #include <stdio.h>
     #include <assert.h>
     #include <stdlib.h>
+    #include <string.h>
 
 
     // variables
@@ -13,6 +14,7 @@
     symbol_table *global_table;
     symbol_table *curr_table;
     state yylval;
+    var_type curr_type;
 
     // functions
     int yylex();
@@ -250,6 +252,7 @@ decl_id2        :  decl_id2 '[' INTEGER ']' {
 
 // Declaration with/without assignment
 decl_assgn      :  type assignList  {
+                    curr_type = $1.type;
                     st_insert_vars(curr_table, $2.curr_id_list, $1.type);
                 }
                 |  CURVE curveAssignList
@@ -259,7 +262,11 @@ curveAssignList :  curveAssignList ',' curve_assign
                 |  curve_assign
 
 // ID/Assignment for a curve
-curve_assign    :  curve_decl '=' rhs
+curve_assign    :  curve_decl '=' rhs   {
+                    if ($3.type.type != CURVE_T){
+                        yyerror("Curve assignment must be a curve");
+                    }
+                }
                 |  curve_decl
 
 // list of IDs/assignments for declarations
@@ -280,26 +287,60 @@ assignList      :  assign_decl ',' assignList   {
 
 // ID/Assignment for a declaration
 assign_decl     :  decl_id '=' rhs  {
+                    if (!is_assignable(&curr_type, &$3.type)){
+                        yyerror("Invalid assignment");
+                    }
                     $$.curr_id_list = $1.curr_id_list;
                 }
                 |  decl_id '=' '{' initializerList '}'  {
+                    if (!is_initializer_list_matched(curr_table, &$1.type, $4.type_list, $4.count)){
+                        yyerror("Invalid assignment");
+                    }
                     $$.curr_id_list = $1.curr_id_list;
                 }
 
 // Assignment
-assign          :  lhs '=' rhs
-                |  lhs '=' '{' initializerList '}'
+assign          :  lhs '=' rhs  {
+                    if (!is_assignable(&$1.type, &$3.type)){
+                        yyerror("Invalid assignment");
+                    }
+                    $$.type = $3.type;
+                }
+                |  lhs '=' '{' initializerList '}'  {
+                    if (!is_initializer_list_matched(curr_table, &$1.type, $4.type_list, $4.count)){
+                        yyerror("Invalid assignment");
+                    }
+                }
 
 // Augmented Assignment
-augAssign       :  lhs AUG_ASSIGN rhs
+augAssign       :  lhs AUG_ASSIGN rhs   {
+                    if (!is_assignable(&$1.type, &$3.type)){
+                        yyerror("Invalid assignment");
+                    }
+                }
 
 // Initializer List like in C/Cpp, i.e., {1,2,3}
-initializerList :  initializerList ',' rhs
-                |  rhs
+initializerList :  initializerList ',' rhs  {
+                    $$.type_list = (var_type *)realloc($1.type_list, ($1.count + 1) * sizeof(var_type));
+                    $$.type_list[$1.count] = $3.type;
+                    $$.count = $1.count + 1;
+                }
+                |  rhs  {
+                    $$.type_list = (var_type *)malloc(sizeof(var_type));
+                    $$.type_list[0] = $1.type;
+                    $$.count = 1;
+                }
 
 // Assign a rhs to multiple variables;
-multi_assign    :  lhs '=' multi_assign
-                |  assign
+multi_assign    :  lhs '=' multi_assign {
+                    if (!is_assignable(&$1.type, &$3.type)){
+                        yyerror("Invalid assignment");
+                    }
+                    $$.type = $3.type;
+                }
+                |  assign   {
+                    $$.type = $1.type;
+                }
 
 // list of identifiers
 idlist          :  IDENTIFIER   {
@@ -317,18 +358,27 @@ idlist          :  IDENTIFIER   {
                 }
 
 // LHS of an assignment
-lhs             :  name
+lhs             :  name {
+                    $$ = $1;
+                }
 
+// TODO: Handle operator types
 // Logical Operators
 rhs             :  rhs OR and
-                |  and
+                |  and  {
+                    $$ = $1;
+                }
 
 and             :  and AND comparision
-                |  comparision
+                |  comparision  {
+                    $$ = $1;
+                }
 
 // Comparison Operators
 comparision     :  comparision compare_op plus
-                |  plus
+                |  plus   {
+                    $$ = $1;
+                }
 
 compare_op      :  '<'
                 |  '>'
@@ -337,123 +387,345 @@ compare_op      :  '<'
 // Arithmetic Operators
 plus            :  plus '+' product
                 |  plus '-' product
-                |  product
+                |  product  {
+                    $$ = $1;
+                }
 
 product         :  product '*' mod
-                |  mod
+                |  mod           {
+                    $$ = $1;
+                }
 
 mod             :  mod '%' division
-                |  division
+                |  division   {
+                    $$ = $1;
+                }
 
 division        :  division '/' bit_or
-                |  bit_or
+                |  bit_or   {
+                    $$ = $1;
+                }
 
 // Bitwise Operators
 bit_or          :  bit_or '|' bit_and
-                |  bit_and
+                |  bit_and  {
+                    $$ = $1;
+                }
 
 bit_and         :  bit_and '&' shift
-                |  shift
+                |  shift    {
+                    $$ = $1;
+                }
 
 shift           :  shift SHIFT power
-                |  power
+                |  power    {
+                    $$ = $1;
+                }
 
 // Power Operator
-power           :  power '^' unary_op
-                |  unary_op
+power           :  power '^' unary_op   {
+                    
+                }
+                |  unary_op   {
+                    $$ = $1;
+                }
 
-unary_op        :  unary_op_only
-                |  final
+unary_op        :  unary_op_only    {
+                    $$ = $1;
+                }
+                |  final    {
+                    $$ = $1;
+                }
 
 // Unary Operators
-unary_op_only   :  '~' final
-                |  '-' final
+unary_op_only   :  '~' final    {
+                    if (!is_int(&$2.type)){
+                        yyerror("Bitwise not must have int type");
+                    }
+                    $$ = $2;
+                }
+                |  '-' final    {
+                    if (!is_number(&$2.type) && $2.type.type != CURVE_T){
+                        yyerror("Unary minus must have int or real or curve type");
+                    }
+                    $$ = $2;
+                }
                 // TODO: Figure out starred expressions
                 /* |  '*' '(' rhs ')' */
-                |  '!' final        // logical not
-                |  final '!'        // factorial
-                |  INCREMENT name   // only names are allowed
-                |  name INCREMENT   // only names are allowed
-                |  DECREMENT name   // only names are allowed
-                |  name DECREMENT   // only names are allowed
+                |  '!' final    {
+                    if (!is_number(&$2.type) && strcmp($2.type.name, "bool") != 0){
+                        yyerror("Not must have int or real type");
+                    }
+                    $$ = $2;
+                }
+                |  final '!'    {
+                    if (!is_int(&$1.type)){
+                        yyerror("Factorial must have int type");
+                    }
+                    $$ = $1;
+                }
+                |  INCREMENT name   {
+                    if (!is_number(&$2.type)){
+                        yyerror("Increment must have int or real type");
+                    }
+                    $$ = $2;
+                }
+                |  name INCREMENT   {
+                    if (!is_number(&$1.type)){
+                        yyerror("Increment must have int or real type");
+                    }
+                    $$ = $1;
+                }
+                |  DECREMENT name   {
+                    if (!is_number(&$2.type)){
+                        yyerror("Decrement must have int or real type");
+                    }
+                    $$ = $2;
+                }
+                |  name DECREMENT   {
+                    if (!is_number(&$1.type)){
+                        yyerror("Decrement must have int or real type");
+                    }
+                    $$ = $1;
+                }
 
-final           :  value
-                |  '(' rhs ')'
+final           :  value    {
+                    $$ = $1;
+                }
+                |  '(' rhs ')'  {
+                    $$ = $2;
+                }
 
 // Values: Numbers, Strings, Booleans, Identifiers, Calls, Object Calls, Differentiate
 // i.e. everything without an operator
-value           :  number
-                |  STRING
-                |  CHAR
-                |  TRUE
-                |  FALSE
-                |  name
-                |  call
-                |  obj_call
-                |  differentiate
-                |  DOLLAR_ID
+value           :  number   {
+                    $$ = $1;
+                }
+                |  STRING    {
+                    init_var_type(&$$.type);
+                    $$.type.type = PRIMITIVE;
+                    $$.type.name = "string";
+                }
+                |  CHAR     {
+                    init_var_type(&$$.type);
+                    $$.type.type = PRIMITIVE;
+                    $$.type.name = "char";
+                }
+                |  TRUE     {
+                    init_var_type(&$$.type);
+                    $$.type.type = PRIMITIVE;
+                    $$.type.name = "bool";
+                }
+                |  FALSE    {
+                    init_var_type(&$$.type);
+                    $$.type.type = PRIMITIVE;
+                    $$.type.name = "bool";
+                }
+                |  name {
+                    $$ = $1;
+                }
+                |  call {
+                    $$ = $1;
+                }
+                |  obj_call {
+                    $$ = $1;
+                }
+                |  differentiate    {
+                    $$ = $1;
+                }
+                |  DOLLAR_ID    {
+                    init_var_type(&$$.type);
+                    $$.type.type = CURVE_T;
+                }
 
 // Numbers: Real and Integer
-number          :  REAL
-                |  INTEGER
+number          :  REAL    {
+                    init_var_type(&$$.type);
+                    $$.type.type = PRIMITIVE;
+                    $$.type.name = "real";
+                }
+                |  INTEGER  {
+                    init_var_type(&$$.type);
+                    $$.type.type = PRIMITIVE;
+                    $$.type.name = "int";
+                }
 
 // Return Statement
 ret             :  RETURN rhs ';'
                 |  RETURN ';'
 
 // Function Call
-call            :  IDENTIFIER '(' arglist ')'
+call            :  IDENTIFIER '(' arglist ')'   {
+                    $$.type = *get_type_of_var(curr_table, $1.text);
+                    is_function_matched(curr_table, $1.text, $3.type_list, $3.count);
+                }
 
 // Function Call with object
-obj_call        :  name ARROW IDENTIFIER '(' arglist ')'
-                |  name DOT IDENTIFIER '(' arglist ')'
+obj_call        :  name ARROW IDENTIFIER '(' arglist ')'    {
+                    if ($1.type.type != POINTER){
+                        yyerror("Arrow expression must be a pointer");
+                    }
+                    $$.type = *get_type_of_member(curr_table, $1.type.subtype, $3.text);
+                    is_object_function_matched(curr_table, $1.type.subtype, $3.text, $5.type_list, $5.count);
+                }
+                |  name DOT IDENTIFIER '(' arglist ')'  {
+                    $$.type = *get_type_of_member(curr_table, &$1.type, $3.text);
+                    is_object_function_matched(curr_table, &$1.type, $3.text, $5.type_list, $5.count);
+                }
 
 // List of arguments for a function call
-arglist         :  rhs
-                |  rhs ',' arglist
-                |  assign_arg_list
-                |
+arglist         :  argOnlyList  {
+                    $$.type_list = $1.type_list;
+                    $$.count = $1.count;
+                }
+                |  assign_arg_list  {
+                    $$.count = 0;
+                }
+                |   {
+                    $$.count = 0;
+                }
 
-assign_arg_list :  IDENTIFIER '=' rhs
+argOnlyList     :  rhs  {
+                    $$.type_list = (var_type *)malloc(sizeof(var_type));
+                    $$.type_list[0] = $1.type;
+                    $$.count = 1;
+                }
+                |  argOnlyList ',' rhs  {
+                    $$.type_list = (var_type *)realloc($1.type_list, ($1.count + 1) * sizeof(var_type));
+                    $$.type_list[$1.count] = $3.type;
+                    $$.count = $1.count + 1;
+                }
+
+assign_arg_list :  IDENTIFIER '=' rhs   {
+                    if (!is_number(&$3.type)){
+                        yyerror("argument values must be int or real");
+                    }
+                }
                 |  assign_arg_list ',' IDENTIFIER '=' rhs
 
 // Object reference
-name            :  name ARROW IDENTIFIER
-                |  name DOT IDENTIFIER
-                |  name '[' rhs ']'
-                |  IDENTIFIER
-                |  starred_name
+name            :  name ARROW IDENTIFIER    {
+                    if ($1.type.type != POINTER){
+                        yyerror("Arrow expression must be a pointer");
+                    }
+                    $$.type = *get_type_of_member(curr_table, $1.type.subtype, $3.text);
+                }
+                |  name DOT IDENTIFIER  {
+                    $$.type = *get_type_of_member(curr_table, &$1.type, $3.text);
+                }
+                |  name '[' rhs ']' {
+                    if ($1.type.type == ARRAY || $1.type.type != POINTER || ($1.type.type != PRIMITIVE && (strcmp($1.type.name, "vector") == 0 || strcmp($1.type.name, "string")) == 0)){
+                        $$.type = *$1.type.subtype;
+                    } else {
+                        yyerror("Array expression must be an array");
+                    }
+                    if (strcmp($3.type.name, "int") != 0){
+                        yyerror("Array index must be an integer");
+                    }
+                }
+                |  IDENTIFIER   {
+                    $$.type = *get_type_of_var(curr_table, $1.text);}
+                |  starred_name {
+                    $$ = $1;
+                }
 
 // Starred object reference
-starred_name    :  '*' '(' name ')'
-                |  '*' starred_name
-                |  '*' IDENTIFIER
+starred_name    :  '*' '(' name ')' {
+                    if ($3.type.type != POINTER){
+                        yyerror("Starred expression must be a pointer");
+                    }
+                    $$.type = *$3.type.subtype;
+                }
+                |  '*' starred_name {
+                    if ($2.type.type != POINTER){
+                        yyerror("Starred expression must be a pointer");
+                    }
+                    $$.type = *$2.type.subtype;
+                }
+                |  '*' IDENTIFIER   {
+                    var_type *type = get_type_of_var(curr_table, $2.text);
+                    if (type->type != POINTER){
+                        yyerror("Starred expression must be a pointer");
+                    }
+                    $$.type = *type->subtype;
+                }
 
-differentiate   :  DIFF '[' rhs ',' rhs ']'
-                |  DIFF '[' rhs ',' rhs ',' INTEGER ']'
+differentiate   :  DIFF '[' rhs ',' rhs ']' {
+                    if ($3.type.type != CURVE_T){
+                        yyerror("Differentiation must be a curve");
+                    }
+                    if ($5.type.type != CURVE_T && $5.type.type != PRIMITIVE && strcmp($5.type.name, "string") != 0){
+                        yyerror("Type must be a curve or string");
+                    }
+                }
+                |  DIFF '[' rhs ',' rhs ',' INTEGER ']' {
+                    if ($3.type.type != CURVE_T){
+                        yyerror("Differentiation must be a curve");
+                    }
+                    if ($5.type.type != CURVE_T && $5.type.type != PRIMITIVE && strcmp($5.type.name, "string") != 0){
+                        yyerror("Type must be a curve or string");
+                    }
+                }
 
 // Conditional Statement
 conditional     :  ifBlock
                 |  ifBlock ELSE {label("Else statement");} statement
 
 // If Statement
-ifBlock         :  IF '(' rhs ')' {label("If statement");} block
+ifBlock         :  IF '(' rhs ')' {label("If statement");} block    {
+                    if ($3.type.type != PRIMITIVE || !is_number(&$3.type)){
+                        yyerror("If statement must have bool type");
+                    }
+                }
 
 // Loop Statements
 loop            :  UNTIL '(' rhs ')' REPEAT {label("Loop");} statement
                 |  REPEAT {label("Loop");} statement UNTIL '(' rhs ')'
 
 // For Loop
-forLoop         :  FOR IDENTIFIER IN forLoopTail
+forLoop         :  FOR IDENTIFIER IN forLoopTail    {
+                    st_entry entry;
+                    entry.name = $2.text;
+                    entry.type = malloc(sizeof(var_type));
+                    *entry.type = $4.type;
+                    entry.subtable = NULL;
+                    st_insert(curr_table, entry);
+                }
 
-forLoopTail     :  loopVals DOTS loopVals {label("For loop");} statement
-                |  loopVals DOTS loopVals DOTS loopVals {label("For loop");} statement
-                |  '(' rhs ')' {label("For loop");} statement
-                |  value {label("For loop");} statement
+forLoopTail     :  loopVals DOTS loopVals {label("For loop");} statement    {
+                    if ($1.type.type != PRIMITIVE || strcmp($1.type.name, "int") != 0 || $3.type.type != PRIMITIVE || strcmp($3.type.name, "int") != 0){
+                        yyerror("For loop must have int types");
+                    }
+                    $$.type = $1.type;
+                }
+                |  loopVals DOTS loopVals DOTS loopVals {label("For loop");} statement  {
+                    if ($1.type.type != PRIMITIVE || strcmp($1.type.name, "int") != 0 || $3.type.type != PRIMITIVE || strcmp($3.type.name, "int") != 0 || $5.type.type != PRIMITIVE || strcmp($5.type.name, "int") != 0){
+                        yyerror("For loop must have int types");
+                    }
+                    $$.type = $1.type;
+                }
+                |  '(' rhs ')' {label("For loop");} statement   {
+                    if (!is_iterable(&$2.type)){
+                        yyerror("For loop must have iterable type");
+                    }
+                    $$.type = *get_item_type(&$2.type);
+                }
+                |  value {label("For loop");} statement   {
+                    if (!is_iterable(&$1.type)){
+                        yyerror("For loop must have iterable type");
+                    }
+                    $$.type = *get_item_type(&$1.type);
+                }
 
-loopVals        :  value
-                |  '(' rhs ')'
-                |  unary_op_only
+loopVals        :  value    {
+                    $$.type = $1.type;
+                }
+                |  '(' rhs ')'  {
+                    $$.type = $2.type;
+                }
+                |  unary_op_only    {
+                    $$.type = $1.type;
+                }
 
 %%
 
