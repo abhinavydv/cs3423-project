@@ -9,7 +9,7 @@
 void myprintf(int level, char *format, ...) {
     va_list args;
     va_start(args, format);
-    for (int i = 0; i < level; i++) {
+    for (int i = 0; i <= level; i++) {
         printf("  ");
     }
     vprintf(format, args);
@@ -41,6 +41,7 @@ symbol_table *st_create(int size, int level, bool parameters) {
     st->size = size;
     st->level = level;
     st->parameters = parameters;
+    st->is_incomplete = false;
     st->entries = malloc(sizeof(st_entry) * size);
     st->parent = NULL;
     return st;
@@ -105,12 +106,14 @@ void st_insert_struct(symbol_table *st, char *name, symbol_table *subtable) {
 }
 
 
-void st_insert_curve(symbol_table *st, char *name, id_list *list, int count){
+void st_insert_curve(symbol_table *st, id name, id_list *list, int count){
+    // printf("%s %d %d %p\n", name.id, name.num_stars, name.num_braks, name.brak_vals);
     st_entry entry;
-    entry.name = strdup(name);
-    entry.type = malloc(sizeof(var_type));
-    init_var_type(entry.type);
-    entry.type->type = CURVE_T;
+    entry.name = strdup(name.id);
+    var_type type;
+    init_var_type(&type);
+    type.type = CURVE_T;
+    entry.type = gen_type(name, type);
     entry.type->num_vars = count;
     if (count)
         entry.type->vars = malloc(sizeof(char*) * count);
@@ -164,9 +167,7 @@ void st_print_type(var_type *type, int level) {
                 myprintf(level, "num_args: %d\n", type->num_args);
                 myprintf(level, "args:\n");
                 for (int i = 0; i < type->num_args; i++) {
-                    myprintf(level, ">>>\n");
                     st_print_type(&type->args[i], level+1);
-                    myprintf(level, "<<<\n");
                 }
             }
             break;
@@ -185,17 +186,18 @@ void st_print_type(var_type *type, int level) {
         case FUNCTION:
             myprintf(level, "function:\n");
             myprintf(level, "name: %s\n", type->name);
-            myprintf(level, "type:\n");
+            myprintf(level, "return type:\n");
             st_print_type(type->subtype, level+1);
             break;
         case CURVE_T:
             myprintf(level, "curve:");
             if (type->num_vars){
-                myprintf(level, "\nnum_vars: %d\n", type->num_vars);
-                myprintf(level, "vars: ");
+                printf("\n");
+                myprintf(level+1, "num_vars: %d\n", type->num_vars);
+                myprintf(level+1, "vars: ");
             }
             for (int i = 0; i < type->num_vars; i++) {
-                myprintf(level, "%s ", type->vars[i]);
+                printf("%s ", type->vars[i]);
             }
             myprintf(level, "\n");
             break;
@@ -206,8 +208,10 @@ void st_print_type(var_type *type, int level) {
 
 
 void st_print_entry(st_entry *entry, int level) {
-    myprintf(level, "name: %s\n", entry->name);
-    st_print_type(entry->type, level);
+    if (entry->type->type != SYMBOL_TABLE){
+        myprintf(level, "name: %s\n", entry->name);
+        st_print_type(entry->type, level);
+    }
     if (entry->subtable != NULL) {
         st_print_table(entry->subtable);
     }
@@ -215,12 +219,19 @@ void st_print_entry(st_entry *entry, int level) {
 
 
 void st_print_table(symbol_table *st) {
-    myprintf(st->level, "Symbol table (level %d, %d entries):\n", st->level, st->filled);
+    myprintf(st->level-1, "Symbol table (level %d, %d entries):", st->level, st->filled);
+    if (st->parameters) {
+        printf(" (parameters)");
+    }
+    if (st->is_incomplete) {
+        printf(" (incomplete)");
+    }
+    printf("\n");
     for (int i = 0; i < st->filled; i++) {
         st_print_entry(&st->entries[i], st->level);
         printf("\n");
     }
-    myprintf(st->level, "Symbol table (level %d) end:\n", st->level);
+    myprintf(st->level-1, "Symbol table (level %d) end:\n", st->level);
 }
 
 
@@ -228,5 +239,12 @@ bool struct_type_defined(st_entry *entry) {
     // find the declaration
     // symbol_table *st = global_table;
     symbol_table *st;
-    
+}
+
+
+void update_pos_info(position *pos, int row, int col) {
+    pos->last_row = pos->row;
+    pos->last_col = pos->col;
+    pos->row = row;
+    pos->col = col;
 }

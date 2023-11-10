@@ -9,11 +9,11 @@
     #include "y.tab.h"
 
     FILE *yyin, *yyout, *parsed_file;
-    int line_count;
     extern state yylval;
+    extern position pos_info;
 
 
-    #define ECHO fprintf(parsed_file, "%s", yytext); fflush(parsed_file);
+    #define ECHO fprintf(parsed_file, "%s", yytext); fflush(parsed_file); update_pos_info(&pos_info, pos_info.row, pos_info.col+strlen(yytext));
     #define DUP yylval.text = strdup(yytext);
 %}
 
@@ -99,10 +99,6 @@ curly           [}{]
 parenthesis     [)(]
 square          [\[\]]
 
-
-%{
-int line_count = 1;
-%}
 
 %%
 
@@ -379,10 +375,10 @@ int line_count = 1;
                             ECHO;
                         }
 {newline}               {
-                            ECHO; line_count++;
+                            fprintf(parsed_file, "\n"); update_pos_info(&pos_info, pos_info.row+1, 0);
                         }
 {comment}               {fprintf(parsed_file, " ");}    // print a space instead of comment
-.                       {printf("Lexer Error at Line Number %d\n",line_count); fflush(yyout); exit(0);}
+.                       {printf("Lexer Error at Line Number %d\n",pos_info.row); fflush(yyout); exit(0);}
 
 %%
 

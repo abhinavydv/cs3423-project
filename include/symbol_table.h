@@ -19,6 +19,7 @@ typedef enum {
     FUNCTION,
     STRUCT_T,
     POINTER,
+    SYMBOL_TABLE
 } Type;
 
 
@@ -47,6 +48,7 @@ struct symbol_table {
     int filled;             // number of entries filled
     int level;              // level of the scope
     bool parameters;        // true if this table stores parameters of a function
+    bool is_incomplete;     // true if this table belongs to a function that is declared but not defined
     st_entry *entries;      // array of entries
     symbol_table *parent;   // parent table
 };
@@ -74,13 +76,21 @@ struct state {
 };
 
 
+typedef struct {
+    int row;
+    int col;
+    int last_row;
+    int last_col;
+} position;
+
+
 // functions
 symbol_table *st_create(int size, int level, bool parameters);
 // void st_insert_default_types(); // insert pre-defined types into symbol table
 void st_insert(symbol_table *st, st_entry entry);
 void st_insert_vars(symbol_table*, id_list*, var_type);
 void st_insert_var(symbol_table*, id, var_type);
-void st_insert_curve(symbol_table*, char*, id_list*, int);
+void st_insert_curve(symbol_table*, id, id_list*, int);
 void st_insert_struct(symbol_table*, char *name, symbol_table*);
 void st_insert_func(symbol_table*, char*, var_type, symbol_table*);
 bool is_iterable();
@@ -95,6 +105,7 @@ st_entry *struct_ptr(); //returns struct declaration entry
 void myprintf(int level, char *format, ...);
 int is_convertible(var_type *type1, var_type *type2);   // return 0 if not convertible, return 1 if 1st to 2nd else return 2
 var_type *get_type_of_var(symbol_table *st, char *name);    // return pointer to variable type if found else return NULL
+void update_pos_info(position *pos, int row, int col);
 
 // return 0 if matched
 // return 1 if length problem

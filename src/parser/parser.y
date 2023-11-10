@@ -8,8 +8,8 @@
 
 
     // variables
-    extern int line_count;
     extern FILE  * yyin, *yyout, *parsed_file;
+    position pos_info = {0};   // used for error reporting
     symbol_table *global_table;
     symbol_table *curr_table;
     state yylval;
@@ -41,7 +41,10 @@ program         :  global_decl program // Passing Symbol Table to Global_DECL
 // all global statements allowed
 global_decl     :  decl_only ';'
                 |  function
-                |  FUNC funcDef ';'
+                |  FUNC funcDef ';' {
+                    curr_table->is_incomplete = true;
+                    curr_table = curr_table->parent;    // exit the parameter table
+                }
                 |  struct
                 |  import
                 |  ';'
@@ -105,7 +108,7 @@ type_defs       :  type decl_id {
                     st_insert_var(curr_table, $2.curr_id_list->id, $1.type);
                 }
                 |  CURVE decl_id    {
-                    st_insert_curve(curr_table, $2.curr_id_list->id.id, NULL, 0);
+                    st_insert_curve(curr_table, $2.curr_id_list->id, NULL, 0);
                 }
 
 type            :  DATA_TYPE temp_params {
@@ -129,12 +132,12 @@ temp_params     :  '<' typelist '>' {
                     $$.type.args = NULL;
                 }
 
-typelist        :  type {
+typelist        :  starred_rettype {
                     $$.type.num_args = 1;
                     $$.type.args = (var_type *)malloc(sizeof(var_type));
                     $$.type.args[0] = $1.type;
                 }
-                |  type ',' typelist    {
+                |  starred_rettype ',' typelist    {
                     $$.type.num_args = $3.type.num_args + 1;
                     $$.type.args = (var_type *)malloc($$.type.num_args * sizeof(var_type));
                     $$.type.args[0] = $1.type;
@@ -145,7 +148,20 @@ typelist        :  type {
                 }
 
 // block of statements
-block           : '{' statements '}'
+block           : '{' {
+                    symbol_table *new_table = st_create(8, curr_table->level+1, false);
+                    st_entry entry;
+                    entry.name = 0;
+                    entry.type = malloc(sizeof(var_type));
+                    init_var_type(entry.type);
+                    entry.type->type = SYMBOL_TABLE;
+                    entry.subtable = new_table;
+                    new_table->parent = curr_table;
+                    st_insert(curr_table, entry);
+                    curr_table = new_table;
+                } statements '}'    {
+                    curr_table = curr_table->parent;
+                }
 
 statements      :  statement statements
                 |
@@ -185,7 +201,8 @@ curve_decl_list :  curve_decl_list ',' curve_decl
 
 // identifier for a curve
 curve_decl      :  IDENTIFIER '(' idlist ')'    {
-                    st_insert_curve(curr_table, $1.text, $3.curr_id_list, $3.count);
+                    id new_id = {$1.text, 0, 0, 0};
+                    st_insert_curve(curr_table, new_id, $3.curr_id_list, $3.count);
                 }
                 |  decl_id  {
                     var_type type;
@@ -232,7 +249,9 @@ decl_id2        :  decl_id2 '[' INTEGER ']' {
                 }
 
 // Declaration with/without assignment
-decl_assgn      :  type assignList
+decl_assgn      :  type assignList  {
+                    st_insert_vars(curr_table, $2.curr_id_list, $1.type);
+                }
                 |  CURVE curveAssignList
 
 // list of IDs/assignments of curves for declarations
@@ -244,18 +263,28 @@ curve_assign    :  curve_decl '=' rhs
                 |  curve_decl
 
 // list of IDs/assignments for declarations
-assignList      :  assignList ',' assign_decl
-                |  assign_decl
-                |  assignList ',' decl_id
-                |  decl_id
-                |  assignList ',' IDENTIFIER '(' arglist ')' {
-                    
+assignList      :  assign_decl ',' assignList   {
+                    $$.curr_id_list = $1.curr_id_list;
+                    $$.curr_id_list->next = $3.curr_id_list;
                 }
-                |  IDENTIFIER '(' arglist ')'
+                |  assign_decl  {
+                    $$.curr_id_list = $1.curr_id_list;
+                }
+                |  decl_id ',' assignList   {
+                    $$.curr_id_list = $1.curr_id_list;
+                    $$.curr_id_list->next = $3.curr_id_list;
+                }
+                |  decl_id  {
+                    $$.curr_id_list = $1.curr_id_list;
+                }
 
 // ID/Assignment for a declaration
-assign_decl     :  decl_id '=' rhs
-                |  decl_id '=' '{' initializerList '}'
+assign_decl     :  decl_id '=' rhs  {
+                    $$.curr_id_list = $1.curr_id_list;
+                }
+                |  decl_id '=' '{' initializerList '}'  {
+                    $$.curr_id_list = $1.curr_id_list;
+                }
 
 // Assignment
 assign          :  lhs '=' rhs
@@ -415,10 +444,12 @@ loop            :  UNTIL '(' rhs ')' REPEAT {label("Loop");} statement
                 |  REPEAT {label("Loop");} statement UNTIL '(' rhs ')'
 
 // For Loop
-forLoop         :  FOR IDENTIFIER IN loopVals DOTS loopVals {label("For loop");} statement
-                |  FOR IDENTIFIER IN loopVals DOTS loopVals DOTS loopVals {label("For loop");} statement
-                |  FOR IDENTIFIER IN '(' rhs ')' {label("For loop");} statement
-                |  FOR IDENTIFIER IN value {label("For loop");} statement
+forLoop         :  FOR IDENTIFIER IN forLoopTail
+
+forLoopTail     :  loopVals DOTS loopVals {label("For loop");} statement
+                |  loopVals DOTS loopVals DOTS loopVals {label("For loop");} statement
+                |  '(' rhs ')' {label("For loop");} statement
+                |  value {label("For loop");} statement
 
 loopVals        :  value
                 |  '(' rhs ')'

@@ -36,7 +36,7 @@ func complex FFT(curve f,int degree)
 
     a.b();
 
-    vector<complex> y(degree);
+    vector<complex> y = {degree};
 
 
     for i in 0 .. degree {
@@ -61,7 +61,7 @@ func curve InverseFFT(complex y,int degree){
         y_poly += y(i) * x^i;
     }
 
-    vector<complex> y(degree);
+    vector<complex> y = {degree};
 
     for k in 0..degree {
 
