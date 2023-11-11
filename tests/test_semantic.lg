@@ -1,26 +1,27 @@
-int a, **b, c[1][2], **d[1][4];
+int a, *b, *c[34];
 
-struct s {
-  int a;
-  int b, **c;
-  curve d, *e[2];
+struct my_struct {
+    int a;
+    curve c;
 };
 
-char** df;
-curve **f[2], g, *h;
-
-curve crv(x, y, z), *crvp;
-
-func int** main(int *a, curve b, curve **c[1][2]){
-    int a;
-    int *b[2];
-    int c, *d, e[2], *f[2], *g[4][3];
-    curve *h, **i[2][3];
-    curve f(x, y), g(y, z), *h;
-    complex c;
-    vector<int, char, curve**, void> a;
+func int foo(int a[23]){
+    return a*a;
 }
 
-int** a;
+func curve bar(curve a){
+    return a+34;
+}
 
-func int as(int a, int b, int c);
+func int main(){
+    int a[34];
+    curve b;
+    int *d;
+    int c;
+    c = *d;
+    foo(a);
+    curve asdf = bar(b);
+    my_struct strct;
+    a[4] = c + strct.a;
+}
+

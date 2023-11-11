@@ -99,7 +99,26 @@ var_type *gen_type(id id, var_type type){
 }
 
 
+bool is_declared(symbol_table *st, char *name){
+    if (find_in_one_table(st,name)!=NULL)
+    {
+        return true;
+    }
+    if (st->parent && st->parent->parameters && find_in_one_table(st->parent,name)!=NULL)
+    {
+        return true;
+    }
+    return false;
+}
+
+
 void st_insert_var(symbol_table *st, id id, var_type type) {
+    if (is_declared(st,id.id))
+    {
+        char *error = malloc(100);
+        sprintf(error, "Error: variable %s already declared\n", id.id);
+        yyerror(error);
+    }
     st_entry entry;
     entry.name = strdup(id.id);
     entry.type = gen_type(id, type);
@@ -153,6 +172,7 @@ void st_insert_func(symbol_table *st, char *name, var_type type, symbol_table* s
     entry.name = strdup(name);
     entry.type = malloc(sizeof(var_type));
     init_var_type(entry.type);
+    entry.type->name = strdup(name);
     entry.type->type = FUNCTION;
     id new_id = {name, 0, 0, 0};
     entry.type->subtype = gen_type(new_id, type);
@@ -264,17 +284,34 @@ void update_pos_info(position *pos, int row, int col) {
 }
 
 
-st_entry *find_in_table(symbol_table *st, char *name) {
-    symbol_table *parent = st;
-    while(parent!=NULL){
-        for (int i = 0; i < st->filled; i++)
+st_entry *find_in_one_table(symbol_table *st, char *name) {
+    for (int i = 0; i < st->filled; i++)
+    {
+        if (st->entries[i].name && strcmp(st->entries[i].name,name)==0)
         {
-            if (strcmp(st->entries[i].name,name)==0)
-            {
-                return &st->entries[i];
-            }
+            return &st->entries[i];
         }
-        parent=parent->parent;
+    }
+    return NULL;
+}
+
+
+st_entry *find_in_table(symbol_table *st, char *name) {
+    while(st!=NULL){
+        st_entry *entry = find_in_one_table(st,name);
+        if (entry != NULL)
+        {
+            return entry;
+        }
+        // for (int i = 0; i < st->filled; i++)
+        // {
+        //     // printf("%s %s\n",st->entries[i].name,name);
+        //     if (st->entries[i].name && strcmp(st->entries[i].name,name)==0)
+        //     {
+        //         return &st->entries[i];
+        //     }
+        // }
+        st=st->parent;
     }
     return NULL;
 }
@@ -297,6 +334,7 @@ bool struct_type_defined(symbol_table *st, st_entry *entry) {
     }
     return false;
 }
+
 int getsize(char * typename){
 
 
@@ -311,9 +349,10 @@ int getsize(char * typename){
 }
 
 int is_convertible(var_type *type1, var_type *type2) {
-    
     if (type1->type == PRIMITIVE && type2->type == PRIMITIVE){
-
+        if (strcmp(type1->name, "vector") && strcmp(type2->name, "vector")){
+            return 0;
+        }
         int size1 = getsize(type1->name);
         int size2 = getsize(type2->name);
         if(size1 == size2){
@@ -325,12 +364,20 @@ int is_convertible(var_type *type1, var_type *type2) {
         else {
             return 1; //  type1 get converted to type2
         }
+    } else if (type1->type == CURVE_T && type2->type == CURVE_T) {
+        return 0;
+    } else if (type1->type == POINTER && type2->type == POINTER) {
+        return is_convertible(type1->subtype, type2->subtype);
+    } else if (type1->type == ARRAY && type2->type == ARRAY) {
+        return is_convertible(type1->subtype, type2->subtype);
+    } else if (type1->type == STRUCT_T && type2->type == STRUCT_T) {
+        if (strcmp(type1->name, type2->name) == 0) {
+            return 0;
+        }
     }
     else {
         return -1;
-    } 
-    
-
+    }
 }
 
 bool is_assignable(var_type *type1, var_type *type2){
@@ -342,8 +389,11 @@ bool is_assignable(var_type *type1, var_type *type2){
 }
 
 var_type *get_type_of_var(symbol_table *st, char *name) {
-    if(find_in_table(st,name)!=NULL) {
-        return find_in_table(st,name)->type;
+    st_entry *entry = find_in_table(st,name);
+    if(entry != NULL) {
+        if (entry->type->type == FUNCTION)
+            return entry->type->subtype;
+        return entry->type;
     }
     return NULL;
 }
@@ -365,20 +415,21 @@ bool is_function_matched(symbol_table* st, char* name, var_type* type_list, int 
     {
         return false;
     }
-    
+
     if (arg_num!=function_ptr->subtable->filled-1)
     {
         return false;
     }
-    
+
     for (int i = 0; i < arg_num; i++)
     {
-        if (is_assignable(&type_list[i],function_ptr->subtable->entries[i].type))
+        if (!is_assignable(&type_list[i],function_ptr->subtable->entries[i].type))
         {
+
             return false;
         }
     }
-    
+
     return true;
 }
 

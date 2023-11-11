@@ -115,8 +115,10 @@ void update_pos_info(position *pos, int row, int col);
 var_type *get_item_type(var_type *type); // return type of item in array or vector
 bool is_number(var_type *type); // checks if type is number
 bool is_int(var_type *type); // checks if type is number
+st_entry *find_in_one_table(symbol_table *st, char *name);
 st_entry *find_in_table(symbol_table *st, char *name); // return pointer to entry if found else return NULL
 
+bool is_declared(symbol_table *st, char *name); // checks if variable is declared
 bool is_function_matched(symbol_table*, char*, var_type*, int); // checks if function is matched
 int is_object_function_matched(symbol_table*, var_type *, char*, var_type*, int); // checks if object function is matched
 bool is_initializer_list_matched(symbol_table*, var_type *type, var_type *list, int count); // checks if initializer list is compatible with type
@@ -124,5 +126,6 @@ var_type *get_compatible_type_logical(var_type *type1, var_type *type2); // retu
 var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2); // return compatible type of two types for arithmetic operator. call yyerror if not compatible
 var_type *get_compatible_type_comparison(var_type *type1, var_type *type2); // return compatible type of two types for comparison operator. call yyerror if not compatible
 var_type *get_compatible_type_bitwise(var_type *type1, var_type *type2); // return compatible type of two types for bitwise operator. call yyerror if not compatible
+void yyerror(char *);
 
 #endif

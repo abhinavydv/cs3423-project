@@ -500,6 +500,7 @@ unary_op        :  unary_op_only    {
                 }
 
 // Unary Operators
+// TODO: add &
 unary_op_only   :  '~' final    {
                     if (!is_int(&$2.type)){
                         yyerror("Bitwise not must have int type");
@@ -618,8 +619,14 @@ ret             :  RETURN rhs ';'
 
 // Function Call
 call            :  IDENTIFIER '(' arglist ')'   {
-                    $$.type = *get_type_of_var(curr_table, $1.text);
-                    is_function_matched(curr_table, $1.text, $3.type_list, $3.count);
+                    var_type *t = get_type_of_var(curr_table, $1.text);
+                    if (t == NULL){
+                        yyerror("Function not defined");
+                    } else 
+                        $$.type = *t;
+                    bool a = is_function_matched(curr_table, $1.text, $3.type_list, $3.count);
+                    if (!a)
+                        yyerror("Function call does not match definition");
                 }
 
 // Function Call with object
@@ -792,6 +799,7 @@ loopVals        :  value    {
 %%
 
 void yyerror(char * msg){
+    printf("line %d, col: %d\n", pos_info.row+1, pos_info.col+1);
     printf("%s\n",msg);
     exit(1);
 }
