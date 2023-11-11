@@ -53,6 +53,7 @@ void st_insert(symbol_table *st, st_entry entry) {
         st->size *= 2;
         st->entries = realloc(st->entries, sizeof(st_entry) * st->size);
     }
+    entry.index = st->filled;
     st->entries[st->filled++] = entry;
 }
 

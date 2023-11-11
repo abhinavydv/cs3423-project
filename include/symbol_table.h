@@ -39,6 +39,7 @@ struct var_type {
 struct st_entry {
     char *name;             // name of variable
     var_type *type;         // type of variable
+    int index;              // index of this entry in the symbol table
     symbol_table *subtable; // subtable for structs, functions and blocks
 };
 
@@ -112,6 +113,7 @@ void update_pos_info(position *pos, int row, int col);
 var_type *get_item_type(var_type *type); // return type of item in array or vector
 bool is_number(var_type *type); // checks if type is number
 bool is_int(var_type *type); // checks if type is number
+st_entry *find_in_table(symbol_table *st, char *name); // return index if found else return -1
 
 // return 0 if matched
 // return 1 if length problem
@@ -119,5 +121,9 @@ bool is_int(var_type *type); // checks if type is number
 int is_function_matched(symbol_table*, char*, var_type*, int); // checks if function is matched
 int is_object_function_matched(symbol_table*, var_type *, char*, var_type*, int); // checks if object function is matched
 bool is_initializer_list_matched(symbol_table*, var_type *type, var_type *list, int count); // checks if initializer list is matched
+var_type get_compatible_type_logical(var_type *type1, var_type *type2); // return compatible type of two types for logical operator. call yyerror if not compatible
+var_type get_compatible_type_arithmetic(var_type *type1, var_type *type2); // return compatible type of two types for arithmetic operator. call yyerror if not compatible
+var_type get_compatible_type_comparison(var_type *type1, var_type *type2); // return compatible type of two types for comparison operator. call yyerror if not compatible
+var_type get_compatible_type_bitwise(var_type *type1, var_type *type2); // return compatible type of two types for bitwise operator. call yyerror if not compatible
 
 #endif

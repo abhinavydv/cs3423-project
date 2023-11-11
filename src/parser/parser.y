@@ -84,9 +84,7 @@ function        :  FUNC funcDef  '{' {
                         yyerror("Function Redefined!!");
                     }
                 } statements '}'    {
-                    curr_table = curr_table->parent;
-                } {
-                    curr_table = curr_table->parent;    // exit the parameter table
+                    curr_table = curr_table->parent->parent;
                 }
 
 // function header defs
@@ -94,20 +92,17 @@ funcDef         :  starred_rettype IDENTIFIER {
                     // check if id and type exist in table if id match but return type do not return error
                     // if both matches do not do anything and check parameters type and number
                     // if non matchs procede with new entry
-                    int status; // ==0 means do not exist proceed, > 0 means check parameter (status contains the location of the entry), < 0 throw error
+                    int status; // ==0 means does not exist proceed, > 0 means check parameter (status contains the location of the entry), < 0 throw error
                     if ((status = if_exist_in_table(curr_table,$2.text,$1.type) ) == 0){ // return error if type matches
-
                         symbol_table *new_table = st_create(8, curr_table->level+1, false);
                         st_insert_func(curr_table, $2.text, $1.type, new_table);
                         new_table->parent = curr_table;
                         curr_table = new_table;
                         curr_table->is_incomplete = true;
-
                     }
                     else if (status > 0 ){
-
-                        // if dec exist make the curr table points to that dec
-                        curr_table = curr_table->enteries[status]->subtable;
+                        // if dec exist make the curr table point to that dec
+                        curr_table = curr_table->entries[status].subtable;
                     }
                     else{
                         yyerror("Function is already declared and return type do not matchs");
@@ -403,18 +398,24 @@ lhs             :  name {
 
 // TODO: Handle operator types
 // Logical Operators
-rhs             :  rhs OR and
+rhs             :  rhs OR and  {
+                    $$.type = get_compatible_type_logical(&$1.type, &$3.type);
+                }
                 |  and  {
                     $$ = $1;
                 }
 
-and             :  and AND comparision
-                |  comparision  {
+and             :  and AND comparison  {
+                    $$.type = get_compatible_type_logical(&$1.type, &$3.type);
+                }
+                |  comparison  {
                     $$ = $1;
                 }
 
 // Comparison Operators
-comparision     :  comparision compare_op plus
+comparison     :  comparison compare_op plus  {
+                    $$.type = get_compatible_type_comparison(&$1.type, &$3.type);
+                }
                 |  plus   {
                     $$ = $1;
                 }
@@ -424,46 +425,68 @@ compare_op      :  '<'
                 |  COMPARE
 
 // Arithmetic Operators
-plus            :  plus '+' product
-                |  plus '-' product
+plus            :  plus '+' product  {
+                    $$.type = get_compatible_type_arithmetic(&$1.type, &$3.type);
+                }
+                |  plus '-' product  {
+                    $$.type = get_compatible_type_arithmetic(&$1.type, &$3.type);
+                }
                 |  product  {
                     $$ = $1;
                 }
 
-product         :  product '*' mod
+product         :  product '*' mod  {
+                    $$.type = get_compatible_type_arithmetic(&$1.type, &$3.type);
+                }
                 |  mod           {
                     $$ = $1;
                 }
 
-mod             :  mod '%' division
+mod             :  mod '%' division  {
+                    $$.type = get_compatible_type_arithmetic(&$1.type, &$3.type);
+                }
                 |  division   {
                     $$ = $1;
                 }
 
-division        :  division '/' bit_or
+division        :  division '/' bit_or  {
+                    $$.type = get_compatible_type_arithmetic(&$1.type, &$3.type);
+                }
                 |  bit_or   {
                     $$ = $1;
                 }
 
 // Bitwise Operators
-bit_or          :  bit_or '|' bit_and
+bit_or          :  bit_or '|' bit_and   {
+                    $$.type = get_compatible_type_bitwise(&$1.type, &$2.type);
+                }
                 |  bit_and  {
                     $$ = $1;
                 }
 
-bit_and         :  bit_and '&' shift
+bit_and         :  bit_and '&' shift    {
+                    $$.type = get_compatible_type_bitwise(&$1.type, &$2.type);
+                }
                 |  shift    {
                     $$ = $1;
                 }
 
-shift           :  shift SHIFT power
+shift           :  shift SHIFT power    {
+                    $$.type = get_compatible_type_bitwise(&$1.type, &$2.type);
+                }
                 |  power    {
                     $$ = $1;
                 }
 
 // Power Operator
 power           :  power '^' unary_op   {
-                    
+                    if (!is_number(&$3.type)){
+                        yyerror("Power must have int or real type");
+                    }
+                    if (!is_number(&$1.type) && $1.type.type != CURVE_T){
+                        yyerror("base must have int, real or curve type");
+                    }
+                    $$ = $1;
                 }
                 |  unary_op   {
                     $$ = $1;
