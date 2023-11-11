@@ -13,13 +13,13 @@ typedef struct state state;
 
 // Enum for type of variable
 typedef enum {
-    PRIMITIVE,
-    ARRAY,
-    CURVE_T,
-    FUNCTION,
-    STRUCT_T,
-    POINTER,
-    SYMBOL_TABLE
+    PRIMITIVE, // int, real, char, bool, vector, complex, etc.
+    ARRAY,     // int a[<NUMBER>];
+    CURVE_T,   // curve f(<variables>)
+    FUNCTION,  // function
+    STRUCT_T,   // struct
+    POINTER,   // int *
+    SYMBOL_TABLE // denotes a symbol table entry
 } Type;
 
 
@@ -41,6 +41,7 @@ struct st_entry {
     var_type *type;         // type of variable
     int index;              // index of this entry in the symbol table
     symbol_table *subtable; // subtable for structs, functions and blocks
+    symbol_table *parent;   // parent table in which this entry is present
 };
 
 
@@ -56,13 +57,14 @@ struct symbol_table {
 
 
 struct id {
-    char *id;
-    int num_stars;
-    int num_braks;
-    int *brak_vals;
+    char *id;               // name of id
+    int num_stars;          // number of stars in pointer
+    int num_braks;          // number of brackets in array
+    int *brak_vals;         // array of values in brackets
 };
 
 
+// a list of ids. Used in parser to pass the id_list and insert
 struct id_list {
     id id;
     id_list *next;
@@ -70,11 +72,11 @@ struct id_list {
 
 
 struct state {
-    char* text;
-    var_type type;
-    id_list *curr_id_list;
-    int count;
-    var_type *type_list;
+    char* text;                 // text being parsed
+    var_type type;              // type of variable
+    id_list *curr_id_list;      // current id list
+    int count;                  // number of types in type_list
+    var_type *type_list;        // list of types
 };
 
 
@@ -101,9 +103,9 @@ void st_print_type(var_type*, int);
 void st_print_entry(st_entry*, int);
 void st_print_table(symbol_table *);
 
-bool struct_type_defined(st_entry *entry); // checks if struct is defined
-bool is_iterable(var_type *type); // checks if type is iterable
-st_entry *struct_ptr(); //returns struct declaration entry
+bool struct_type_defined(symbol_table* st, st_entry *entry); // checks if struct is defined
+bool is_iterable(var_type *type); // checks if type is iterable. true if it is an array or vector
+st_entry *struct_ptr(st_entry *entry, symbol_table *st); //returns struct declaration entry
 void myprintf(int level, char *format, ...);
 int is_convertible(var_type *type1, var_type *type2);   // return 0 if same type, -1 if not convertible, return 1 if 1st to 2nd else return 2
 bool is_assignable(var_type *type1, var_type *type2);   // return 0 if same type, -1 if not convertible, return 1 if 1st to 2nd else return 2
@@ -113,17 +115,14 @@ void update_pos_info(position *pos, int row, int col);
 var_type *get_item_type(var_type *type); // return type of item in array or vector
 bool is_number(var_type *type); // checks if type is number
 bool is_int(var_type *type); // checks if type is number
-st_entry *find_in_table(symbol_table *st, char *name); // return index if found else return -1
+st_entry *find_in_table(symbol_table *st, char *name); // return pointer to entry if found else return NULL
 
-// return 0 if matched
-// return 1 if length problem
-// return n+1 if nth argument has wrong type
-int is_function_matched(symbol_table*, char*, var_type*, int); // checks if function is matched
+bool is_function_matched(symbol_table*, char*, var_type*, int); // checks if function is matched
 int is_object_function_matched(symbol_table*, var_type *, char*, var_type*, int); // checks if object function is matched
-bool is_initializer_list_matched(symbol_table*, var_type *type, var_type *list, int count); // checks if initializer list is matched
-var_type get_compatible_type_logical(var_type *type1, var_type *type2); // return compatible type of two types for logical operator. call yyerror if not compatible
-var_type get_compatible_type_arithmetic(var_type *type1, var_type *type2); // return compatible type of two types for arithmetic operator. call yyerror if not compatible
-var_type get_compatible_type_comparison(var_type *type1, var_type *type2); // return compatible type of two types for comparison operator. call yyerror if not compatible
-var_type get_compatible_type_bitwise(var_type *type1, var_type *type2); // return compatible type of two types for bitwise operator. call yyerror if not compatible
+bool is_initializer_list_matched(symbol_table*, var_type *type, var_type *list, int count); // checks if initializer list is compatible with type
+var_type *get_compatible_type_logical(var_type *type1, var_type *type2); // return compatible type of two types for logical operator. call yyerror if not compatible
+var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2); // return compatible type of two types for arithmetic operator. call yyerror if not compatible
+var_type *get_compatible_type_comparison(var_type *type1, var_type *type2); // return compatible type of two types for comparison operator. call yyerror if not compatible
+var_type *get_compatible_type_bitwise(var_type *type1, var_type *type2); // return compatible type of two types for bitwise operator. call yyerror if not compatible
 
 #endif

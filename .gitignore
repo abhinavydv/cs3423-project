@@ -58,3 +58,4 @@ include/y.tab.h
 tests/parsed
 tests/tokens
 tests/logs
+tests/experiments

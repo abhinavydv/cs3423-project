@@ -54,6 +54,7 @@ void st_insert(symbol_table *st, st_entry entry) {
         st->entries = realloc(st->entries, sizeof(st_entry) * st->size);
     }
     entry.index = st->filled;
+    entry.parent = st;
     st->entries[st->filled++] = entry;
 }
 
@@ -101,6 +102,7 @@ void st_insert_struct(symbol_table *st, char *name, symbol_table *subtable) {
     entry.name = strdup(name);
     entry.type = malloc(sizeof(var_type));
     init_var_type(entry.type);
+    entry.type->name = strdup(name);
     entry.type->type = STRUCT_T;
     entry.subtable = subtable;
     st_insert(st, entry);
@@ -235,17 +237,149 @@ void st_print_table(symbol_table *st) {
     myprintf(st->level-1, "Symbol table (level %d) end:\n", st->level);
 }
 
-
-bool struct_type_defined(st_entry *entry) {
-    // find the declaration
-    // symbol_table *st = global_table;
-    symbol_table *st;
-}
-
-
 void update_pos_info(position *pos, int row, int col) {
     pos->last_row = pos->row;
     pos->last_col = pos->col;
     pos->row = row;
     pos->col = col;
+}
+
+
+st_entry *find_in_table(symbol_table *st, char *name) {
+    symbol_table *parent = st;
+    while(parent!=NULL){
+        for (int i = 0; i < st->filled; i++)
+        {
+            if (strcmp(st->entries[i].name,name)==0)
+            {
+                return &st->entries[i];
+            }
+        }
+        parent=parent->parent;
+    }
+    return NULL;
+}
+
+st_entry *struct_ptr(st_entry *entry, symbol_table *st) {
+    // find the declaration of the entry
+    // symbol_table *st = global_table;
+    return find_in_table(st,entry->type->name);
+}
+
+bool is_iterable(var_type *type) {
+    return (type->type == ARRAY || type->type == PRIMITIVE && strcmp(type->name, "vector") == 0);
+}
+
+bool struct_type_defined(symbol_table *st, st_entry *entry) {
+    // symbol_table *st = global_table;
+    if (struct_ptr(entry,st)!=NULL)
+    {
+        return true;
+    }
+    return false;
+}
+
+int is_convertible(var_type *type1, var_type *type2) {
+    
+    char * convert_from[] = {"int16"};
+    char * convert_to[] = {{"int16","int"}};
+    
+    
+    
+    return 0;
+}
+
+bool is_assignable(var_type *type1, var_type *type2){
+    if (is_convertible(type1,type2)==0 || is_convertible(type1,type2)==2)
+    {
+        return true;
+    }
+    return false;
+}
+
+var_type *get_type_of_var(symbol_table *st, char *name) {
+    if(find_in_table(st,name)!=NULL) {
+        return find_in_table(st,name)->type;
+    }
+    return NULL;
+}
+
+var_type *get_item_type(var_type *type){
+    if(type->type = ARRAY) return type->subtype;
+    return &type->args[0];
+}
+
+var_type *get_type_of_member(symbol_table *st, var_type *type, char *name) {
+    st_entry *struct_ptr = find_in_table(st,type->name);
+    st_entry *desired = find_in_table(struct_ptr->subtable,name);
+    return desired->type;
+}
+
+bool is_function_matched(symbol_table* st, char* name, var_type* type_list, int arg_num){
+    st_entry *function_ptr = find_in_table(st,name);
+    if (function_ptr==NULL)
+    {
+        return false;
+    }
+    
+    if (arg_num!=function_ptr->subtable->filled-1)
+    {
+        return false;
+    }
+    
+    for (int i = 0; i < arg_num; i++)
+    {
+        if (is_assignable(&type_list[i],function_ptr->subtable->entries[i].type))
+        {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+bool is_int(var_type *type){
+    return (
+        type->type == PRIMITIVE && (
+            strcmp(type->name, "int") == 0 ||
+            strcmp(type->name, "int8") == 0 ||
+            strcmp(type->name, "int16") == 0 ||
+            strcmp(type->name, "int32") == 0 ||
+            strcmp(type->name, "int64") == 0
+        )
+    );
+}
+
+bool is_real(var_type *type){
+    return (
+        type->type == PRIMITIVE && (
+            strcmp(type->name, "real") == 0 ||
+            strcmp(type->name, "real32") == 0 ||
+            strcmp(type->name, "real64") == 0
+        )
+    );
+}
+
+bool is_number(var_type *type){
+    return is_int(type) || is_real(type);
+}
+
+bool is_initializer_list_matched(symbol_table* st, var_type *type, var_type *list, int count){
+    return true;
+}
+
+var_type *get_compatible_type_logical(var_type *type1, var_type *type2){
+    return type1;
+}
+
+var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2){
+    return type1;
+}
+
+var_type *get_compatible_type_comparison(var_type *type1, var_type *type2){
+    return type1;
+}
+
+var_type *get_compatible_type_bitwise(var_type *type1, var_type *type2){
+    return type1;
 }

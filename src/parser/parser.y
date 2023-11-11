@@ -399,14 +399,14 @@ lhs             :  name {
 // TODO: Handle operator types
 // Logical Operators
 rhs             :  rhs OR and  {
-                    $$.type = get_compatible_type_logical(&$1.type, &$3.type);
+                    $$.type = *get_compatible_type_logical(&$1.type, &$3.type);
                 }
                 |  and  {
                     $$ = $1;
                 }
 
 and             :  and AND comparison  {
-                    $$.type = get_compatible_type_logical(&$1.type, &$3.type);
+                    $$.type = *get_compatible_type_logical(&$1.type, &$3.type);
                 }
                 |  comparison  {
                     $$ = $1;
@@ -414,7 +414,7 @@ and             :  and AND comparison  {
 
 // Comparison Operators
 comparison     :  comparison compare_op plus  {
-                    $$.type = get_compatible_type_comparison(&$1.type, &$3.type);
+                    $$.type = *get_compatible_type_comparison(&$1.type, &$3.type);
                 }
                 |  plus   {
                     $$ = $1;
@@ -426,31 +426,31 @@ compare_op      :  '<'
 
 // Arithmetic Operators
 plus            :  plus '+' product  {
-                    $$.type = get_compatible_type_arithmetic(&$1.type, &$3.type);
+                    $$.type = *get_compatible_type_arithmetic(&$1.type, &$3.type);
                 }
                 |  plus '-' product  {
-                    $$.type = get_compatible_type_arithmetic(&$1.type, &$3.type);
+                    $$.type = *get_compatible_type_arithmetic(&$1.type, &$3.type);
                 }
                 |  product  {
                     $$ = $1;
                 }
 
 product         :  product '*' mod  {
-                    $$.type = get_compatible_type_arithmetic(&$1.type, &$3.type);
+                    $$.type = *get_compatible_type_arithmetic(&$1.type, &$3.type);
                 }
                 |  mod           {
                     $$ = $1;
                 }
 
 mod             :  mod '%' division  {
-                    $$.type = get_compatible_type_arithmetic(&$1.type, &$3.type);
+                    $$.type = *get_compatible_type_arithmetic(&$1.type, &$3.type);
                 }
                 |  division   {
                     $$ = $1;
                 }
 
 division        :  division '/' bit_or  {
-                    $$.type = get_compatible_type_arithmetic(&$1.type, &$3.type);
+                    $$.type = *get_compatible_type_arithmetic(&$1.type, &$3.type);
                 }
                 |  bit_or   {
                     $$ = $1;
@@ -458,21 +458,21 @@ division        :  division '/' bit_or  {
 
 // Bitwise Operators
 bit_or          :  bit_or '|' bit_and   {
-                    $$.type = get_compatible_type_bitwise(&$1.type, &$2.type);
+                    $$.type = *get_compatible_type_bitwise(&$1.type, &$2.type);
                 }
                 |  bit_and  {
                     $$ = $1;
                 }
 
 bit_and         :  bit_and '&' shift    {
-                    $$.type = get_compatible_type_bitwise(&$1.type, &$2.type);
+                    $$.type = *get_compatible_type_bitwise(&$1.type, &$2.type);
                 }
                 |  shift    {
                     $$ = $1;
                 }
 
 shift           :  shift SHIFT power    {
-                    $$.type = get_compatible_type_bitwise(&$1.type, &$2.type);
+                    $$.type = *get_compatible_type_bitwise(&$1.type, &$2.type);
                 }
                 |  power    {
                     $$ = $1;

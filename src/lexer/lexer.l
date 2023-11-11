@@ -40,9 +40,7 @@ complex         (complex)
 curve           (curve)
 void            (void)
 vector          (vector)
-matrix          (matrix)
-rational        (rational)
-data_type       {string}|{char}|{int}|{uint}|{bool}|{real}|{complex}|{void}|{vector}|{matrix}|{rational}
+data_type       {string}|{char}|{int}|{uint}|{bool}|{real}|{complex}|{void}|{vector}
 
 /*Keywords*/
 struct          (struct)
@@ -52,7 +50,6 @@ repeat          (repeat)
 until           (until)
 for             (for)
 in              (in)
-DUP;
 return          (return)
 break           (break)
 continue        (continue)
