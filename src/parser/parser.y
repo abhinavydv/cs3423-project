@@ -93,20 +93,20 @@ funcDef         :  starred_rettype IDENTIFIER {
                     // if both matches do not do anything and check parameters type and number
                     // if non matchs procede with new entry
                     int status; // ==0 means does not exist proceed, > 0 means check parameter (status contains the location of the entry), < 0 throw error
-                    if ((status = if_exist_in_table(curr_table,$2.text,$1.type) ) == 0){ // return error if type matches
+                    // if ((status = if_exist_in_table(curr_table,$2.text,$1.type) ) == 0){ // return error if type matches
                         symbol_table *new_table = st_create(8, curr_table->level+1, false);
                         st_insert_func(curr_table, $2.text, $1.type, new_table);
                         new_table->parent = curr_table;
                         curr_table = new_table;
                         curr_table->is_incomplete = true;
-                    }
-                    else if (status > 0 ){
-                        // if dec exist make the curr table point to that dec
-                        curr_table = curr_table->entries[status].subtable;
-                    }
-                    else{
-                        yyerror("Function is already declared and return type do not matchs");
-                    }
+                    // }
+                    // else if (status > 0 ){
+                    //     // if dec exist make the curr table point to that dec
+                    //     curr_table = curr_table->entries[status].subtable;
+                    // }
+                    // else{
+                    //     yyerror("Function is already declared and return type do not matchs");
+                    // }
                     curr_table->parameters = true;
                 } '(' params ')' {
                     label("Function def");
@@ -628,11 +628,11 @@ obj_call        :  name ARROW IDENTIFIER '(' arglist ')'    {
                         yyerror("Arrow expression must be a pointer");
                     }
                     $$.type = *get_type_of_member(curr_table, $1.type.subtype, $3.text);
-                    is_object_function_matched(curr_table, $1.type.subtype, $3.text, $5.type_list, $5.count);
+                    // is_object_function_matched(curr_table, $1.type.subtype, $3.text, $5.type_list, $5.count);
                 }
                 |  name DOT IDENTIFIER '(' arglist ')'  {
                     $$.type = *get_type_of_member(curr_table, &$1.type, $3.text);
-                    is_object_function_matched(curr_table, &$1.type, $3.text, $5.type_list, $5.count);
+                    // is_object_function_matched(curr_table, &$1.type, $3.text, $5.type_list, $5.count);
                 }
 
 // List of arguments for a function call
