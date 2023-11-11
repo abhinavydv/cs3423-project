@@ -5,7 +5,26 @@
 #include <stdarg.h>
 #include <string.h>
 
+char * datatype[16][2] = {
 
+        {"bool","1"},
+        {"char","1"},
+        {"int8","1"},
+        {"uint8","1"},
+        {"int16","2"},
+        {"uint16","2"},
+        {"int","4"},
+        {"uint","4"},
+        {"int32","4"},
+        {"uint32","4"},
+        {"real32","4"},
+        {"int64","8"},
+        {"uint64","8"},
+        {"real","8"},
+        {"real64","8"},
+        {"complex","9"}
+
+};
 void myprintf(int level, char *format, ...) {
     va_list args;
     va_start(args, format);
@@ -278,15 +297,40 @@ bool struct_type_defined(symbol_table *st, st_entry *entry) {
     }
     return false;
 }
+int getsize(char * typename){
+
+
+    int numtype = 16;
+    for (int i=0; i< numtype; i++){
+
+        if (strcmp(typename,datatype[i][0]) == 0){
+            return datatype[i][1][0] - '0';
+        }
+    }
+    return 0;
+}
 
 int is_convertible(var_type *type1, var_type *type2) {
     
-    char * convert_from[] = {"int16"};
-    char * convert_to[] = {{"int16","int"}};
+    if (type1->type == PRIMITIVE && type2->type == PRIMITIVE){
+
+        int size1 = getsize(type1->name);
+        int size2 = getsize(type2->name);
+        if(size1 == size2){
+            return 0;
+        }
+        else if (size1 > size2){
+            return 2; // type2 get converted to type1
+        }
+        else {
+            return 1; //  type1 get converted to type2
+        }
+    }
+    else {
+        return -1;
+    } 
     
-    
-    
-    return 0;
+
 }
 
 bool is_assignable(var_type *type1, var_type *type2){
