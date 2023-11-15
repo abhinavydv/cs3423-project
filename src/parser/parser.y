@@ -888,16 +888,29 @@ void print_errs(){
 }
 
 int main(int argc, char *argv[]){
-
-    if (argc != 4){
-        printf("Format not Used: [executable] [input file] [token file] [parsed file]\n");
-        exit(1);
+    if (argc == 2 && strcmp(argv[1], "-h") == 0){
+        printf("Usage: %s [input_file] [token_file] [parsed_file]\n", argv[0]);
+        exit(0);
+    }
+    if (argc >= 4){
+        parsed_file = fopen(argv[3],"w");
+    } else {
+        parsed_file = fopen("/dev/null", "w");
     }
 
-    yyin = fopen(argv[1], "r");
-    input_file = strdup(argv[1]);
-    yyout = fopen(argv[2],"w");
-    parsed_file = fopen(argv[3],"w");
+    if (argc >= 3){
+        yyout = fopen(argv[2],"w");
+    } else {
+        yyout = fopen("/dev/null", "w");
+    }
+
+    if (argc >= 2){
+        yyin = fopen(argv[1], "r");
+        input_file = strdup(argv[1]);
+    } else {
+        yyin = stdin;
+        input_file = strdup("stdin");
+    }
 
     global_table = st_create(8, 0, false);
     curr_table = global_table;
