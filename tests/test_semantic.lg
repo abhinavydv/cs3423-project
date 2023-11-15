@@ -14,10 +14,6 @@ func curve bar(curve a){
     return a+34;
 }
 
-func curve bar(int a){
-    return a+34;
-}
-
 func int main(){
     int a[34];
     curve b;
@@ -26,7 +22,7 @@ func int main(){
     c = *d;
     foo(a);
     curve asdf = $x + $x^2;
-    my_struct strct;
+    my_struc strct;
     a[4] = c + strct.d->a;
     curve crv = D[asdf, $x];
     // tsggv = 34;

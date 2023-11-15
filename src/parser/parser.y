@@ -17,7 +17,9 @@
     st_entry *func_def_entry;
     state yylval;
     var_type curr_type;
-    int loc; // location of specific entry in curr_table 
+
+    errors *err = NULL;
+    errors *prev_err = NULL;
 
     // functions
     int yylex();
@@ -113,7 +115,6 @@ funcDef         :  starred_rettype IDENTIFIER {
                 } '(' params ')' {
                     label("Function def");
                     if (func_def_entry != NULL){
-                        printf("hehe: %d\n", $5.type_list[0].type);
                         if (!is_function_matched(curr_table, func_def_entry->name, $5.type_list, $5.count)){
                             yyerror("Function definition does not match declaration");
                         }
@@ -184,7 +185,12 @@ type            :  DATA_TYPE temp_params {
                 }
                 |  IDENTIFIER   {
                     init_var_type(&$$.type);
-                    $$.type.name = $1.text;
+                    if (find_in_table(curr_table, $1.text) == NULL){
+                        yyerror(format_string("Type '%s' not defined", $1.text));
+                        $$.type.type = NOT_DEFINED;
+                    } else {
+                        $$.type.name = $1.text;
+                    }
                 }
 
 // template paramaters
@@ -855,9 +861,30 @@ loopVals        :  value    {
 %%
 
 void yyerror(char * msg){
-    printf("%s:%d.%d\n", input_file, pos_info.last_row+1, pos_info.last_col+1);
+    errors *e = (errors *)malloc(sizeof(errors));
+    e->msg = msg;
+    e->pos = pos_info;
+
+    if (prev_err == NULL){
+        prev_err = e;
+        err = e;
+    } else {
+        prev_err->next = e;
+        prev_err = e;
+    }
+
+    /* printf("%s:%d.%d\n", input_file, pos_info.last_row+1, pos_info.last_col+1);
     printf("%s\n",msg);
-    exit(1);
+    exit(1); */
+}
+
+void print_errs(){
+    errors *e = err;
+    while (e != NULL){
+        printf("%s:%d.%d\n", input_file, e->pos.last_row+1, e->pos.last_col+1);
+        printf("%s\n\n",e->msg);
+        e = e->next;
+    }
 }
 
 int main(int argc, char *argv[]){
@@ -877,10 +904,14 @@ int main(int argc, char *argv[]){
 
     yyparse();
 
-    st_print_table(global_table);
-
     fclose(yyin);
     fclose(yyout);
     fclose(parsed_file);
+
+    if (err != NULL){
+        print_errs();
+        exit(1);
+    }
+
     return 0;
 }

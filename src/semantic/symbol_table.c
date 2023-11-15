@@ -473,6 +473,12 @@ var_type *get_item_type(var_type *type){
 
 var_type *get_type_of_member(symbol_table *st, var_type *type, char *name) {
     st_entry *struct_ptr = find_in_table(st,type->name);
+    if (struct_ptr==NULL) {
+        var_type *type = malloc(sizeof(var_type));
+        init_var_type(type);
+        type->type = NOT_DEFINED;
+        return type;
+    }
     st_entry *desired = find_in_table(struct_ptr->subtable,name);
     if (desired==NULL) {
         var_type *type = malloc(sizeof(var_type));
@@ -556,10 +562,12 @@ bool is_initializer_list_matched(symbol_table* st, var_type *type, var_type *lis
 var_type *get_compatible_type_logical(var_type *type1, var_type *type2){
     int a = is_convertible(type1,type2);
     if (a==-1){
-        yyerror("Error: incompatible types\n");
+        yyerror("Incompatible Operand types");
+        var_type *type = malloc(sizeof(var_type));
+        init_var_type(type);
+        type->type = NOT_DEFINED;
+        return type;
     }
-    if (a==-1)
-        return NULL;
     if (a==0 || a==2){
         return type2;
     }
@@ -568,12 +576,13 @@ var_type *get_compatible_type_logical(var_type *type1, var_type *type2){
 
 var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2){
     int a = is_convertible(type1,type2);
-    printf("%d %d \n", type1->type, type2->type);
     if (a==-1){
-        yyerror("Error: incompatible types\n");
+        yyerror("Incompatible Operand types");
+        var_type *type = malloc(sizeof(var_type));
+        init_var_type(type);
+        type->type = NOT_DEFINED;
+        return type;
     }
-    if (a==-1)
-        return NULL;
     if (a==0 || a==2){
         return type2;
     }
@@ -583,10 +592,12 @@ var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2){
 var_type *get_compatible_type_comparison(var_type *type1, var_type *type2){
     int a = is_convertible(type1,type2);
     if (a==-1){
-        yyerror("Error: incompatible types\n");
+        yyerror("Incompatible Operand types");
+        var_type *type = malloc(sizeof(var_type));
+        init_var_type(type);
+        type->type = NOT_DEFINED;
+        return type;
     }
-    if (a==-1)
-        return NULL;
     if (a==0 || a==2){
         return type2;
     }
@@ -596,10 +607,12 @@ var_type *get_compatible_type_comparison(var_type *type1, var_type *type2){
 var_type *get_compatible_type_bitwise(var_type *type1, var_type *type2){
     int a = is_convertible(type1,type2);
     if (a==-1){
-        yyerror("Error: incompatible types\n");
+        yyerror("Incompatible Operand types");
+        var_type *type = malloc(sizeof(var_type));
+        init_var_type(type);
+        type->type = NOT_DEFINED;
+        return type;
     }
-    if (a==-1)
-        return NULL;
     if (a==0 || a==2){
         return type2;
     }

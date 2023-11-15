@@ -91,6 +91,13 @@ typedef struct {
 } position;
 
 
+typedef struct errors {
+    char *msg;
+    position pos;
+    struct errors *next;
+} errors;
+
+
 // functions
 symbol_table *st_create(int size, int level, bool parameters);
 // void st_insert_default_types(); // insert pre-defined types into symbol table
