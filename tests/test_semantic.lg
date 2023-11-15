@@ -3,13 +3,18 @@ int a, *b, *c[34];
 struct my_struct {
     int a;
     curve c;
+    my_struct *d;
 };
 
 func int foo(int a[23]){
-    return a*a;
+    return a[2]**b;
 }
 
 func curve bar(curve a){
+    return a+34;
+}
+
+func curve bar(int a){
     return a+34;
 }
 
@@ -20,8 +25,10 @@ func int main(){
     int c;
     c = *d;
     foo(a);
-    curve asdf = bar(b);
+    curve asdf = $x + $x^2;
     my_struct strct;
-    a[4] = c + strct.a;
+    a[4] = c + strct.d->a;
+    curve crv = D[asdf, $x];
+    // tsggv = 34;
 }
 

@@ -4,6 +4,7 @@
 .SILENT: clean
 .SILENT: test_parser
 .SILENT: test_parser_only
+.SILENT: test_symtab
 
 yellow = echo $(2) "\033[01;33m$(1)\033[01;0m"
 green = echo $(2) "\033[01;32m$(1)\033[01;0m"
@@ -42,6 +43,11 @@ test_parser_only: create_folders
 	$(call test_parser_at,examples/other_funcs.lg,other_funcs_tokens.txt,other_funcs_parsed.lg,other_funcs_log.txt)
 	$(call test_parser_at,tests/test_parser.lg,test_parser_tokens.txt,test_parser_parsed.lg,test_parser_log.txt)
 	$(call test_parser_at,tests/test_semantic.lg,test_semantic_tokens.txt,test_semantic_parsed.lg,test_semantic_log.txt)
+
+test_symtab: create_folders
+	$(call yellow,Testing symbol table)
+	gcc tests/test_symtab.c src/semantic/symbol_table.c -o bin/test_symtab -Iinclude
+	./bin/test_symtab && $(call green,Symbol table test passed) || $(call red,Symbol table test failed)
 
 clean:
 	rm -rf bin/* tests/parsed/* tests/tokens/* src/parser/y.tab.c src/lexer/lex.yy.c include/y.tab.h

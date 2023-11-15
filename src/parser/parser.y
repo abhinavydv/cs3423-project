@@ -10,9 +10,11 @@
 
     // variables
     extern FILE  * yyin, *yyout, *parsed_file;
+    char *input_file;
     position pos_info = {0};   // used for error reporting
     symbol_table *global_table;
     symbol_table *curr_table;
+    st_entry *func_def_entry;
     state yylval;
     var_type curr_type;
     int loc; // location of specific entry in curr_table 
@@ -30,12 +32,12 @@
 %token CHAR RETURN INTEGER CURVE DOLLAR_ID
 %token FOR STRUCT AUG_ASSIGN DIFF
 %token VOID ARROW COMPARE AND OR SHIFT DECREMENT INCREMENT
-%token REAL NEWLINE IF ELSE DOT
+%token REAL IF ELSE DOT
 %token REPEAT UNTIL BREAK CONTINUE IMPORT TRUE FALSE FUNC
 
 %%
 start           :  program         // Intialisation and deletion of Symbol Table
-                |  NEWLINE {printf(" : invalid program\n"); exit(0);}
+                |  error ';' {yyerror("Syntax error");}
 
 // the program
 program         :  global_decl program // Passing Symbol Table to Global_DECL
@@ -43,10 +45,13 @@ program         :  global_decl program // Passing Symbol Table to Global_DECL
 
 // all global statements allowed
 global_decl     :  decl_only ';'
-                |  function
+                |  function {
+                    func_def_entry = NULL;
+                }
                 |  FUNC funcDef ';' {
                     curr_table->is_incomplete = true;
                     curr_table = curr_table->parent;    // exit the parameter table
+                    func_def_entry = NULL;
                 }
                 |  struct
                 |  import
@@ -67,7 +72,6 @@ struct          :  STRUCT IDENTIFIER {
 function        :  FUNC funcDef  '{' {
                     // is_incomplete should be true otherwise throw error
                     if (curr_table->is_incomplete){
-                        
                         curr_table->is_incomplete = false;
                         symbol_table *new_table = st_create(8, curr_table->level+1, false);
                         st_entry entry;
@@ -90,26 +94,31 @@ function        :  FUNC funcDef  '{' {
 // function header defs
 funcDef         :  starred_rettype IDENTIFIER {
                     // check if id and type exist in table if id match but return type do not return error
-                    // if both matches do not do anything and check parameters type and number
-                    // if non matchs procede with new entry
-                    int status; // ==0 means does not exist proceed, > 0 means check parameter (status contains the location of the entry), < 0 throw error
-                    // if ((status = if_exist_in_table(curr_table,$2.text,$1.type) ) == 0){ // return error if type matches
+                    // if both match do not do anything and check parameters type and number
+                    // if not matches proceed with new entry
+
+                    func_def_entry = find_in_table(curr_table, $2.text);
+                    if (func_def_entry == NULL){
                         symbol_table *new_table = st_create(8, curr_table->level+1, false);
                         st_insert_func(curr_table, $2.text, $1.type, new_table);
                         new_table->parent = curr_table;
                         curr_table = new_table;
                         curr_table->is_incomplete = true;
-                    // }
-                    // else if (status > 0 ){
-                    //     // if dec exist make the curr table point to that dec
-                    //     curr_table = curr_table->entries[status].subtable;
-                    // }
-                    // else{
-                    //     yyerror("Function is already declared and return type do not matchs");
-                    // }
-                    curr_table->parameters = true;
+                        curr_table->parameters = true;
+                    } else if (!are_types_equal(func_def_entry->type->subtype, &$1.type)){
+                        yyerror("Function Redefined with different type!!");
+                    } else {
+                        curr_table = func_def_entry->subtable;
+                    }
                 } '(' params ')' {
                     label("Function def");
+                    if (func_def_entry != NULL){
+                        printf("hehe: %d\n", $5.type_list[0].type);
+                        if (!is_function_matched(curr_table, func_def_entry->name, $5.type_list, $5.count)){
+                            yyerror("Function definition does not match declaration");
+                        }
+                        func_def_entry = NULL;
+                    }
                 }
 
 starred_rettype :  starred_rettype '*' {
@@ -134,17 +143,37 @@ ret_type        :  type     {
                 }
 
 // function parameters
-params          :  param_list
-                |
-param_list      :  type_defs
-                |  param_list ',' type_defs
+params          :  param_list   {
+                    $$ = $1;
+                }
+                |   {
+                    $$.type_list = NULL;
+                    $$.count = 0;
+                }
+param_list      :  type_defs    {
+                    $$.type_list = (var_type *)malloc(sizeof(var_type));
+                    $$.type_list[0] = $1.type;
+                    $$.count = 1;
+                }
+                |  param_list ',' type_defs {
+                    $$.type_list = (var_type *)realloc($1.type_list, ($1.count + 1) * sizeof(var_type));
+                    $$.type_list[$1.count] = $3.type;
+                    $$.count++;
+                }
 
 // type definitions for function parameters
 type_defs       :  type decl_id {
-                    st_insert_var(curr_table, $2.curr_id_list->id, $1.type);
+                    $$.type = $1.type;
+                    if (func_def_entry == NULL){
+                        st_insert_var(curr_table, $2.curr_id_list->id, $1.type);
+                    }
                 }
                 |  CURVE decl_id    {
-                    st_insert_curve(curr_table, $2.curr_id_list->id, NULL, 0);
+                    init_var_type(&$$.type);
+                    $$.type.type = CURVE_T;
+                    if (func_def_entry == NULL){
+                        st_insert_curve(curr_table, $2.curr_id_list->id, NULL, 0);
+                    }
                 }
 
 type            :  DATA_TYPE temp_params {
@@ -507,6 +536,15 @@ unary_op_only   :  '~' final    {
                     }
                     $$ = $2;
                 }
+                |  '&' name  {
+                    if ($2.type.type == NOT_DEFINED){
+                        $$.type = $2.type;
+                    } else {
+                        $$.type.type = POINTER;
+                        $$.type.subtype = malloc(sizeof(var_type));
+                        *$$.type.subtype = $2.type;
+                    }
+                }
                 |  '-' final    {
                     if (!is_number(&$2.type) && $2.type.type != CURVE_T){
                         yyerror("Unary minus must have int or real or curve type");
@@ -676,24 +714,40 @@ assign_arg_list :  IDENTIFIER '=' rhs   {
 name            :  name ARROW IDENTIFIER    {
                     if ($1.type.type != POINTER){
                         yyerror("Arrow expression must be a pointer");
+                        $$.type.type = NOT_DEFINED;
+                    } else {
+                        $$.type = *get_type_of_member(curr_table, $1.type.subtype, $3.text);
+                        if ($$.type.type == NOT_DEFINED){
+                            yyerror(format_string("Member '%s' of type '%s' not defined", $3.text, $1.type.subtype->name));
+                        }
                     }
-                    $$.type = *get_type_of_member(curr_table, $1.type.subtype, $3.text);
                 }
                 |  name DOT IDENTIFIER  {
-                    $$.type = *get_type_of_member(curr_table, &$1.type, $3.text);
+                    if ($1.type.type == NOT_DEFINED){
+                        $$.type.type = NOT_DEFINED;
+                    } else {
+                        $$.type = *get_type_of_member(curr_table, &$1.type, $3.text);
+                        if ($$.type.type == NOT_DEFINED){
+                            yyerror(format_string("Member '%s' of type '%s' not defined", $3.text, $1.type.name));
+                        }
+                    }
                 }
                 |  name '[' rhs ']' {
-                    if ($1.type.type == ARRAY || $1.type.type != POINTER || ($1.type.type != PRIMITIVE && (strcmp($1.type.name, "vector") == 0 || strcmp($1.type.name, "string")) == 0)){
+                    if ($1.type.type == ARRAY || $1.type.type == POINTER || ($1.type.type == PRIMITIVE && (strcmp($1.type.name, "vector") == 0 || strcmp($1.type.name, "string")) == 0)){
                         $$.type = *$1.type.subtype;
                     } else {
-                        yyerror("Array expression must be an array");
+                        yyerror("Array expression must be an array, pointer, vector or string");
                     }
                     if (strcmp($3.type.name, "int") != 0){
                         yyerror("Array index must be an integer");
                     }
                 }
                 |  IDENTIFIER   {
-                    $$.type = *get_type_of_var(curr_table, $1.text);}
+                    $$.type = *get_type_of_var(curr_table, $1.text);
+                    if ($$.type.type == NOT_DEFINED){
+                        yyerror(format_string("Variable '%s' not defined", $1.text));
+                    }
+                }
                 |  starred_name {
                     $$ = $1;
                 }
@@ -723,9 +777,10 @@ differentiate   :  DIFF '[' rhs ',' rhs ']' {
                     if ($3.type.type != CURVE_T){
                         yyerror("Differentiation must be a curve");
                     }
-                    if ($5.type.type != CURVE_T && $5.type.type != PRIMITIVE && strcmp($5.type.name, "string") != 0){
+                    if ($5.type.type != CURVE_T && (strcmp($5.type.name, "string") != 0)){
                         yyerror("Type must be a curve or string");
                     }
+                    $$.type.type = CURVE_T;
                 }
                 |  DIFF '[' rhs ',' rhs ',' INTEGER ']' {
                     if ($3.type.type != CURVE_T){
@@ -734,6 +789,7 @@ differentiate   :  DIFF '[' rhs ',' rhs ']' {
                     if ($5.type.type != CURVE_T && $5.type.type != PRIMITIVE && strcmp($5.type.name, "string") != 0){
                         yyerror("Type must be a curve or string");
                     }
+                    $$.type.type = CURVE_T;
                 }
 
 // Conditional Statement
@@ -799,7 +855,7 @@ loopVals        :  value    {
 %%
 
 void yyerror(char * msg){
-    printf("line %d, col: %d\n", pos_info.row+1, pos_info.col+1);
+    printf("%s:%d.%d\n", input_file, pos_info.last_row+1, pos_info.last_col+1);
     printf("%s\n",msg);
     exit(1);
 }
@@ -812,6 +868,7 @@ int main(int argc, char *argv[]){
     }
 
     yyin = fopen(argv[1], "r");
+    input_file = strdup(argv[1]);
     yyout = fopen(argv[2],"w");
     parsed_file = fopen(argv[3],"w");
 

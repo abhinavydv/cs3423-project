@@ -13,26 +13,27 @@ typedef struct state state;
 
 // Enum for type of variable
 typedef enum {
-    PRIMITIVE, // int, real, char, bool, vector, complex, etc.
-    ARRAY,     // int a[<NUMBER>];
-    CURVE_T,   // curve f(<variables>)
-    FUNCTION,  // function
-    STRUCT_T,   // struct
-    POINTER,   // int *
-    SYMBOL_TABLE // denotes a symbol table entry
+    PRIMITIVE,      // int, real, char, bool, vector, complex, etc.
+    ARRAY,          // int a[<NUMBER>];
+    CURVE_T,        // curve f(<variables>)
+    FUNCTION,       // function
+    STRUCT_T,       // struct
+    POINTER,        // pointer to a type (e.g. int*)
+    SYMBOL_TABLE,   // denotes a symbol table entry
+    NOT_DEFINED,    // denotes that the variable was not declared
 } Type;
 
 
 // structs
 struct var_type {
-    Type type;              // type of variable
-    char *name;             // name of type (e.g. "int", "real", "char", etc.)
-    var_type *subtype;      // type of elements in array (e.g. "int" in "int[5]")
-    int length;             // length if it is an array (e.g. 5 for "int[5]")
-    int num_args;           // number of template arguments (e.g. 1 for "vector<int>")
-    var_type *args;         // array of template arguments (e.g. "int" in "vector<int>")
-    int num_vars;           // number of variables used in curve
-    char **vars;            // array of variables used in curve
+    Type type;          // type of variable
+    char *name;         // name of type (e.g. "int", "real", "char", etc.)
+    var_type *subtype;  // type of elements in array (e.g. "int" in "int[5]")
+    int length;         // length if it is an array (e.g. 5 for "int[5]")
+    int num_args;       // number of template arguments (e.g. 1 for "vector<int>")
+    var_type *args;     // array of template arguments (e.g. "int" in "vector<int>")
+    int num_vars;       // number of variables used in curve
+    char **vars;        // array of variables used in curve
 };
 
 
@@ -84,7 +85,9 @@ typedef struct {
     int row;
     int col;
     int last_row;
+    int last_last_row;
     int last_col;
+    int last_last_col;
 } position;
 
 
@@ -120,12 +123,16 @@ st_entry *find_in_table(symbol_table *st, char *name); // return pointer to entr
 
 bool is_declared(symbol_table *st, char *name); // checks if variable is declared
 bool is_function_matched(symbol_table*, char*, var_type*, int); // checks if function is matched
+bool is_function_def_matched(symbol_table*, char*, var_type*, int); // checks if function is matched
 int is_object_function_matched(symbol_table*, var_type *, char*, var_type*, int); // checks if object function is matched
 bool is_initializer_list_matched(symbol_table*, var_type *type, var_type *list, int count); // checks if initializer list is compatible with type
 var_type *get_compatible_type_logical(var_type *type1, var_type *type2); // return compatible type of two types for logical operator. call yyerror if not compatible
 var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2); // return compatible type of two types for arithmetic operator. call yyerror if not compatible
 var_type *get_compatible_type_comparison(var_type *type1, var_type *type2); // return compatible type of two types for comparison operator. call yyerror if not compatible
 var_type *get_compatible_type_bitwise(var_type *type1, var_type *type2); // return compatible type of two types for bitwise operator. call yyerror if not compatible
+bool are_types_equal(var_type *type1, var_type *type2); // return true if types are compatible else return false
 void yyerror(char *);
+
+char *format_string(char *format, ...);
 
 #endif

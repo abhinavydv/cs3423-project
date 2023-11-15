@@ -13,7 +13,8 @@
     extern position pos_info;
 
 
-    #define ECHO fprintf(parsed_file, "%s", yytext); fflush(parsed_file); update_pos_info(&pos_info, pos_info.row, pos_info.col+strlen(yytext));
+    #define ECHO fprintf(parsed_file, "%s", yytext); fflush(parsed_file);\
+            update_pos_info(&pos_info, pos_info.row, pos_info.col+strlen(yytext));
     #define DUP yylval.text = strdup(yytext);
 %}
 

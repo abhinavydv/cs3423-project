@@ -6,7 +6,6 @@
 #include <string.h>
 
 char * datatype[16][2] = {
-
         {"bool","1"},
         {"char","1"},
         {"int8","1"},
@@ -23,8 +22,8 @@ char * datatype[16][2] = {
         {"real","8"},
         {"real64","8"},
         {"complex","9"}
-
 };
+
 void myprintf(int level, char *format, ...) {
     va_list args;
     va_start(args, format);
@@ -35,6 +34,66 @@ void myprintf(int level, char *format, ...) {
     va_end(args);
 }
 
+int int_len(int num) {
+    int len = 0;
+    while (num) {
+        num /= 10;
+        len++;
+    }
+    return len;
+}
+
+// only %s and %d are supported
+char *format_string(char *format, ...) {
+    va_list args;
+    va_start(args, format);
+    int size = 8;
+    int curr_pos = 0;
+    char *str = malloc(size);
+    while (*format){
+        if (*format == '%'){
+            format++;
+            switch (*format) {
+                case 's':
+                    char *arg = va_arg(args, char*);
+                    str[curr_pos] = 0;
+                    curr_pos += strlen(arg);
+                    if (size <= curr_pos - 1){
+                        size *= 2;
+                        str = realloc(str, size);
+                    }
+                    strcat(str, arg);
+                    break;
+                case 'd':
+                    int num = va_arg(args, int);
+                    str[curr_pos] = 0;
+                    curr_pos += int_len(num);
+                    if (size <= curr_pos - 1){
+                        size *= 2;
+                        str = realloc(str, size);
+                    }
+                    sprintf(str, "%s%d", str, num);
+                    break;
+                case '%':
+                    if (curr_pos == size)
+                        str = realloc(str, size *= 2);
+                    str[curr_pos] = *format;
+                    break;
+                default:
+                    printf("Error: format string not supported\n");
+                    break;
+            }
+        } else {
+            if (curr_pos == size)
+                str = realloc(str, size *= 2);
+            str[curr_pos] = *format;
+            curr_pos++;
+        }
+        format++;
+    }
+    va_end(args);
+    return str;
+}
 
 void init_var_type(var_type *type) {
     type->type = PRIMITIVE;
@@ -277,6 +336,8 @@ void st_print_table(symbol_table *st) {
 }
 
 void update_pos_info(position *pos, int row, int col) {
+    pos->last_last_row = pos->last_row;
+    pos->last_last_col = pos->last_col;
     pos->last_row = pos->row;
     pos->last_col = pos->col;
     pos->row = row;
@@ -349,7 +410,18 @@ int getsize(char * typename){
 }
 
 int is_convertible(var_type *type1, var_type *type2) {
-    if (type1->type == PRIMITIVE && type2->type == PRIMITIVE){
+    if (are_types_equal(type1,type2))
+        return 0;
+    else if (type1->type == CURVE_T && is_number(type2)){
+        return 0;
+    } else if (is_number(type1) && type2->type == CURVE_T){
+        return 0;
+    }
+    if (type1->type != type2->type)
+        return -1;
+    if (type1->type == NOT_DEFINED)
+        return -1;
+    if (type1->type == PRIMITIVE){
         if (strcmp(type1->name, "vector") && strcmp(type2->name, "vector")){
             return 0;
         }
@@ -364,18 +436,11 @@ int is_convertible(var_type *type1, var_type *type2) {
         else {
             return 1; //  type1 get converted to type2
         }
-    } else if (type1->type == CURVE_T && type2->type == CURVE_T) {
-        return 0;
-    } else if (type1->type == POINTER && type2->type == POINTER) {
+    } else if (type1->type == POINTER) {
         return is_convertible(type1->subtype, type2->subtype);
-    } else if (type1->type == ARRAY && type2->type == ARRAY) {
-        return is_convertible(type1->subtype, type2->subtype);
-    } else if (type1->type == STRUCT_T && type2->type == STRUCT_T) {
-        if (strcmp(type1->name, type2->name) == 0) {
-            return 0;
-        }
-    }
-    else {
+    } else if (type1->type == ARRAY) {
+        return type1->length == type2->length && is_convertible(type1->subtype, type2->subtype);
+    } else {
         return -1;
     }
 }
@@ -395,7 +460,10 @@ var_type *get_type_of_var(symbol_table *st, char *name) {
             return entry->type->subtype;
         return entry->type;
     }
-    return NULL;
+    var_type *type = malloc(sizeof(var_type));
+    init_var_type(type);
+    type->type = NOT_DEFINED;
+    return type;
 }
 
 var_type *get_item_type(var_type *type){
@@ -406,6 +474,12 @@ var_type *get_item_type(var_type *type){
 var_type *get_type_of_member(symbol_table *st, var_type *type, char *name) {
     st_entry *struct_ptr = find_in_table(st,type->name);
     st_entry *desired = find_in_table(struct_ptr->subtable,name);
+    if (desired==NULL) {
+        var_type *type = malloc(sizeof(var_type));
+        init_var_type(type);
+        type->type = NOT_DEFINED;
+        return type;
+    }
     return desired->type;
 }
 
@@ -425,7 +499,23 @@ bool is_function_matched(symbol_table* st, char* name, var_type* type_list, int 
     {
         if (!is_assignable(&type_list[i],function_ptr->subtable->entries[i].type))
         {
+            return false;
+        }
+    }
 
+    return true;
+}
+
+bool is_function_def_matched(symbol_table* st, char* name, var_type* type_list, int arg_num){
+    st_entry *function_ptr = find_in_table(st,name);
+    if (function_ptr==NULL) {
+        return false;
+    }
+    if (arg_num!=function_ptr->subtable->filled-1) {
+        return false;
+    }
+    for (int i = 0; i < arg_num; i++) {
+        if (!are_types_equal(&type_list[i],function_ptr->subtable->entries[i].type)) {
             return false;
         }
     }
@@ -464,17 +554,85 @@ bool is_initializer_list_matched(symbol_table* st, var_type *type, var_type *lis
 }
 
 var_type *get_compatible_type_logical(var_type *type1, var_type *type2){
+    int a = is_convertible(type1,type2);
+    if (a==-1){
+        yyerror("Error: incompatible types\n");
+    }
+    if (a==-1)
+        return NULL;
+    if (a==0 || a==2){
+        return type2;
+    }
     return type1;
 }
 
 var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2){
+    int a = is_convertible(type1,type2);
+    printf("%d %d \n", type1->type, type2->type);
+    if (a==-1){
+        yyerror("Error: incompatible types\n");
+    }
+    if (a==-1)
+        return NULL;
+    if (a==0 || a==2){
+        return type2;
+    }
     return type1;
 }
 
 var_type *get_compatible_type_comparison(var_type *type1, var_type *type2){
+    int a = is_convertible(type1,type2);
+    if (a==-1){
+        yyerror("Error: incompatible types\n");
+    }
+    if (a==-1)
+        return NULL;
+    if (a==0 || a==2){
+        return type2;
+    }
     return type1;
 }
 
 var_type *get_compatible_type_bitwise(var_type *type1, var_type *type2){
+    int a = is_convertible(type1,type2);
+    if (a==-1){
+        yyerror("Error: incompatible types\n");
+    }
+    if (a==-1)
+        return NULL;
+    if (a==0 || a==2){
+        return type2;
+    }
     return type1;
+}
+
+bool are_types_equal(var_type *type1, var_type* type2){
+    if (type1 == type2)
+        return true;
+    if (!type1 || !type2) {
+        return false;
+    }
+    if (type1->type != type2->type) {
+        return false;
+    }
+    if (type1->type == NOT_DEFINED) {
+        return false;
+    }
+    if (type1->type == CURVE_T) {
+        return true;
+    }
+    if (type1->type == PRIMITIVE && strcmp(type1->name, type2->name) != 0) {
+        return false;
+    }
+    else if (type1->type == ARRAY || type1->type == POINTER){
+        if (type1->length != type2->length)
+            return false;
+        return are_types_equal(type1->subtype, type2->subtype);
+    } else if (type1->type == STRUCT_T || type1->type == FUNCTION) {
+        if (strcmp(type1->name, type2->name) != 0) {
+            return false;
+        }
+    }
+
+    return true;
 }

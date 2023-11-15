@@ -19,7 +19,7 @@ int main(){
 
     // test2: Additions and substractions
     cout << x+x*sin << endl;
-    assert(""<<(x+x) == "2*x");
+    assert(""<<(x+x*sin) == "x+x*sin(x)");
     cout << x+y+z << endl;
     assert(""<<x+y+z == "x+y+z");
     cout << 8 + x + 6 - 1.0/3<< endl;
