@@ -274,9 +274,14 @@ curve_decl_list :  curve_decl_list ',' curve_decl
 // identifier for a curve
 curve_decl      :  IDENTIFIER '(' idlist ')'    {
                     id new_id = {$1.text, 0, 0, 0};
+                    $$.curr_id_list = (id_list *)malloc(sizeof(id_list));
+                    $$.curr_id_list->next = 0;
+                    $$.curr_id_list->id = new_id;
+                    $$.count = 1;
                     st_insert_curve(curr_table, new_id, $3.curr_id_list, $3.count);
                 }
                 |  decl_id  {
+                    $$.curr_id_list = $1.curr_id_list;
                     var_type type;
                     init_var_type(&type);
                     type.type = CURVE_T;
@@ -321,9 +326,8 @@ decl_id2        :  decl_id2 '[' INTEGER ']' {
                 }
 
 // Declaration with/without assignment
-decl_assgn      :  type assignList  {
-                    curr_type = $1.type;
-                    st_insert_vars(curr_table, $2.curr_id_list, $1.type);
+decl_assgn      :  type {curr_type = $1.type;} assignList  {
+                    st_insert_vars(curr_table, $3.curr_id_list, $1.type);
                 }
                 |  CURVE curveAssignList
 
@@ -333,8 +337,12 @@ curveAssignList :  curveAssignList ',' curve_assign
 
 // ID/Assignment for a curve
 curve_assign    :  curve_decl '=' rhs   {
-                    if ($3.type.type != CURVE_T){
-                        yyerror("Curve assignment must be a curve");
+                    var_type type;
+                    init_var_type(&type);
+                    type.type = CURVE_T;
+                    var_type *new_type = gen_type($1.curr_id_list->id, type);
+                    if (!is_assignable(new_type, &$3.type)){
+                        yyerror("Invalid assignment");
                     }
                 }
                 |  curve_decl
@@ -561,7 +569,7 @@ unary_op_only   :  '~' final    {
                 // TODO: Figure out starred expressions
                 /* |  '*' '(' rhs ')' */
                 |  '!' final    {
-                    if (!is_number(&$2.type) && strcmp($2.type.name, "bool") != 0){
+                    if (!is_number(&$2.type) && ($2.type.type == PRIMITIVE && strcmp($2.type.name, "bool")) != 0){
                         yyerror("Not must have int or real type");
                     }
                     $$ = $2;
@@ -674,13 +682,19 @@ ret             :  RETURN rhs ';'   {
 // Function Call
 call            :  IDENTIFIER '(' arglist ')'   {
                     var_type *t = get_type_of_var(curr_table, $1.text);
-                    if (t == NULL){
+                    if (t->type == NOT_DEFINED){
                         yyerror("Function not defined");
-                    } else 
+                    } else
                         $$.type = *t;
-                    bool a = is_function_matched(curr_table, $1.text, $3.type_list, $3.count);
-                    if (!a)
-                        yyerror("Function call does not match definition");
+                    st_entry *entry = find_in_table(curr_table, $1.text);
+                    if (entry->type->type == FUNCTION){
+                        if (!is_function_matched(curr_table, $1.text, $3.type_list, $3.count))
+                            yyerror("Function call does not match definition");
+                    } else if (entry->type->type == CURVE_T){
+
+                    } else {
+                        yyerror("Function call must be a function");
+                    }
                 }
 
 // Function Call with object
@@ -720,8 +734,8 @@ argOnlyList     :  rhs  {
                 }
 
 assign_arg_list :  IDENTIFIER '=' rhs   {
-                    if (!is_number(&$3.type)){
-                        yyerror("argument values must be int or real");
+                    if (!(is_number(&$3.type) || $3.type.type == CURVE_T)){
+                        yyerror("argument values must be int, real or curve");
                     }
                 }
                 |  assign_arg_list ',' IDENTIFIER '=' rhs
@@ -749,8 +763,15 @@ name            :  name ARROW IDENTIFIER    {
                     }
                 }
                 |  name '[' rhs ']' {
-                    if ($1.type.type == ARRAY || $1.type.type == POINTER || ($1.type.type == PRIMITIVE && (strcmp($1.type.name, "vector") == 0 || strcmp($1.type.name, "string")) == 0)){
+                    if ($1.type.type == ARRAY || $1.type.type == POINTER){
                         $$.type = *$1.type.subtype;
+                    } else if ($1.type.type == PRIMITIVE && strcmp($1.type.name, "vector") == 0) {
+                        init_var_type(&$$.type);
+                        $$.type = $1.type.args[0];
+                    } else if ($1.type.type == PRIMITIVE && strcmp($1.type.name, "string") == 0) {
+                        init_var_type(&$$.type);
+                        $$.type.type = PRIMITIVE;
+                        $$.type.name = "char";
                     } else {
                         yyerror("Array expression must be an array, pointer, vector or string");
                     }
@@ -817,11 +838,12 @@ conditional     :  ifBlock
                 |  ifBlock ELSE {label("Else statement");} statement
 
 // If Statement
-ifBlock         :  IF '(' rhs ')' {label("If statement");} block    {
-                    if ($3.type.type != PRIMITIVE || !is_number(&$3.type)){
-                        yyerror("If statement must have bool type");
+ifBlock         :  IF '(' rhs ')' {
+                    label("If statement");
+                    if (!(is_number(&$3.type) || ($3.type.type == PRIMITIVE && strcmp($3.type.name, "bool") == 0))){
+                        yyerror("If statement must have number or bool type");
                     }
-                }
+                } block    
 
 // Loop Statements
 loop            :  UNTIL '(' rhs ')' REPEAT {label("Loop");} statement
@@ -835,27 +857,27 @@ forLoop         :  FOR IDENTIFIER IN forLoopTail    {
                     *entry.type = $4.type;
                     entry.subtable = NULL;
                     st_insert(curr_table, entry);
-                }
+                }   statement
 
-forLoopTail     :  loopVals DOTS loopVals {label("For loop");} statement    {
+forLoopTail     :  loopVals DOTS loopVals {label("For loop");}    {
                     if ($1.type.type != PRIMITIVE || strcmp($1.type.name, "int") != 0 || $3.type.type != PRIMITIVE || strcmp($3.type.name, "int") != 0){
                         yyerror("For loop must have int types");
                     }
                     $$.type = $1.type;
                 }
-                |  loopVals DOTS loopVals DOTS loopVals {label("For loop");} statement  {
+                |  loopVals DOTS loopVals DOTS loopVals {label("For loop");}  {
                     if ($1.type.type != PRIMITIVE || strcmp($1.type.name, "int") != 0 || $3.type.type != PRIMITIVE || strcmp($3.type.name, "int") != 0 || $5.type.type != PRIMITIVE || strcmp($5.type.name, "int") != 0){
                         yyerror("For loop must have int types");
                     }
                     $$.type = $1.type;
                 }
-                |  '(' rhs ')' {label("For loop");} statement   {
+                |  '(' rhs ')' {label("For loop");}   {
                     if (!is_iterable(&$2.type)){
                         yyerror("For loop must have iterable type");
                     }
                     $$.type = *get_item_type(&$2.type);
                 }
-                |  value {label("For loop");} statement   {
+                |  value {label("For loop");}   {
                     if (!is_iterable(&$1.type)){
                         yyerror("For loop must have iterable type");
                     }
@@ -887,9 +909,9 @@ void yyerror(char * msg){
         prev_err = e;
     }
 
-    /* printf("%s:%d.%d\n", input_file, pos_info.last_row+1, pos_info.last_col+1);
+    printf("%s:%d.%d\n", input_file, pos_info.last_row+1, pos_info.last_col+1);
     printf("%s\n",msg);
-    exit(1); */
+    exit(1);
 }
 
 void print_errs(){

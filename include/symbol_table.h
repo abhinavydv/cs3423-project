@@ -101,6 +101,7 @@ typedef struct errors {
 // functions
 symbol_table *st_create(int size, int level, bool parameters);
 void st_insert_default_types(); // insert pre-defined types into symbol table (vector, complex)
+void st_insert_default_functions(); // insert pre-defined functions into symbol table (print, read, sin, cos, etc.)
 void st_insert(symbol_table *st, st_entry entry);
 void st_insert_vars(symbol_table*, id_list*, var_type);
 void st_insert_var(symbol_table*, id, var_type);
@@ -125,6 +126,7 @@ var_type *get_type_of_member(symbol_table *st, var_type *type, char *name);    /
 void update_pos_info(position *pos, int row, int col);
 var_type *get_item_type(var_type *type); // return type of item in array or vector
 bool is_number(var_type *type); // checks if type is number
+bool number_comparable(var_type *type); // checks if type is number
 bool is_int(var_type *type); // checks if type is number
 st_entry *find_in_one_table(symbol_table *st, char *name);
 st_entry *find_in_table(symbol_table *st, char *name); // return pointer to entry if found else return NULL

@@ -1,32 +1,68 @@
 // Multiply two polynomial
 
+func curve input_poly(int n){
+    curve f(x);
+    int i;
+    for i in 0..n{
+        f = f + $x^i;
+    }
+    return f;
+}
+
+func void print_poly(curve f){
+    
+}
+
+func curve sin(curve x){
+    
+}
+
+func curve cos(curve x){
+    
+}
+
+func void print(string s, curve c){
+
+}
+
+
 int a;
+
+func complex FFT(curve f,int degree);
+func curve InverseFFT(curve y,int degree);
+func curve to_curve(complex y);
 
 func int main(){
     curve f(x), g(x); // real polynomial
     f = input_poly(10); // Takes 11 input [a0,a1,...,a10] to form 10 degree poly ( a0 + a1x^1 ... + a10x^10)  
     g = input_poly(9);  // Takes 10 input [a0,a1,...,a9] to form 9 degree poly ( a0 + a1x^1 ... + a9x^9)
 
-    complex<real, real> y_f[11], y_g[11];
+    complex<real, real> y_f, y_g;
 
     y_f = FFT(f,10);
     y_g = FFT(g,10);
 
-    complex y[11];
+    complex y;
 
     y = y_f * y_g; // Overloading
 
-    curve c(k) = InverseFFT(y,11); // output can be of form x, but should be converted into k
+    curve c(k) = InverseFFT(to_curve(y),11); // output can be of form x, but should be converted into k
 
     print("Curve is ", c($t)); // print should display the curve in form of t
-    
+
     return 0;
+}
+
+func complex to_complex(curve x){
+
 }
 
 func complex FFT(curve f,int degree)
 { // return type [number of return variable][type]
 
     // Zeros of Unity
+
+    int e, k, _i_, pi, x;
 
     curve zeroes(k) = e^(2*k*_i_*pi/(degree + 1));
 
@@ -41,16 +77,18 @@ func complex FFT(curve f,int degree)
 
     for i in 0 .. degree {
 
-        y[i] = y_poly(i);
+        y[i] = to_complex(y_poly(i));
 
     }
 
     return y;
 }
 
-func curve InverseFFT(complex y,int degree){
+func curve InverseFFT(curve y,int degree){
     
     // Inverse Zeros of Unity
+
+    int e, k, _i_, pi, x, i;
 
     curve zeroes(k) = e^(-2*k*_i_*pi/(degree + 1));
 
@@ -61,11 +99,11 @@ func curve InverseFFT(complex y,int degree){
         y_poly += y(i) * x^i;
     }
 
-    vector<complex> y = {degree};
+    vector<complex> y2 = {degree};
 
     for k in 0..degree {
 
-        y[i] = y_poly( zeroes(i) );
+        y2[i] = to_complex(y_poly( zeroes(i) ));
 
     }
 

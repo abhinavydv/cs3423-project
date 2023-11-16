@@ -7,8 +7,6 @@ struct my_struct {
 };
 
 func int foo(int a[23]){
-    int b;
-    b = 2;
     return a[2]**b;
 }
 

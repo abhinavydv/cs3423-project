@@ -1,33 +1,34 @@
 struct Hello{
     int a, b;
     curve c;
-    curve *c[10];
-    int *a[10];
+    int *d[10];
 }
+
+int b;
 
 func/*fgj*/int main(){
     b = 1;
-    int ***a = 1;
-    int *b[1] = 2;
-    int c = 3;
+    int a = 1;
+    int *c;
+    int e, f;
     int /* hehehe */ d = 4;
     d = d = 6;
 
     if (a && 1)
     {
-        a += 2;
     }
 
     d = *c;
 
-    c = a + b - (d * e) / (f % *c[1]--);
+    c[5] = a + b - (d * e) / (f % c[1]--);
 
     return 0;
 }
 
-func int hehe(int *a[2], curve **b){
-    return a!+!b;
-    curve *a = 1;
+func int hehe(int *a[2], int b){
+    return a[1][2]!+!b;
+    int ad;
+    curve c = 1;
 
     if (true){
         if (true){

@@ -92,6 +92,7 @@ char *format_string(char *format, ...) {
         format++;
     }
     va_end(args);
+    str[curr_pos] = 0;
     return str;
 }
 
@@ -491,20 +492,20 @@ var_type *get_type_of_member(symbol_table *st, var_type *type, char *name) {
 
 bool is_function_matched(symbol_table* st, char* name, var_type* type_list, int arg_num){
     st_entry *function_ptr = find_in_table(st,name);
-    if (function_ptr==NULL)
-    {
+    if (function_ptr==NULL) {
         return false;
     }
 
-    if (arg_num!=function_ptr->subtable->filled-1)
-    {
+    if (function_ptr->subtable->is_incomplete && arg_num!=function_ptr->subtable->filled
+        ||
+        (!function_ptr->subtable->is_incomplete && arg_num!=function_ptr->subtable->filled-1)
+    ){
         return false;
     }
 
-    for (int i = 0; i < arg_num; i++)
-    {
-        if (!is_assignable(&type_list[i],function_ptr->subtable->entries[i].type))
-        {
+    for (int i = 0; i < arg_num; i++) {
+        if (!is_assignable(&type_list[i],function_ptr->subtable->entries[i].type)) {
+            printf("%d %s %d %s\n",type_list[i].type,type_list[i].name,function_ptr->subtable->entries[i].type->type,function_ptr->subtable->entries[i].type->name);
             return false;
         }
     }
@@ -555,29 +556,47 @@ bool is_number(var_type *type){
     return is_int(type) || is_real(type);
 }
 
+bool number_comparable(var_type *type){
+    return is_number(type) || type->type == CURVE_T || type->type == PRIMITIVE && strcmp(type->name, "bool") == 0 || type->type == POINTER;
+}
+
 bool is_initializer_list_matched(symbol_table* st, var_type *type, var_type *list, int count){
     return true;
 }
 
 var_type *get_compatible_type_logical(var_type *type1, var_type *type2){
-    int a = is_convertible(type1,type2);
-    if (a==-1){
+    // int a = is_convertible(type1,type2);
+    // if (a==-1){
+    //     yyerror("Incompatible Operand types");
+    //     var_type *type = malloc(sizeof(var_type));
+    //     init_var_type(type);
+    //     type->type = NOT_DEFINED;
+    //     return type;
+    // }
+    // if (a==0 || a==2){
+    //     return type2;
+    // }
+    // return type1;
+    var_type *type = malloc(sizeof(var_type));
+    init_var_type(type);
+    if (
+            !is_number(type1) && !(type1->type == PRIMITIVE && strcmp(type1->name, "bool") == 0) && type1->type != POINTER
+            ||
+            !is_number(type2) && !(type2->type == PRIMITIVE && strcmp(type2->name, "bool") == 0) && type2->type != POINTER
+    ){
         yyerror("Incompatible Operand types");
-        var_type *type = malloc(sizeof(var_type));
-        init_var_type(type);
         type->type = NOT_DEFINED;
-        return type;
+    } else {
+        type->type = PRIMITIVE;
+        type->name = "bool";
     }
-    if (a==0 || a==2){
-        return type2;
-    }
-    return type1;
+    return type;
 }
 
 var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2){
     int a = is_convertible(type1,type2);
     if (a==-1){
-        yyerror("Incompatible Operand types");
+        yyerror("Incompatible Operand types for arithmetic operator");
         var_type *type = malloc(sizeof(var_type));
         init_var_type(type);
         type->type = NOT_DEFINED;
@@ -590,18 +609,29 @@ var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2){
 }
 
 var_type *get_compatible_type_comparison(var_type *type1, var_type *type2){
-    int a = is_convertible(type1,type2);
-    if (a==-1){
-        yyerror("Incompatible Operand types");
-        var_type *type = malloc(sizeof(var_type));
-        init_var_type(type);
-        type->type = NOT_DEFINED;
+    // int a = is_convertible(type1,type2);
+    // if (a==-1){
+    //     yyerror("Incompatible Operand types");
+    //     var_type *type = malloc(sizeof(var_type));
+    //     init_var_type(type);
+    //     type->type = NOT_DEFINED;
+    //     return type;
+    // }
+    // if (a==0 || a==2){
+    //     return type2;
+    // }
+    // return type1;
+
+    var_type *type = malloc(sizeof(var_type));
+    init_var_type(type);
+    if (number_comparable(type1) && number_comparable(type2)){
+        type->type = PRIMITIVE;
+        type->name = "bool";
         return type;
     }
-    if (a==0 || a==2){
-        return type2;
-    }
-    return type1;
+    yyerror("Incompatible Operand types for comparison");
+    type->type = NOT_DEFINED;
+    return type;
 }
 
 var_type *get_compatible_type_bitwise(var_type *type1, var_type *type2){
