@@ -100,7 +100,7 @@ typedef struct errors {
 
 // functions
 symbol_table *st_create(int size, int level, bool parameters);
-// void st_insert_default_types(); // insert pre-defined types into symbol table
+void st_insert_default_types(); // insert pre-defined types into symbol table (vector, complex)
 void st_insert(symbol_table *st, st_entry entry);
 void st_insert_vars(symbol_table*, id_list*, var_type);
 void st_insert_var(symbol_table*, id, var_type);
@@ -109,6 +109,7 @@ void st_insert_struct(symbol_table*, char *name, symbol_table*);
 void st_insert_func(symbol_table*, char*, var_type, symbol_table*);
 void init_var_type(var_type*);
 void init_id(id*);
+var_type *gen_type(id id, var_type type);
 void st_print_type(var_type*, int);
 void st_print_entry(st_entry*, int);
 void st_print_table(symbol_table *);
@@ -131,13 +132,14 @@ st_entry *find_in_table(symbol_table *st, char *name); // return pointer to entr
 bool is_declared(symbol_table *st, char *name); // checks if variable is declared
 bool is_function_matched(symbol_table*, char*, var_type*, int); // checks if function is matched
 bool is_function_def_matched(symbol_table*, char*, var_type*, int); // checks if function is matched
-int is_object_function_matched(symbol_table*, var_type *, char*, var_type*, int); // checks if object function is matched
+var_type *get_obj_func_ret_type(symbol_table*, var_type *, char*, var_type*, int); // get the type of function call from object and functin name. Call yyerror and return NULL if not found
 bool is_initializer_list_matched(symbol_table*, var_type *type, var_type *list, int count); // checks if initializer list is compatible with type
 var_type *get_compatible_type_logical(var_type *type1, var_type *type2); // return compatible type of two types for logical operator. call yyerror if not compatible
 var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2); // return compatible type of two types for arithmetic operator. call yyerror if not compatible
 var_type *get_compatible_type_comparison(var_type *type1, var_type *type2); // return compatible type of two types for comparison operator. call yyerror if not compatible
 var_type *get_compatible_type_bitwise(var_type *type1, var_type *type2); // return compatible type of two types for bitwise operator. call yyerror if not compatible
 bool are_types_equal(var_type *type1, var_type *type2); // return true if types are compatible else return false
+bool check_ret_type(symbol_table *st, var_type *type); // return true if return type is compatible else return false
 void yyerror(char *);
 
 char *format_string(char *format, ...);

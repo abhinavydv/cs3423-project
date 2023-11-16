@@ -7,6 +7,8 @@ struct my_struct {
 };
 
 func int foo(int a[23]){
+    int b;
+    b = 2;
     return a[2]**b;
 }
 
@@ -22,7 +24,7 @@ func int main(){
     c = *d;
     foo(a);
     curve asdf = $x + $x^2;
-    my_struc strct;
+    my_struct strct;
     a[4] = c + strct.d->a;
     curve crv = D[asdf, $x];
     // tsggv = 34;

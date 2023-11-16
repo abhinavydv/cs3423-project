@@ -6,16 +6,19 @@ struct Hello{
 }
 
 func/*fgj*/int main(){
+    b = 1;
     int ***a = 1;
     int *b[1] = 2;
     int c = 3;
     int /* hehehe */ d = 4;
-    d = 6;
+    d = d = 6;
 
     if (a && 1)
     {
         a += 2;
     }
+
+    d = *c;
 
     c = a + b - (d * e) / (f % *c[1]--);
 

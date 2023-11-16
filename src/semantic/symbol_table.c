@@ -174,9 +174,7 @@ bool is_declared(symbol_table *st, char *name){
 void st_insert_var(symbol_table *st, id id, var_type type) {
     if (is_declared(st,id.id))
     {
-        char *error = malloc(100);
-        sprintf(error, "Error: variable %s already declared\n", id.id);
-        yyerror(error);
+        yyerror(format_string("Error: variable %s already declared\n", id.id));
     }
     st_entry entry;
     entry.name = strdup(id.id);
@@ -446,6 +444,8 @@ int is_convertible(var_type *type1, var_type *type2) {
 }
 
 bool is_assignable(var_type *type1, var_type *type2){
+    if (type1->type == NOT_DEFINED || type2->type == NOT_DEFINED)
+        return false;
     if (is_convertible(type1,type2)==0 || is_convertible(type1,type2)==2)
     {
         return true;
@@ -648,4 +648,21 @@ bool are_types_equal(var_type *type1, var_type* type2){
     }
 
     return true;
+}
+
+bool check_ret_type(symbol_table *st, var_type *type){
+    while (!st->parameters){
+        st = st->parent;
+    }
+    for (int i=0; i<st->parent->filled; i++){
+        if (st->parent->entries[i].subtable == st){
+            if (is_assignable(st->parent->entries[i].type->subtype, type)){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    return false;
 }

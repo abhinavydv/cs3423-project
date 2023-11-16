@@ -9,7 +9,8 @@
 
 
     // variables
-    extern FILE  * yyin, *yyout, *parsed_file;
+    extern FILE  *yyin, *yyout, *parsed_file;
+    FILE *cpp_file = NULL;
     char *input_file;
     position pos_info = {0};   // used for error reporting
     symbol_table *global_table;
@@ -356,7 +357,7 @@ assignList      :  assign_decl ',' assignList   {
 
 // ID/Assignment for a declaration
 assign_decl     :  decl_id '=' rhs  {
-                    if (!is_assignable(&curr_type, &$3.type)){
+                    if (!is_assignable(gen_type($1.curr_id_list->id, curr_type), &$3.type)){
                         yyerror("Invalid assignment");
                     }
                     $$.curr_id_list = $1.curr_id_list;
@@ -658,8 +659,17 @@ number          :  REAL    {
                 }
 
 // Return Statement
-ret             :  RETURN rhs ';'
-                |  RETURN ';'
+ret             :  RETURN rhs ';'   {
+                    if (!check_ret_type(curr_table, &$2.type)){
+                        yyerror("Return type does not match function definition");
+                    }
+                    $$ = $2;
+                }
+                |  RETURN ';'   {
+                    init_var_type(&$$.type);
+                    $$.type.type = PRIMITIVE;
+                    $$.type.name = "void";
+                }
 
 // Function Call
 call            :  IDENTIFIER '(' arglist ')'   {
@@ -768,15 +778,19 @@ starred_name    :  '*' '(' name ')' {
                 |  '*' starred_name {
                     if ($2.type.type != POINTER){
                         yyerror("Starred expression must be a pointer");
+                    } else {
+                        $$.type = *$2.type.subtype;
                     }
-                    $$.type = *$2.type.subtype;
                 }
                 |  '*' IDENTIFIER   {
                     var_type *type = get_type_of_var(curr_table, $2.text);
                     if (type->type != POINTER){
                         yyerror("Starred expression must be a pointer");
+                        init_var_type(&$$.type);
+                        $$.type.type = NOT_DEFINED;
+                    } else {
+                        $$.type = *type->subtype;
                     }
-                    $$.type = *type->subtype;
                 }
 
 differentiate   :  DIFF '[' rhs ',' rhs ']' {
@@ -887,8 +901,9 @@ void print_errs(){
     }
 }
 
-int main(int argc, char *argv[]){
-    if (argc == 2 && strcmp(argv[1], "-h") == 0){
+void parse_args(int argc, char *argv[]){
+    yyin = yyout = parsed_file = cpp_file = NULL;
+    /* if (argc == 2 && strcmp(argv[1], "-h") == 0){
         printf("Usage: %s [input_file] [token_file] [parsed_file]\n", argv[0]);
         exit(0);
     }
@@ -910,21 +925,76 @@ int main(int argc, char *argv[]){
     } else {
         yyin = stdin;
         input_file = strdup("stdin");
+    } */
+
+    for (int i=1; i<argc; i++){
+        if (strcmp(argv[i], "-c") == 0){
+            cpp_file = fopen(argv[++i], "w");
+        }
+        else if (strcmp(argv[i], "-l") == 0){
+            yyout = fopen(argv[++i],"w");
+        }
+        else if (strcmp(argv[i], "-p") == 0){
+            parsed_file = fopen(argv[++i],"w");
+        }
+        else if (strcmp(argv[i], "-h") == 0){
+            printf("Usage: %s [input_file] [token_file] [parsed_file]\n", argv[0]);
+            exit(0);
+        }
+        else if (strcmp(argv[i], "-v") == 0){
+            printf("Version: 0.1\n");
+            exit(0);
+        } else if (argv[i][0] == '-'){
+            printf("Invalid option: %s\n", argv[i]);
+            exit(1);
+        }
+        else {
+            if (yyin != NULL){
+                printf("Multiple input files not allowed\n");
+                exit(1);
+            }
+            yyin = fopen(argv[i], "r");
+            input_file = strdup(argv[i]);
+        }
     }
+
+    if (yyin == NULL){
+        yyin = stdin;
+    }
+    if (yyout == NULL){
+        yyout = fopen("/dev/null", "w");
+    }
+    if (parsed_file == NULL){
+        parsed_file = fopen("/dev/null", "w");
+    }
+    if (cpp_file == NULL){
+        cpp_file = fopen("a.cpp", "w");
+    }
+}
+
+void clean_files(){
+    if (yyin != stdin)
+        fclose(yyin);
+    fclose(yyout);
+    fclose(parsed_file);
+    fclose(cpp_file);
+}
+
+int main(int argc, char *argv[]){
+    parse_args(argc, argv);
 
     global_table = st_create(8, 0, false);
     curr_table = global_table;
 
     yyparse();
 
-    fclose(yyin);
-    fclose(yyout);
-    fclose(parsed_file);
-
     if (err != NULL){
         print_errs();
+        clean_files();
         exit(1);
     }
+
+    clean_files();
 
     return 0;
 }
