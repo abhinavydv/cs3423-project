@@ -1105,7 +1105,7 @@ double Complex::getImag(){
 
 Complex Complex::operator+(Complex c){
 
-    return Complex(c->real+real, c->imag + imag);
+    return Complex(c.real+real, c.imag + imag);
 }
 
 Complex Complex::operator+(double d){
@@ -1119,8 +1119,8 @@ Complex operator+(double d, Complex c){
 
 Complex Complex::operator+=(Complex c){
 
-    this->real = this->real + c->real;
-    this->imag = this->imag + c->imag;
+    this->real = this->real + c.real;
+    this->imag = this->imag + c.imag;
 
     return *this;
 
@@ -1140,7 +1140,7 @@ Complex Complex::operator-(){
 
 Complex Complex::operator-(Complex c){
 
-    return Complex(real- c->real, imag - c->imag);
+    return Complex(real- c.real, imag - c.imag);
 }
 
 Complex Complex::operator-(double d){
@@ -1155,8 +1155,8 @@ Complex operator-(double d, Complex c){
 
 Complex Complex::operator-=(Complex c){
 
-    this->real -= c->real;
-    this->imag -= c->imag;
+    this->real -= c.real;
+    this->imag -= c.imag;
 
     return *this;
 }
@@ -1169,7 +1169,7 @@ Complex Complex::operator-=(double d){
 
 Complex Complex::operator*(Complex c){
 
-    return Complex(real * c->real - imag * c->imag, real * c->imag + imag * c->real);
+    return Complex(real * c.real - imag * c.imag, real * c.imag + imag * c.real);
 }
 
 Complex Complex::operator*(double d){
@@ -1184,11 +1184,11 @@ Complex operator*(double d,Complex c){
 
 Complex Complex::operator*=(Complex c){
 
-    this->real = this->real * c->real - this->imag * c->imag;
-    this->imag = this->real * c->imag + this->imag * c->real;
+    this->real = this->real * c.real - this->imag * c.imag;
+    this->imag = this->real * c.imag + this->imag * c.real;
     // *this = *this*c (will this work ?)
 
-    return *this 
+    return *this;
 }
 
 Complex Complex::operator*=(double d){
@@ -1213,7 +1213,7 @@ Complex Complex::conjugate(){
 
 Complex Complex::operator/(Complex c){
 
-    return Complex((real*c->real + imag*c->imag)/c.normsq(), (imag*c->real - real*c->imag)/c.normsq());
+    return Complex((real*c.real + imag*c.imag)/c.normsq(), (imag*c.real - real*c.imag)/c.normsq());
 }
 
 Complex Complex::operator/(double d){
@@ -1228,8 +1228,8 @@ Complex operator/(double d, Complex c){
 
 Complex Complex::operator/=(Complex c){
 
-    this->real = (real*c->real + imag*c->imag)/c.normsq();
-    this->imag = (imag*c->real - real*c->imag)/c.normsq();
+    this->real = (real*c.real + imag*c.imag)/c.normsq();
+    this->imag = (imag*c.real - real*c.imag)/c.normsq();
 
     return *this;
 
@@ -1245,7 +1245,7 @@ Complex Complex::operator/=(double d){
 
 bool Complex::operator==(Complex c){
 
-    return (real == c->real && imag == c->imag);
+    return (real == c.real && imag == c.imag);
 }
 
 bool Complex::operator==(double d){
@@ -1269,13 +1269,12 @@ bool Complex::operator!=(double d){
     return !(*this == d);
 }
 
-ostream& Complex::operator<<(ostream& os, const Complex& c){
+ostream& operator<<(ostream& os, const Complex& c){
 
     return os << ("" << c);
 }
 
-std::string Complex::operator<<(std::string s, const Complex& c){
-    
-    return s + without_trail_0(c);
+std::string operator<<(std::string s, const Complex& c){
 
+    return s + without_trail_0(c);
 }

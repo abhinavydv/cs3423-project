@@ -92,6 +92,18 @@ class Complex {
     bool operator!=(Complex);
     bool operator!=(double);
     friend bool operator!=(double, Complex);
+    bool operator<(Complex);
+    bool operator<(double);
+    friend bool operator<(double, Complex);
+    bool operator>(Complex);
+    bool operator>(double);
+    friend bool operator>(double, Complex);
+    bool operator<=(Complex);
+    bool operator<=(double);
+    friend bool operator<=(double, Complex);
+    bool operator>=(Complex);
+    bool operator>=(double);
+    friend bool operator>=(double, Complex);
     friend ostream& operator<<(ostream&, const Complex&);
     friend string operator<<(string, const Complex&);
 };
@@ -142,6 +154,8 @@ class Expression {
     double getDegree();
     template <typename T> Expression reduce(const T, Expression);
     Expression evaluate(map<string, Complex>);
+    Expression differentiate(Expression);
+    Expression differentiate(Expression, int);
 
     // operator overloads
     friend ostream& operator<<(ostream&, const Expression&);
