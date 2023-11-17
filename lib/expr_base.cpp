@@ -1091,3 +1091,191 @@ Expression abs(Expression expr){
     Expression exp = {ABS, expr};
     return exp;
 }
+
+
+double Complex::getReal(){
+
+    return this->real;
+}
+
+double Complex::getImag(){
+
+    return this->imag;
+}
+
+Complex Complex::operator+(Complex c){
+
+    return Complex(c->real+real, c->imag + imag);
+}
+
+Complex Complex::operator+(double d){
+    return Complex(d+this->real, this->imag);
+}
+
+Complex operator+(double d, Complex c){
+
+    return c + d;
+}
+
+Complex Complex::operator+=(Complex c){
+
+    this->real = this->real + c->real;
+    this->imag = this->imag + c->imag;
+
+    return *this;
+
+}
+
+Complex Complex::operator+=(double d){
+
+    this->real = this->real + d;
+    
+    return *this;
+}
+
+Complex Complex::operator-(){
+
+    return Complex(-real,-imag);
+}
+
+Complex Complex::operator-(Complex c){
+
+    return Complex(real- c->real, imag - c->imag);
+}
+
+Complex Complex::operator-(double d){
+
+    return Complex(real-d,imag);
+}
+
+Complex operator-(double d, Complex c){
+
+    return (-c) + d;
+}
+
+Complex Complex::operator-=(Complex c){
+
+    this->real -= c->real;
+    this->imag -= c->imag;
+
+    return *this;
+}
+
+Complex Complex::operator-=(double d){
+
+    this->real -= d;
+    return *this;
+}
+
+Complex Complex::operator*(Complex c){
+
+    return Complex(real * c->real - imag * c->imag, real * c->imag + imag * c->real);
+}
+
+Complex Complex::operator*(double d){
+
+    return Complex(real * d, imag * d);
+}
+
+Complex operator*(double d,Complex c){
+
+    return c*d;
+}
+
+Complex Complex::operator*=(Complex c){
+
+    this->real = this->real * c->real - this->imag * c->imag;
+    this->imag = this->real * c->imag + this->imag * c->real;
+    // *this = *this*c (will this work ?)
+
+    return *this 
+}
+
+Complex Complex::operator*=(double d){
+
+    this->real = this->real * d;
+    this->imag = this->imag * d;
+    // *this = *this*d
+
+    return *this;
+
+}
+
+double Complex::normsq(){
+
+    return real*real + imag*imag;
+}
+
+Complex Complex::conjugate(){
+
+    return Complex(real,-imag);
+}
+
+Complex Complex::operator/(Complex c){
+
+    return Complex((real*c->real + imag*c->imag)/c.normsq(), (imag*c->real - real*c->imag)/c.normsq());
+}
+
+Complex Complex::operator/(double d){
+
+    return Complex(real/d,imag/d);
+}
+
+Complex operator/(double d, Complex c){
+
+    return c.conjugate()*d / c.normsq();
+}
+
+Complex Complex::operator/=(Complex c){
+
+    this->real = (real*c->real + imag*c->imag)/c.normsq();
+    this->imag = (imag*c->real - real*c->imag)/c.normsq();
+
+    return *this;
+
+}
+
+Complex Complex::operator/=(double d){
+
+    this->real = this->real/d;
+    this->imag = this->imag/d;
+
+    return *this;
+}
+
+bool Complex::operator==(Complex c){
+
+    return (real == c->real && imag == c->imag);
+}
+
+bool Complex::operator==(double d){
+    
+    return (real == d && imag == 0);
+}
+
+bool operator==(double d,Complex c){
+    
+    return c==d;
+
+}
+
+bool Complex::operator!=(Complex c){
+
+    return !(*this == c);
+}
+
+bool Complex::operator!=(double d){
+    
+    return !(*this == d);
+}
+
+ostream& Complex::operator<<(ostream& os, const Complex& c){
+
+    return os << ("" << c);
+}
+
+std::string Complex::operator<<(std::string s, const Complex& c){
+    
+    return s + without_trail_0(c);
+
+}

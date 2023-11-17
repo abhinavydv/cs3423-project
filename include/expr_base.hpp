@@ -63,12 +63,14 @@ class Complex {
     Complex(double, double);
     double getReal();
     double getImag();
+    double normsq();
+    Complex conjugate();
     Complex operator+(Complex);
     Complex operator+(double);
-    friend Complex operator+(double, Complex);
+    friend Complex operator+(double, Complex); // what it will do
     Complex operator+=(Complex);
     Complex operator+=(double);
-    Complex operator-();
+    Complex operator-(); 
     Complex operator-(Complex);
     Complex operator-(double);
     friend Complex operator-(double, Complex);
@@ -90,9 +92,6 @@ class Complex {
     bool operator!=(Complex);
     bool operator!=(double);
     friend bool operator!=(double, Complex);
-    bool operator<(Complex);
-    bool operator<(double);
-    friend bool operator<(double, Complex);
     friend ostream& operator<<(ostream&, const Complex&);
     friend string operator<<(string, const Complex&);
 };
