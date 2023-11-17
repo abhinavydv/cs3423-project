@@ -52,6 +52,52 @@ class BugException: public exception{
 };
 
 
+class Complex {
+    private:
+    double real;
+    double imag;
+
+    public:
+    Complex();
+    Complex(double);
+    Complex(double, double);
+    double getReal();
+    double getImag();
+    Complex operator+(Complex);
+    Complex operator+(double);
+    friend Complex operator+(double, Complex);
+    Complex operator+=(Complex);
+    Complex operator+=(double);
+    Complex operator-();
+    Complex operator-(Complex);
+    Complex operator-(double);
+    friend Complex operator-(double, Complex);
+    Complex operator-=(Complex);
+    Complex operator-=(double);
+    Complex operator*(Complex);
+    Complex operator*(double);
+    friend Complex operator*(double, Complex);
+    Complex operator*=(Complex);
+    Complex operator*=(double);
+    Complex operator/(Complex);
+    Complex operator/(double);
+    friend Complex operator/(double, Complex);
+    Complex operator/=(Complex);
+    Complex operator/=(double);
+    bool operator==(Complex);
+    bool operator==(double);
+    friend bool operator==(double, Complex);
+    bool operator!=(Complex);
+    bool operator!=(double);
+    friend bool operator!=(double, Complex);
+    bool operator<(Complex);
+    bool operator<(double);
+    friend bool operator<(double, Complex);
+    friend ostream& operator<<(ostream&, const Complex&);
+    friend string operator<<(string, const Complex&);
+};
+
+
 class Expression {
     private:
     string value;
@@ -60,7 +106,7 @@ class Expression {
     Operator op;
     Function func;
     double pow;
-    double coeff;
+    Complex coeff;
     double degree;
 
     public:
@@ -69,8 +115,8 @@ class Expression {
     // Initialisers
     Expression();
     Expression(string);
-    Expression(double);
-    Expression(string, double);
+    Expression(Complex);
+    Expression(string, Complex);
     Expression(Operator);
     Expression(Function, string);
     Expression(Function, Expression);
@@ -86,7 +132,7 @@ class Expression {
     int push(Expression&, void (*)(int, vector<Expression>&));
     void push_all(Expression&, void (*)(int, vector<Expression>&));
     string getValue();
-    double getCoeff();
+    Complex getCoeff();
     Type getType();
     Operator getOperator();
     Function getFunction();
@@ -96,33 +142,33 @@ class Expression {
     void validate_symbol(string);
     double getDegree();
     template <typename T> Expression reduce(const T, Expression);
-    Expression evaluate(map<string, double>);
+    Expression evaluate(map<string, Complex>);
 
     // operator overloads
     friend ostream& operator<<(ostream&, const Expression&);
     friend string operator<<(string, const Expression&);
     Expression operator+(Expression);
-    Expression operator+(double);
-    friend Expression operator+(double, Expression);
+    Expression operator+(Complex);
+    friend Expression operator+(Complex, Expression);
     Expression operator-();
     Expression operator-(Expression);
-    Expression operator-(double);
-    friend Expression operator-(double, Expression);
+    Expression operator-(Complex);
+    friend Expression operator-(Complex, Expression);
     Expression operator*(Expression);
-    Expression operator*(double);
-    friend Expression operator*(double, Expression);
+    Expression operator*(Complex);
+    friend Expression operator*(Complex, Expression);
     Expression operator/(Expression);
-    Expression operator/(double);
-    friend Expression operator/(double, Expression);
+    Expression operator/(Complex);
+    friend Expression operator/(Complex, Expression);
     bool operator==(Expression);
-    bool operator==(double);
-    friend bool operator==(double, Expression);
+    bool operator==(Complex);
+    friend bool operator==(Complex, Expression);
     bool operator!=(Expression);
-    bool operator!=(double);
-    friend bool operator!=(double, Expression);
+    bool operator!=(Complex);
+    friend bool operator!=(Complex, Expression);
     bool operator<(Expression);
-    bool operator<(double);
-    friend bool operator<(double, Expression);
+    bool operator<(Complex);
+    friend bool operator<(Complex, Expression);
     Expression operator[](int);
 
     // other friend functions
@@ -143,12 +189,12 @@ TODO: Create a class for these functions as some of them would
 conflict with standard math functions
 */
 // functions
-Expression sin(Expression&);
-Expression cos(Expression&);
-Expression tan(Expression&);
-Expression cosec(Expression&);
-Expression sec(Expression&);
-Expression cot(Expression&);
-Expression floor(Expression&);
-Expression ceil(Expression&);
-Expression abs(Expression&);
+Expression sin(Expression);
+Expression cos(Expression);
+Expression tan(Expression);
+Expression cosec(Expression);
+Expression sec(Expression);
+Expression cot(Expression);
+Expression floor(Expression);
+Expression ceil(Expression);
+Expression abs(Expression);

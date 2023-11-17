@@ -40,13 +40,22 @@ map<Function, std::string> Expression::functions = {
 
 // returns string representation of the double val without trailing 0
 std::string without_trail_0(double val){
-    std::string str = std::to_string (val);
+    std::string str = std::to_string(val);
     str.erase(str.find_last_not_of('0') + 1, std::string::npos);
 
     if (str.back()=='.')
         return str.erase(str.find('.'));
 
     return str;
+}
+
+
+string without_trail_0(Complex val){
+    string real = without_trail_0(val.getReal());
+    string imag = without_trail_0(val.getImag());
+    if (imag != "0")
+        return real + "+" + imag + "i";
+    return real;
 }
 
 
@@ -84,14 +93,14 @@ Expression::Expression(std::string value){
 }
 
 
-Expression::Expression(double val){
+Expression::Expression(Complex val){
     this->init();
     this->type = CONSTANT;
     this->coeff = val;
 }
 
 
-Expression::Expression(std::string value, double coeff){
+Expression::Expression(std::string value, Complex coeff){
     this->validate_symbol(value);
     this->init();
     this->value = value;
@@ -206,7 +215,7 @@ Function Expression::getFunction(){
 }
 
 
-double Expression::getCoeff(){
+Complex Expression::getCoeff(){
     return this->coeff;
 }
 
@@ -237,7 +246,7 @@ Expression Expression::reduce(const T func, Expression init){
 }
 
 
-Expression Expression::evaluate(map<string, double> values){
+Expression Expression::evaluate(map<string, Complex> values){
     if (this->type == CONSTANT)
         return *this;
     else if (this->type == SYMBOL)
@@ -273,13 +282,13 @@ Expression Expression::evaluate(map<string, double> values){
         }
     }
     else if (this->op == PLUS){
-        return this->coeff * reduce([values](Expression& left, Expression& right){return left.evaluate(values) + right.evaluate(values);}, Expression(0));
+        return this->coeff * reduce([values](Expression& left, Expression& right){return left.evaluate(values) + right.evaluate(values);}, Expression(Complex(0)));
     }
     else if (this->op == MULTIPLY)
         return this->coeff * reduce([values](Expression& left, Expression& right){return left.evaluate(values) * right.evaluate(values);}, Expression(1));
     else if (this->op == DIVIDE)
         return this->coeff * this->exprs[0].evaluate(values) / this->exprs[1].evaluate(values);
-    return 0;
+    return Complex(0);
 }
 
 
@@ -477,12 +486,12 @@ Expression Expression::operator+(Expression expr){
 }
 
 
-Expression Expression::operator+(double value){
+Expression Expression::operator+(Complex value){
     return *this + Expression(value);
 }
 
 
-Expression operator+(double value, Expression expr){
+Expression operator+(Complex value, Expression expr){
     return expr + value;
 }
 
@@ -516,12 +525,12 @@ Expression Expression::operator-(Expression expr){
 }
 
 
-Expression Expression::operator-(double val){
+Expression Expression::operator-(Complex val){
     return *this + (-val);
 }
 
 
-Expression operator-(double value, Expression expr){
+Expression operator-(Complex value, Expression expr){
     return -expr + value;
 }
 
@@ -748,12 +757,12 @@ Expression Expression::operator*(Expression expr){
 }
 
 
-Expression Expression::operator*(double value){
+Expression Expression::operator*(Complex value){
     return (*this) * Expression(value);
 }
 
 
-Expression operator*(double value, Expression expr){
+Expression operator*(Complex value, Expression expr){
     return expr * Expression(value);
 }
 
@@ -890,12 +899,12 @@ bool Expression::operator==(Expression expr){
 }
 
 
-bool Expression::operator==(double value){
+bool Expression::operator==(Complex value){
     return *this == Expression(value);
 }
 
 
-bool operator==(double value, Expression expr){
+bool operator==(Complex value, Expression expr){
     return expr == value;
 }
 
@@ -905,12 +914,12 @@ bool Expression::operator!=(Expression expr){
 }
 
 
-bool Expression::operator!=(double val){
+bool Expression::operator!=(Complex val){
     return !(*this == Expression(val));
 }
 
 
-bool operator!=(double val, Expression expr){
+bool operator!=(Complex val, Expression expr){
     return !(expr == val);
 }
 
@@ -985,12 +994,12 @@ bool Expression::operator<(Expression expr){
 }
 
 
-bool Expression::operator<(double value){
+bool Expression::operator<(Complex value){
     return *this < Expression(value);
 }
 
 
-bool operator<(double value, Expression expr){
+bool operator<(Complex value, Expression expr){
     return !(expr<value && expr == value);
 }
 
@@ -1017,42 +1026,42 @@ void Expression::convert_sum_of_divs_to_single_div(){
 }
 
 
-Expression sin(Expression& expr){
+Expression sin(Expression expr){
     if (expr.getType() == CONSTANT)
         return sin(expr.getCoeff());
     Expression exp = {SIN, expr};
     return exp;
 }
 
-Expression cos(Expression& expr){
+Expression cos(Expression expr){
     if (expr.getType() == CONSTANT)
         return cos(expr.getCoeff());
     Expression exp = {COS, expr};
     return exp;
 }
 
-Expression tan(Expression& expr){
+Expression tan(Expression expr){
     if (expr.getType() == CONSTANT)
         return tan(expr.getCoeff());
     Expression exp = {TAN, expr};
     return exp;
 }
 
-Expression cosec(Expression& expr){
+Expression cosec(Expression expr){
     if (expr.getType() == CONSTANT)
         return 1/sin(expr.getCoeff());
     Expression exp = {COSEC, expr};
     return exp;
 }
 
-Expression sec(Expression& expr){
+Expression sec(Expression expr){
     if (expr.getType() == CONSTANT)
         return 1/cos(expr.getCoeff());
     Expression exp = {SEC, expr};
     return exp;
 }
 
-Expression cot(Expression& expr){
+Expression cot(Expression expr){
     if (expr.getType() == CONSTANT)
         return 1/tan(expr.getCoeff());
     Expression exp = {COT, expr};
@@ -1060,7 +1069,7 @@ Expression cot(Expression& expr){
 }
 
 
-Expression floor(Expression& expr){
+Expression floor(Expression expr){
     if (expr.getType() == CONSTANT)
         return floor(expr.getCoeff());
     Expression exp = {GIF, expr};
@@ -1068,7 +1077,7 @@ Expression floor(Expression& expr){
 }
 
 
-Expression ceil(Expression& expr){
+Expression ceil(Expression expr){
     if (expr.getType() == CONSTANT)
         return ceil(expr.getCoeff());
     Expression exp = {SIF, expr};
@@ -1076,7 +1085,7 @@ Expression ceil(Expression& expr){
 }
 
 
-Expression abs(Expression& expr){
+Expression abs(Expression expr){
     if (expr.getType() == CONSTANT)
         return abs(expr.getCoeff());
     Expression exp = {ABS, expr};
