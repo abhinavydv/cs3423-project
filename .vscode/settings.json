@@ -5,6 +5,7 @@
         "string": "cpp",
         "vector": "cpp",
         "cmath": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "*.tcc": "cpp"
     }
 }

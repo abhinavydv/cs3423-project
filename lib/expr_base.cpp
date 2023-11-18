@@ -291,7 +291,110 @@ Expression Expression::evaluate(map<string, Complex> values){
     return Complex(0);
 }
 
+Expression Expression::differentiate(Expression exp){
 
+    // const
+    Expression result;
+
+    if (this->type == CONSTANT){
+
+        return 0;
+    }
+    else if (this->pow !=1 ){
+
+        result = *this;
+        result.pow--;
+        Expression exp2 =  *this;
+        exp2.pow = 1;
+        
+        result = result *(result.pow+1) * exp2.differenciate(exp);
+    }
+    else if (this->type == FUNCTION){
+
+        if (this->func == GIF){
+
+            throw exception ("GIF Function is not differentiable\n")
+        }
+        else if (this->func == SIF){
+
+            throw exception ("SIF Function is not differentiable\n")
+
+        }
+        else if (this->func == ABS){
+
+            throw exception ("Absolute Function is not differentiable\n")
+
+        }
+        else if (this->func == SIN){
+            result = cos(this->exprs[0]) * this->exprs[0].differentiate(exp);
+        }
+        else if (this->func == COS){
+
+            result = -sin(this->exprs[0]) * this->exprs[0].differentiate(exp);
+        }
+        else if (this->func == TAN){
+
+            result =  (sec(this->exprs[0])^2)  * this->exprs[0].differentiate(exp);
+        }
+        else if (this->func == COSEC){
+
+            result =  -(cosec(this->exprs[0])*cot(this->exprs[0]))  * this->exprs[0].differentiate(exp);
+        }
+        else if (this->func == SEC){
+
+            result =  (sec(this->exprs[0]) * tan(this->exprs[0]))  * this->exprs[0].differentiate(exp);
+        }
+        else if (this->func == COT){
+
+            result =  -(cosec(this->exprs[0])^2)  * this->exprs[0].differentiate(exp);
+        }
+    }
+    else if (this->type == OPERATOR){
+
+        if (this->op == PLUS){
+
+            for (int i=0; i< this->exprs.size; i++){
+                result += this->exprs[0].differentiate(exp);
+            }
+        }
+        else if (this->op == MULTIPLY){
+
+            for (int i=0; i<this->exprs.size; i++){
+
+                result += (this->exprs[i].differentiate(exp) / this->exprs[i]) ;
+            }
+            result = result * (*this);
+        }
+        else if (this->op == DIVIDE){
+
+            result = (this->exprs[0].differentiate(exp) * this->exprs[1] - this->exprs[1].differentiate(exp) * this->exprs[0])/ ((this->exprs[1]) ^ 2);
+        }
+
+    }
+    else if (this->type == SYMBOL){
+
+        
+        if (this->value == exp.value){
+            return 1;
+        }
+        
+        return 0;
+    }
+
+    return result* this->coeff;
+
+}
+
+Expression Expression::differentiate(Expression exp, int n){
+
+    Expression exp = *this;
+
+    for (int i=0; i<n; i++){
+
+        exp = exp.differentiate();
+    }
+    return exp;
+}
 // override for cout to print the expression to output stream
 ostream& operator<<(ostream& os, const Expression& expr){
     return os << ("" << expr);
@@ -883,6 +986,11 @@ Expression Expression::operator^=(double d){
 
     this->pow *= d;
     return *this;
+}
+
+Expression Expression::operator()(Expression exp){
+
+    return exp.evaluate();
 }
 
 

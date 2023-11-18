@@ -178,6 +178,7 @@ class Expression {
     friend Expression operator/(Complex, Expression);
     Expression operator^(double);
     Expression operator^=(double);
+    Expression operator()(Expression);
     bool operator==(Expression);
     bool operator==(Complex);
     friend bool operator==(Complex, Expression);
