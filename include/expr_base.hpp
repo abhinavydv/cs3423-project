@@ -3,7 +3,7 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
-
+#include <complex>
 
 using namespace std;
 
@@ -59,6 +59,7 @@ class Complex {
 
     public:
     Complex();
+    Complex(complex<double>);
     Complex(double);
     Complex(double, double);
     double getReal();
@@ -86,6 +87,8 @@ class Complex {
     friend Complex operator/(double, Complex);
     Complex operator/=(Complex);
     Complex operator/=(double);
+    Complex operator^(double);
+    Complex operator^=(double);
     bool operator==(Complex);
     bool operator==(double);
     friend bool operator==(double, Complex);
@@ -106,6 +109,7 @@ class Complex {
     friend bool operator>=(double, Complex);
     friend ostream& operator<<(ostream&, const Complex&);
     friend string operator<<(string, const Complex&);
+
 };
 
 
@@ -172,6 +176,8 @@ class Expression {
     Expression operator/(Expression);
     Expression operator/(Complex);
     friend Expression operator/(Complex, Expression);
+    Expression operator^(double);
+    Expression operator^=(double);
     bool operator==(Expression);
     bool operator==(Complex);
     friend bool operator==(Complex, Expression);
@@ -210,3 +216,14 @@ Expression cot(Expression);
 Expression floor(Expression);
 Expression ceil(Expression);
 Expression abs(Expression);
+
+Complex sin(Complex);
+Complex cos(Complex);
+Complex tan(Complex);
+Complex cosec(Complex);
+Complex sec(Complex);
+Complex cot(Complex);
+Complex floor(Complex);
+Complex ceil(Complex);
+Complex abs(Complex);
+

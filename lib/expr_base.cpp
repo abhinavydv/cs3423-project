@@ -53,7 +53,7 @@ std::string without_trail_0(double val){
 string without_trail_0(Complex val){
     string real = without_trail_0(val.getReal());
     string imag = without_trail_0(val.getImag());
-    if (imag != "0")
+    if (imag != "0" && imag != "-0")
         return real + "+" + imag + "i";
     return real;
 }
@@ -870,6 +870,21 @@ Expression operator/(Complex c, Expression exp){
     return (exp / c);
 }
 
+Expression Expression::operator^(double d){
+
+    Expression exp;
+    exp = *this;
+    exp.pow *= d;
+
+    return exp;
+}
+
+Expression Expression::operator^=(double d){
+
+    this->pow *= d;
+    return *this;
+}
+
 
 // check if the expressions are equal if power is not considered
 bool eq_without_pow(Expression expr1, Expression expr2, bool check_coeff=false){
@@ -1102,6 +1117,11 @@ Expression abs(Expression expr){
     return exp;
 }
 
+Complex::Complex(complex<double> c){
+
+    this->real = c.real();
+    this->imag = c.imag();
+}
 Complex::Complex(){
 
     this->real = 0.0;
@@ -1270,6 +1290,21 @@ Complex Complex::operator/=(double d){
     return *this;
 }
 
+Complex Complex::operator^(double d){
+
+    return pow(complex(real,imag),d);
+}
+
+Complex Complex::operator^=(double d){
+
+    Complex c = pow(complex(real,imag),d);
+
+    this->real = this->real + c.getReal();
+    this->imag = this->imag + c.getImag();
+
+    return *this; 
+}
+
 bool Complex::operator==(Complex c){
 
     return (real == c.real && imag == c.imag);
@@ -1374,3 +1409,48 @@ std::string operator<<(std::string s, const Complex& c){
     return s + without_trail_0(c);
 }
 
+Complex sin(Complex c){
+
+    return sin(complex(c.getReal(),c.getImag()));
+
+}
+
+Complex cos(Complex c){
+
+    return cos(complex(c.getReal(),c.getImag()));
+}
+
+Complex tan(Complex c){
+
+    return tan(complex(c.getReal(),c.getImag()));
+}
+
+Complex cosec(Complex c){
+
+    return 1.0/sin(c);
+}
+
+Complex sec(Complex c){
+
+    return 1.0/cos(c);
+}
+
+Complex cot(Complex c){
+
+    return 1.0/tan(c);
+}
+
+Complex floor(Complex c){
+
+    return Complex(floor(c.getReal()),floor(c.getImag()));
+}
+
+Complex ceil(Complex c){
+    return Complex(ceil(c.getReal()),ceil(c.getImag()));
+
+}
+
+Complex abs(Complex c){
+
+    return Complex(abs(c.getReal()),abs(c.getImag()));
+}
