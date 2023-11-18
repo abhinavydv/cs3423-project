@@ -60,3 +60,4 @@ tests/tokens
 tests/logs
 tests/experiments
 tests/temp
+tests/cpp_out

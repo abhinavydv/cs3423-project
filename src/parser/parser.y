@@ -242,6 +242,7 @@ type            :  DATA_TYPE temp_params {
                     } else {
                         $$.type.name = $1.text;
                     }
+                    $$.code = format_string("%s", $1.text);
                 }
 
 // template paramaters
@@ -371,9 +372,9 @@ import          :  IMPORT STRING ';'    {
 
 // list of declarations (for structs)
 declarations    :  decl_only ';' {label("Declaration");} declarations   {
-                    $$.code = format_string("%s;\n%s", $1.code, $3.code);
+                    $$.code = format_string("%s;\n%s", $1.code, $4.code);
                     free($1.code);
-                    free($3.code);
+                    free($4.code);
                 }
                 |   {
                     $$.code = format_string("");
@@ -635,7 +636,7 @@ idlist          :  IDENTIFIER   {
                     $$.curr_id_list->id.id = $1.text;
                     $$.count = 1;
 
-                    $$.code = format_string("%s", $1.text);
+                    $$.code = format_string("\"%s\"", $1.text);
                 }
                 |  IDENTIFIER ',' idlist    {
                     $$.curr_id_list = (id_list *)malloc(sizeof(id_list));
@@ -644,7 +645,7 @@ idlist          :  IDENTIFIER   {
                     $$.curr_id_list->next = $3.curr_id_list;
                     $$.count = 1 + $3.count;
 
-                    $$.code = format_string("%s, %s", $1.text, $3.code);
+                    $$.code = format_string("\"%s\", %s", $1.text, $3.code);
                     free($3.code);
                 }
 

@@ -14,7 +14,7 @@ red = echo $(2) "\033[01;31m$(1)\033[01;0m"
 test_parser_at = $(call yellow,Testing at $(1),-n); ./bin/parser $(1) -l tests/tokens/$(2) -p tests/parsed/$(3) -c tests/cpp_out/$(4) > tests/logs/$(5) && $(call green, \tOK) || $(call red, \tFailed)
 
 create_folders:
-	@mkdir -p bin tests/parsed tests/tokens tests/logs
+	@mkdir -p bin tests/parsed tests/tokens tests/logs tests/cpp_out
 
 parser: create_folders
 	$(call yellow,Building parser,-n)
