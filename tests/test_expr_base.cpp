@@ -110,7 +110,10 @@ int main(){
     // Differentiation
     cout << (x*x).differentiate(x) << "\n";
     cout << (x^7).differentiate(x) << "\n";
-    cout << (x*s).differentiate(x) << "\n";
-    cout << (x*x).differentiate(y) << "\n";
-    cout << (x+x-z).differentiate("x") << "\n";
+    cout << (x+1).differentiate(x) << "\n";
+    cout << (x/(x+1)).differentiate("x") << "\n";
+    cout << (Expression(2+x)*Expression(2*x)) << "\n";
+    cout << (Expression(x+ tan(x)).differentiate("y"))<< "\n";
+    cout << (Expression(4*(x^3) * y * cos(x)))<< "\n";
+    cout << (y*cos(x)/(x^4)).differentiate(x) << "\n";
 }

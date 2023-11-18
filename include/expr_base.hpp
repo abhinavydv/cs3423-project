@@ -209,7 +209,7 @@ class Expression {
     friend Expression multiply(Expression, Expression, bool);
     friend bool is_equal(Expression, Expression, bool);
     friend void cancel_commons(Expression&, Expression&, Expression&, bool);
-
+    friend Expression remove_zeroes(Expression);
     void convert_sum_of_divs_to_single_div();
 };
 

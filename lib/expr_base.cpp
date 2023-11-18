@@ -45,6 +45,13 @@ map<Operator, std::string> Expression::operators = {
 map<Function, std::string> Expression::functions = {
     {SIN, "sin"},
     {COS, "cos"},
+    {TAN, "tan"},
+    {COSEC, "cosec"},
+    {SEC, "sec"},
+    {COT, "cot"},
+    {GIF, "gif"},
+    {SIF, "sif"},
+    {ABS, "abs"},
 };
 
 
@@ -345,7 +352,7 @@ Expression Expression::differentiate(Expression exp){
             result = -sin(this->exprs[0]) * this->exprs[0].differentiate(exp);
         }
         else if (this->func == TAN){
-            result =  (sec(this->exprs[0])^2)  * this->exprs[0].differentiate(exp);
+            result =  ((sec(this->exprs[0])^2))  * this->exprs[0].differentiate(exp);
         }
         else if (this->func == COSEC){
             result =  -(cosec(this->exprs[0])*cot(this->exprs[0]))  * this->exprs[0].differentiate(exp);
@@ -359,29 +366,44 @@ Expression Expression::differentiate(Expression exp){
     }
     else if (this->type == OPERATOR){
         if (this->op == PLUS){
+
+            result = 0;
             for (int i=0; i< this->exprs.size(); i++){
-                result = result + this->exprs[0].differentiate(exp);
+                result = result + this->exprs[i].differentiate(exp);
+                
             }
+
         }
         else if (this->op == MULTIPLY){
+
+            result = 0;
             for (int i=0; i<this->exprs.size(); i++){
-                result = result + (this->exprs[i].differentiate(exp) / this->exprs[i]) ;
+                Expression temp = 1;
+                for (int j=0; j<this->exprs.size(); j++){
+                    if (i != j){
+                        temp = temp * this->exprs[j];
+                    }
+                }
+                result = result + temp * this->exprs[i].differentiate(exp);
             }
-            result = result * (*this);
         }
         else if (this->op == DIVIDE){
-            result = (this->exprs[0].differentiate(exp) * this->exprs[1] - this->exprs[1].differentiate(exp) * this->exprs[0])/ ((this->exprs[1]) ^ 2);
+            // cout <<"Here "<< this->exprs[0] << endl;
+            // return  - (4* (Expression("x")^3) * Expression("y") * cos(Expression("x")));
+
+            result = ((this->exprs[0].differentiate(exp) * this->exprs[1]) - (this->exprs[1].differentiate(exp) * this->exprs[0]))/ ((this->exprs[1]) ^ 2);
         }
 
     }
     else if (this->type == SYMBOL){
         if (this->value == exp.value){
-            return 1;
+            return this->coeff;
         }
 
         return 0;
     }
 
+    
     return result* this->coeff;
 }
 
@@ -591,10 +613,28 @@ Expression Expression::operator+(Expression expr){
         exp.push(expr, after_push_plus);
     }
 
+    exp = remove_zeroes(exp);
+
     // check for and fix singlet exprs
     return fix_singlet(exp);
 }
 
+Expression remove_zeroes(Expression exp){
+
+    Expression n_exp = exp;
+    n_exp.exprs.clear();
+
+    for (int i=0; i< exp.exprs.size(); i++){
+        if (exp.exprs[i].coeff != 0){
+            n_exp.exprs.push_back(exp.exprs[i]);
+        }
+    }
+
+    if (n_exp.exprs.size() == 0){
+        n_exp.exprs.push_back(0);
+    }
+    return n_exp;
+}
 
 // Expression Expression::operator+(Complex value){
 //     return *this + Expression(value);
@@ -671,7 +711,6 @@ void after_push_mult(int index, vector<Expression>& exprs){
 
 Expression multiply(Expression expr1, Expression expr2, bool broadcast=false){
     Expression ret(MULTIPLY);
-
     // if both are constant then return a constant expr
     // with coeff = coeff1 * coeff2
     if (expr1.type == CONSTANT && expr2.type == CONSTANT){
@@ -735,9 +774,10 @@ Expression multiply(Expression expr1, Expression expr2, bool broadcast=false){
         }
         // for MULTIPLY, push the expr2 to exprs and multiply the coeffs
         else if (expr1.op == MULTIPLY){
+            ret.coeff = expr1.coeff * expr2.coeff;
+            expr2.coeff = 1;
             ret.push_all(expr1, after_push_mult);
             ret.push(expr2, after_push_mult);
-            ret.coeff = expr1.coeff * expr2.coeff;
         }
         // TODONE: Cancel out commons
         else if (expr1.op == DIVIDE){
@@ -822,8 +862,10 @@ Expression multiply(Expression expr1, Expression expr2, bool broadcast=false){
         ret.push(ep);
         cancel_commons(ret.exprs[0], ret.exprs[1], ret, true);
     }
-    if (ret != Expression(MULTIPLY))
+
+    if (ret != Expression(MULTIPLY)){
         return fix_singlet(ret);
+    }
     throw BugException("All cases should have been covered (1)");
 }
 
