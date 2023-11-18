@@ -860,6 +860,16 @@ Expression Expression::operator/(Expression expr){
     return ret;
 }
 
+Expression Expression::operator/(Complex c){
+
+    return (*this/Expression(c));
+}
+
+Expression operator/(Complex c, Expression exp){
+
+    return (exp / c);
+}
+
 
 // check if the expressions are equal if power is not considered
 bool eq_without_pow(Expression expr1, Expression expr2, bool check_coeff=false){
@@ -1092,6 +1102,23 @@ Expression abs(Expression expr){
     return exp;
 }
 
+Complex::Complex(){
+
+    this->real = 0.0;
+    this->imag = 0.0;
+}
+
+Complex::Complex(double d){
+
+    this->real = d;
+    this->imag = 0.0;
+}
+
+Complex::Complex(double d1, double d2 ){
+
+    this->real = d1;
+    this->imag = d2;
+}
 
 double Complex::getReal(){
 
@@ -1269,6 +1296,74 @@ bool Complex::operator!=(double d){
     return !(*this == d);
 }
 
+bool operator!=(double d, Complex c){
+
+    return (c != d);
+}
+
+bool Complex::operator<(Complex c){
+
+    return (real < c.real || (real == c.real && imag < c.imag));
+}   
+
+bool Complex::operator<(double d){
+    
+    return (real < d || (real == d && imag < 0));
+}
+
+bool operator<(double d, Complex c){
+    
+    return (c<d);
+}
+
+bool Complex::operator>(Complex c){
+
+    return (real > c.real || (real == c.real && imag > c.imag));
+
+}
+
+bool Complex::operator>(double d){
+
+    return (real > d || (real == d && imag > 0));
+
+}
+
+bool operator>(double d, Complex c){
+    
+    return (c>d);
+
+}
+
+bool Complex::operator<=(Complex c){
+
+    return !(*this > c);
+}
+
+bool Complex::operator<=(double d){
+    
+    return !(*this > d);
+}
+
+bool operator<=(double d, Complex c){
+    
+    return !(c>d);
+}
+
+bool Complex::operator>=(Complex c){
+
+    return !(*this < c);
+}
+
+bool Complex::operator>=(double d){
+    
+    return !(*this < d);
+}
+
+bool operator>=(double d, Complex c){
+    
+    return !(c<d);
+}
+
 ostream& operator<<(ostream& os, const Complex& c){
 
     return os << ("" << c);
@@ -1278,3 +1373,4 @@ std::string operator<<(std::string s, const Complex& c){
 
     return s + without_trail_0(c);
 }
+
