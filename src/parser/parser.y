@@ -997,13 +997,15 @@ ret             :  RETURN rhs ';'   {
 
 // Function Call
 call            :  IDENTIFIER '(' arglist ')'   {
-                    var_type *t = get_type_of_var(curr_table, $1.text);
-                    if (t->type == NOT_DEFINED){
+                    $$.type = *get_type_of_var(curr_table, $1.text);
+                    if ($$.type.type == NOT_DEFINED){
                         yyerror("Function not defined");
-                    } else
-                        $$.type = *t;
+                    }
                     st_entry *entry = find_in_table(curr_table, $1.text);
                     if (entry->type->type == FUNCTION){
+                        if ($3.has_assignargs){
+                            yyerror("normal function calls cannot contain argument assignments");
+                        }
                         if (!is_function_matched(curr_table, $1.text, $3.type_list, $3.count))
                             yyerror("Function call does not match definition");
                     } else if (entry->type->type == CURVE_T){
@@ -1017,24 +1019,43 @@ call            :  IDENTIFIER '(' arglist ')'   {
                 }
 
 // Function Call with object
-obj_call        :  name ARROW IDENTIFIER '(' arglist ')'    {
-                    if ($1.type.type != POINTER){
-                        yyerror("Arrow expression must be a pointer");
+obj_call        :  name membership IDENTIFIER '(' arglist ')'   {
+                    if ($1.type.type == NOT_DEFINED){
+                        $$.type.type = NOT_DEFINED;
+                    } else {
+                        if ($2.is_arrow && $1.type.type != POINTER){
+                            $$.type.type = NOT_DEFINED;
+                            yyerror("Arrow expression must be a pointer");
+                        } else {
+                            $$.type = *get_type_of_member(curr_table, ($2.is_arrow ? $1.type.subtype : &$1.type), $3.text);
+                            if ($$.type.type == NOT_DEFINED){
+                                yyerror(format_string("Member '%s' of type '%s' not defined", $3.text, ($2.is_arrow ? $1.type.subtype->name : $1.type.name)));
+                            } else if ($$.type.type == FUNCTION){
+                                if ($5.has_assignargs){
+                                    yyerror("normal function calls cannot contain argument assignments");
+                                }
+                            } else if ($$.type.type == CURVE) {
+                                
+                            } else {
+                                yyerror(format_string("Member '%s' of type '%s' is not a function", $3.text, $1.type.subtype->name));
+                            }
+                            // is_object_function_matched(curr_table, $1.type.subtype, $3.text, $5.type_list, $5.count);
+                        }
                     }
-                    $$.type = *get_type_of_member(curr_table, $1.type.subtype, $3.text);
-                    // is_object_function_matched(curr_table, $1.type.subtype, $3.text, $5.type_list, $5.count);
 
-                    $$.code = format_string("%s%s%s(%s)", $1.code, $2.text, $3.text, $5.code);
+                    $$.code = format_string("%s%s%s(%s)", $1.code, $2.code, $3.text, $5.code);
                     free($1.code);
+                    free($2.code);
                     free($5.code);
                 }
-                |  name DOT IDENTIFIER '(' arglist ')'  {
-                    $$.type = *get_type_of_member(curr_table, &$1.type, $3.text);
-                    // is_object_function_matched(curr_table, &$1.type, $3.text, $5.type_list, $5.count);
 
-                    $$.code = format_string("%s%s%s(%s)", $1.code, $2.text, $3.text, $5.code);
-                    free($1.code);
-                    free($5.code);
+membership      :  ARROW    {
+                    $$.is_arrow = true;
+                    $$.code = format_string("->");
+                }
+                |  DOT    {
+                    $$.is_arrow = false;
+                    $$.code = format_string(".");
                 }
 
 // List of arguments for a function call
@@ -1046,6 +1067,7 @@ arglist         :  argOnlyList  {
                 }
                 |  assign_arg_list  {
                     $$.count = 0;
+                    $$.has_assignargs = true;
 
                     $$.code = $1.code;
                 }
@@ -1091,7 +1113,25 @@ assign_arg_list :  IDENTIFIER '=' rhs   {
                 }
 
 // Object reference
-name            :  name ARROW IDENTIFIER    {
+name            :  name membership IDENTIFIER    {
+                    if ($1.type.type == NOT_DEFINED){
+                        $$.type.type = NOT_DEFINED;
+                    } else {
+                        if ($2.is_arrow && $1.type.type != POINTER){
+                            $$.type.type = NOT_DEFINED;
+                            yyerror("Arrow expression must be a pointer");
+                        } else {
+                            $$.type = *get_type_of_member(curr_table, ($2.is_arrow ? $1.type.subtype : &$1.type), $3.text);
+                            if ($$.type.type == NOT_DEFINED){
+                                yyerror(format_string("Member '%s' of type '%s' not defined", $3.text, $1.type.subtype->name));
+                            }
+                        }
+                    }
+
+                    $$.code = format_string("%s%s%s", $1.code, $2.text, $3.text);
+                    free($1.code);
+                }
+                /* |  name ARROW IDENTIFIER    {
                     if ($1.type.type != POINTER){
                         yyerror("Arrow expression must be a pointer");
                         $$.type.type = NOT_DEFINED;
@@ -1117,7 +1157,7 @@ name            :  name ARROW IDENTIFIER    {
 
                     $$.code = format_string("%s%s%s", $1.code, $2.text, $3.text);
                     free($1.code);
-                }
+                } */
                 |  name '[' rhs ']' {
                     if ($1.type.type == ARRAY || $1.type.type == POINTER){
                         $$.type = *$1.type.subtype;

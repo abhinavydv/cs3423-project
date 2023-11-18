@@ -79,6 +79,10 @@ struct state {
     int count;                  // number of types in type_list
     var_type *type_list;        // list of types
     char *code;                 // code to be inserted for this non-terminal
+    char **code_list;           // list of codes
+    int code_count;             // number of codes in code_list
+    bool has_assignargs;        // true if assignargs (eg x=2) is present
+    bool is_arrow;              // true if arrow (eg x->y) is present
 };
 
 

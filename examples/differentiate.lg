@@ -1,18 +1,26 @@
+struct hehe {
+    vector<int> coeff;
+    int deg;
+};
+
 func curve input_poly(int n){
     curve f(x);
     int i;
     for i in 0..n{
         f = f + $x^i;
     }
+    f(x = 1);
     return f;
 }
 
 func void print_poly(curve f){
-    
+    hehe h;
+    vector<int> a = h.coeff;
+    int b = h.stg;
 }
 
 func curve sin(curve x){
-    
+    vector<int> v;
 }
 
 func curve cos(curve x){

@@ -45,6 +45,13 @@ class BadSymbolException: public exception{
 };
 
 
+class NotDifferentiableException: public exception{
+    public:
+    NotDifferentiableException();
+    NotDifferentiableException(string);
+};
+
+
 class BugException: public exception{
     public:
         BugException();
@@ -130,6 +137,7 @@ class Expression {
     // Initialisers
     Expression();
     Expression(string);
+    Expression(double);
     Expression(Complex);
     Expression(string, Complex);
     Expression(Operator);
@@ -159,26 +167,29 @@ class Expression {
     template <typename T> Expression reduce(const T, Expression);
     Expression evaluate(map<string, Complex>);
     Expression differentiate(Expression);
+    Expression differentiate(string);
     Expression differentiate(Expression, int);
+    Expression differentiate(string, int);
 
     // operator overloads
     friend ostream& operator<<(ostream&, const Expression&);
     friend string operator<<(string, const Expression&);
     Expression operator+(Expression);
-    Expression operator+(Complex);
+    // Expression operator+(Complex);
     friend Expression operator+(Complex, Expression);
     Expression operator-();
     Expression operator-(Expression);
-    Expression operator-(Complex);
+    // Expression operator-(Complex);
+    friend Expression operator-(Complex, Expression);
     Expression operator*(Expression);
-    Expression operator*(Complex);
+    // Expression operator*(Complex);
     friend Expression operator*(Complex, Expression);
     Expression operator/(Expression);
     Expression operator/(Complex);
     friend Expression operator/(Complex, Expression);
     Expression operator^(double);
     Expression operator^=(double);
-    Expression operator()(Expression);
+    Expression operator()(map<string, Complex>);
     bool operator==(Expression);
     bool operator==(Complex);
     friend bool operator==(Complex, Expression);
