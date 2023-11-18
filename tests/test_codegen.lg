@@ -1,0 +1,11 @@
+// func int main(){
+//     int a;
+// 
+//     for i in 0..10{
+//         a=2;
+//     }
+// }
+
+func void print(string s, curve c, int a){
+
+}

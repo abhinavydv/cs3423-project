@@ -51,6 +51,7 @@ char *format_string(char *format, ...) {
     int curr_pos = 0;
     char *str = malloc(size);
     while (*format){
+        fflush(stdout);
         if (*format == '%'){
             format++;
             switch (*format) {
@@ -59,7 +60,8 @@ char *format_string(char *format, ...) {
                     str[curr_pos] = 0;
                     curr_pos += strlen(arg);
                     if (size <= curr_pos - 1){
-                        size *= 2;
+                        while (size <= curr_pos - 1)
+                            size *= 2;
                         str = realloc(str, size);
                     }
                     strcat(str, arg);
@@ -69,7 +71,8 @@ char *format_string(char *format, ...) {
                     str[curr_pos] = 0;
                     curr_pos += int_len(num);
                     if (size <= curr_pos - 1){
-                        size *= 2;
+                        while (size <= curr_pos - 1)
+                            size *= 2;
                         str = realloc(str, size);
                     }
                     sprintf(str, "%s%d", str, num);
@@ -77,7 +80,7 @@ char *format_string(char *format, ...) {
                 case '%':
                     if (curr_pos == size)
                         str = realloc(str, size *= 2);
-                    str[curr_pos] = *format;
+                    str[curr_pos++] = *format;
                     break;
                 default:
                     printf("Error: format string not supported\n");
@@ -96,9 +99,42 @@ char *format_string(char *format, ...) {
     return str;
 }
 
+char *increase_indent(char *code, int indents){
+    int indent_size = 4;
+    int count = 1;
+    int ln = strlen(code);
+    for (int i = 0; i < ln; i++) {
+        if (code[i] == '\n') {
+            count++;
+        }
+    }
+    if (code[ln-1] == '\n' || ln == 0)
+        count--;
+    char *new_code = malloc(ln + count * indents * indent_size + 1);
+    int offset = 0;
+    if (ln == 0){
+        new_code[0] = 0;
+        return new_code;
+    }
+    for (int j = 0; j < indents*indent_size; j++) {
+        new_code[offset++] = ' ';
+    }
+    for (int i=0; i<ln; i++){
+        new_code[i+offset] = code[i];
+        if (code[i] == '\n' && i != ln-1){
+            for (int j = 0; j < indents*indent_size; j++) {
+                new_code[i+ ++offset] = ' ';
+            }
+        }
+    }
+
+    return new_code;
+}
+
 void init_var_type(var_type *type) {
     type->type = PRIMITIVE;
     type->name = NULL;
+    type->subtype = NULL;
     type->length = 0;
     type->num_args = 0;
     type->args = NULL;
@@ -118,6 +154,7 @@ void init_id(id *id) {
 symbol_table *st_create(int size, int level, bool parameters) {
     symbol_table *st = malloc(sizeof(symbol_table));
     st->size = size;
+    st->filled = 0;
     st->level = level;
     st->parameters = parameters;
     st->is_incomplete = false;
@@ -505,7 +542,6 @@ bool is_function_matched(symbol_table* st, char* name, var_type* type_list, int 
 
     for (int i = 0; i < arg_num; i++) {
         if (!is_assignable(&type_list[i],function_ptr->subtable->entries[i].type)) {
-            printf("%d %s %d %s\n",type_list[i].type,type_list[i].name,function_ptr->subtable->entries[i].type->type,function_ptr->subtable->entries[i].type->name);
             return false;
         }
     }

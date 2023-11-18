@@ -8,13 +8,15 @@
     #include <assert.h>
     #include "y.tab.h"
 
-    FILE *yyin, *yyout, *parsed_file;
+    FILE *yyin, *yyout, *parsed_file, *cpp_file;
     extern state yylval;
     extern position pos_info;
+    extern bool create_cpp_file, print_spaces;
 
 
     #define ECHO fprintf(parsed_file, "%s", yytext); fflush(parsed_file);\
-            update_pos_info(&pos_info, pos_info.row, pos_info.col+strlen(yytext));
+            update_pos_info(&pos_info, pos_info.row, pos_info.col+strlen(yytext));\
+            if (create_cpp_file) fprintf(cpp_file, "%s", yytext); fflush(cpp_file);
     #define DUP yylval.text = strdup(yytext);
 %}
 
@@ -371,9 +373,18 @@ square          [\[\]]
 
 {blank}                 {
                             ECHO;
+                            if (!create_cpp_file && print_spaces){
+                                fprintf(cpp_file, "%s", yytext);
+                                fflush(cpp_file);
+                            }
                         }
 {newline}               {
-                            ECHO; update_pos_info(&pos_info, pos_info.row+1, 0);
+                            ECHO;
+                            if (!create_cpp_file && print_spaces){
+                                fprintf(cpp_file, "%s", yytext);
+                                fflush(cpp_file);
+                            }
+                            update_pos_info(&pos_info, pos_info.row+1, 0);
                         }
 {comment}               {fprintf(parsed_file, " ");}    // print a space instead of comment
 .                       {printf("Lexer Error at Line Number %d\n",pos_info.row); fflush(yyout); exit(0);}

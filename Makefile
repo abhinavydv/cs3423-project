@@ -5,6 +5,7 @@
 .SILENT: test_parser
 .SILENT: test_parser_only
 .SILENT: test_symtab
+.SILENT: test_complex
 
 yellow = echo $(2) "\033[01;33m$(1)\033[01;0m"
 green = echo $(2) "\033[01;32m$(1)\033[01;0m"
@@ -33,6 +34,13 @@ test_expr_base: create_folders
 	$(call green,expr_base test passed)
 	echo
 
+test_complex: create_folders
+	$(call yellow,Testing complex)
+	g++ -std=c++20 -g lib/expr_base.cpp  tests/test_complex.cpp -Iinclude/ -o bin/test_complex
+	./bin/test_complex
+	$(call green,complex test passed)
+	echo
+
 test_parser: create_folders parser test_parser_only
 
 test_parser_only: create_folders
@@ -43,6 +51,7 @@ test_parser_only: create_folders
 	$(call test_parser_at,examples/other_funcs.lg,other_funcs_tokens.txt,other_funcs_parsed.lg,other_funcs.cpp,other_funcs_log.txt)
 	$(call test_parser_at,tests/test_parser.lg,test_parser_tokens.txt,test_parser_parsed.lg,test_parser.cpp,test_parser_log.txt)
 	$(call test_parser_at,tests/test_semantic.lg,test_semantic_tokens.txt,test_semantic_parsed.lg,test_semantic.cpp,test_semantic_log.txt)
+	$(call test_parser_at,tests/test_codegen.lg,test_codegen_tokens.txt,test_codegen_parsed.lg,test_codegen.cpp,test_codegen_log.txt)
 
 test_symtab: create_folders
 	$(call yellow,Testing symbol table)

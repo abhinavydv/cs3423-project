@@ -3,9 +3,6 @@
 func curve input_poly(int n){
     curve f(x);
     int i;
-    for i in 0..n{
-        f = f + $x^i;
-    }
     return f;
 }
 

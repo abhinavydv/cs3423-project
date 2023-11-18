@@ -78,6 +78,7 @@ struct state {
     id_list *curr_id_list;      // current id list
     int count;                  // number of types in type_list
     var_type *type_list;        // list of types
+    char *code;                 // code to be inserted for this non-terminal
 };
 
 
@@ -145,5 +146,6 @@ bool check_ret_type(symbol_table *st, var_type *type); // return true if return 
 void yyerror(char *);
 
 char *format_string(char *format, ...);
+char *increase_indent(char* code, int indents);
 
 #endif
