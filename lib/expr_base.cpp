@@ -271,7 +271,7 @@ Expression Expression::reduce(const T func, Expression init){
 
 
 // TODO: replace Complex with Expression
-Expression Expression::evaluate(map<string, Complex> values){
+Expression Expression::evaluate(map<string, Expression> values){
     if (this->type == CONSTANT)
         return *this;
     else if (this->type == SYMBOL)
@@ -1037,7 +1037,7 @@ Expression Expression::operator^=(double d){
     return *this;
 }
 
-Expression Expression::operator()(map<string, Complex> vals){
+Expression Expression::operator()(map<string, Expression> vals){
 
     return this->evaluate(vals);
 }

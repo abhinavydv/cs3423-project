@@ -16,7 +16,6 @@ func curve input_poly(int n){
 func void print_poly(curve f){
     hehe h;
     vector<int> a = h.coeff;
-    int b = h.stg;
 }
 
 func curve sin(curve x){

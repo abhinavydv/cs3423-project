@@ -29,6 +29,14 @@
     void label(char * msg){
         fprintf(parsed_file," /* %s */ ",msg);
     }
+
+    void add_headers(FILE *file){
+        fprintf(
+            file,
+            "#include <iostream>\n"
+            "#include <expr_base.hpp>\n\n"
+        );
+    }
 %}
 
 %token DATA_TYPE IDENTIFIER STRING IN DOTS
@@ -40,6 +48,7 @@
 
 %%
 start           :  program  {
+                    add_headers(cpp_file);
                     fprintf(cpp_file, "%s", $1.code);
                 }
                 |  error ';' {yyerror("Syntax error");}
@@ -411,7 +420,7 @@ curve_decl      :  IDENTIFIER '(' idlist ')'    {
                     $$.count = 1;
                     st_insert_curve(curr_table, new_id, $3.curr_id_list, $3.count);
 
-                    $$.code = format_string("%s(%s)", $1.text, $3.code);
+                    $$.code = format_string("%s", $1.text);
                     free($3.code);
                 }
                 |  decl_id  {
@@ -1009,7 +1018,27 @@ call            :  IDENTIFIER '(' arglist ')'   {
                         if (!is_function_matched(curr_table, $1.text, $3.type_list, $3.count))
                             yyerror("Function call does not match definition");
                     } else if (entry->type->type == CURVE_T){
-
+                        if (!$3.has_assignargs) {
+                            if ($3.code_count == 0){
+                                yyerror("Curve call must have at least one argument");
+                            } else {
+                                if ($3.code_count > $$.type.num_vars){
+                                    yyerror("Too many arguments for curve call");
+                                } else {
+                                    char *res = format_string("{\"%s\", %s}", $$.type.vars[0], $3.code_list[0]);
+                                    char *tmp = res;
+                                    for (int i=1; i<$3.type.num_vars; i++){
+                                        res = format_string("%s, {\"%s\", %s}", $$.type.vars[i], $3.code_list[i]);
+                                        free(tmp);
+                                    }
+                                    tmp = res;
+                                    res = format_string("{%s}", tmp);
+                                    free(tmp);
+                                    free($3.code);
+                                    $3.code = res;
+                                }
+                            }
+                        }
                     } else {
                         yyerror("Function call must be a function");
                     }
@@ -1035,7 +1064,7 @@ obj_call        :  name membership IDENTIFIER '(' arglist ')'   {
                                     yyerror("normal function calls cannot contain argument assignments");
                                 }
                             } else if ($$.type.type == CURVE) {
-                                
+
                             } else {
                                 yyerror(format_string("Member '%s' of type '%s' is not a function", $3.text, $1.type.subtype->name));
                             }
@@ -1063,13 +1092,17 @@ arglist         :  argOnlyList  {
                     $$.type_list = $1.type_list;
                     $$.count = $1.count;
 
+                    $$.code_list = $1.code_list;
+                    $$.code_count = $1.code_count;
+
                     $$.code = $1.code;
                 }
                 |  assign_arg_list  {
                     $$.count = 0;
                     $$.has_assignargs = true;
 
-                    $$.code = $1.code;
+                    $$.code = format_string("{%s}", $1.code);
+                    free($1.code);
                 }
                 |   {
                     $$.count = 0;
@@ -1082,12 +1115,20 @@ argOnlyList     :  rhs  {
                     $$.type_list[0] = $1.type;
                     $$.count = 1;
 
+                    $$.code_list = (char **)malloc(sizeof(char *));
+                    $$.code_list[0] = $1.code;
+                    $$.code_count = 1;
+
                     $$.code = $1.code;
                 }
                 |  argOnlyList ',' rhs  {
                     $$.type_list = (var_type *)realloc($1.type_list, ($1.count + 1) * sizeof(var_type));
                     $$.type_list[$1.count] = $3.type;
                     $$.count = $1.count + 1;
+
+                    $$.code_list = realloc($1.code_list, ($1.code_count + 1) * sizeof(char *));
+                    $$.code_list[$1.code_count] = $3.code;
+                    $$.code_count = $1.code_count + 1;
 
                     $$.code = format_string("%s, %s", $1.code, $3.code);
                     free($1.code);
@@ -1099,7 +1140,7 @@ assign_arg_list :  IDENTIFIER '=' rhs   {
                         yyerror("argument values must be int, real or curve");
                     }
 
-                    $$.code = format_string("%s = %s", $1.text, $3.code);
+                    $$.code = format_string("{\"%s\", %s}", $1.text, $3.code);
                     free($3.code);
                 }
                 |  assign_arg_list ',' IDENTIFIER '=' rhs   {
@@ -1107,7 +1148,7 @@ assign_arg_list :  IDENTIFIER '=' rhs   {
                         yyerror("argument values must be int, real or curve");
                     }
 
-                    $$.code = format_string("%s, %s = %s", $1.code, $3.text, $5.code);
+                    $$.code = format_string("%s, {\"%s\", %s}", $1.code, $3.text, $5.code);
                     free($1.code);
                     free($5.code);
                 }
@@ -1123,7 +1164,7 @@ name            :  name membership IDENTIFIER    {
                         } else {
                             $$.type = *get_type_of_member(curr_table, ($2.is_arrow ? $1.type.subtype : &$1.type), $3.text);
                             if ($$.type.type == NOT_DEFINED){
-                                yyerror(format_string("Member '%s' of type '%s' not defined", $3.text, $1.type.subtype->name));
+                                yyerror(format_string("Member '%s' of type '%s' not defined", $3.text, ($2.is_arrow ? $1.type.subtype->name : $1.type.name)));
                             }
                         }
                     }

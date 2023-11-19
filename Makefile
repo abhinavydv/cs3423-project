@@ -53,6 +53,14 @@ test_parser_only: create_folders
 	$(call test_parser_at,tests/test_semantic.lg,test_semantic_tokens.txt,test_semantic_parsed.lg,test_semantic.cpp,test_semantic_log.txt)
 	$(call test_parser_at,tests/test_codegen.lg,test_codegen_tokens.txt,test_codegen_parsed.lg,test_codegen.cpp,test_codegen_log.txt)
 
+test_code_gen: create_folders
+	$(call yellow,Testing code generation)
+	$(call test_parser_at,examples/polymultiply.lg,polymultiply_tokens.txt,polymultiply_parsed.lg,polymultiply.cpp,polymultiply_log.txt)
+	g++ -std=c++20 -g -Iinclude tests/cpp_out/polymultiply.cpp lib/expr_base.cpp -o bin/polymultiply
+	./bin/polymultiply
+	$(call green,Code generation test passed)
+	echo
+
 test_symtab: create_folders
 	$(call yellow,Testing symbol table)
 	gcc tests/test_symtab.c src/semantic/symbol_table.c -o bin/test_symtab -Iinclude

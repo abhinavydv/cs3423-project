@@ -165,7 +165,7 @@ class Expression {
     void validate_symbol(string);
     double getDegree();
     template <typename T> Expression reduce(const T, Expression);
-    Expression evaluate(map<string, Complex>);
+    Expression evaluate(map<string, Expression>);
     Expression differentiate(Expression);
     Expression differentiate(string);
     Expression differentiate(Expression, int);
@@ -189,7 +189,7 @@ class Expression {
     friend Expression operator/(Complex, Expression);
     Expression operator^(double);
     Expression operator^=(double);
-    Expression operator()(map<string, Complex>);
+    Expression operator()(map<string, Expression>);
     bool operator==(Expression);
     bool operator==(Complex);
     friend bool operator==(Complex, Expression);
