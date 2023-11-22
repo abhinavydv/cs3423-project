@@ -765,3 +765,238 @@ bool verify_temp_params(char *name, var_type *type){
 
     return false;
 }
+
+
+// var_type *get_obj_func_ret_type(symbol_table* st, var_type *obj_type, char *name, var_type *type_list, int arg_num) {
+//     st_entry *function_ptr = find_in_table(st,name);
+//     if (function_ptr==NULL) {
+//         return NULL;
+//     }
+//     if (arg_num!=function_ptr->subtable->filled-1) {
+//         return NULL;
+//     }
+//     for (int i = 0; i < arg_num; i++) {
+//         if (!are_types_equal(&type_list[i],function_ptr->subtable->entries[i].type)) {
+//             return NULL;
+//         }
+//     }
+//     if (strcmp(name,"size")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = PRIMITIVE;
+//         vt->name = "int";
+//         return vt;
+//     }
+//     if (strcmp(name,"max_size")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = PRIMITIVE;
+//         vt->name = "int";
+//         return vt;
+//     }
+//     if (strcmp(name,"length")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = PRIMITIVE;
+//         vt->name = "int";
+//         return vt;
+//     }
+//     if (strcmp(name,"push_back")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = PRIMITIVE;
+//         vt->name = "void";
+//         return vt;
+//     }
+//     if (strcmp(name,"pop_back")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = PRIMITIVE;
+//         vt->name = "void";
+//         return vt;
+//     }
+//     if (strcmp(name,"insert")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = PRIMITIVE;
+//         vt->name = "void";
+//         return vt;
+//     }
+//     if (strcmp(name,"erase")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = PRIMITIVE;
+//         vt->name = "void";
+//         return vt;
+//     }
+//     if (strcmp(name,"clear")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = PRIMITIVE;
+//         vt->name = "void";
+//         return vt;
+//     }
+//     if (strcmp(name,"empty")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = PRIMITIVE;
+//         vt->name = "bool";
+//         return vt;
+//     }
+//     if (strcmp(name,"front")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = POINTER;
+//         vt->name = obj_type->subtype->name;
+//         vt->subtype = obj_type->subtype->subtype;
+//         return vt;
+//     }
+//     if (strcmp(name,"back")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = POINTER;
+//         vt->name = obj_type->subtype->name;
+//         vt->subtype = obj_type->subtype->subtype;
+//         return vt;
+//     }
+//     if (strcmp(name,"data")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = POINTER;
+//         vt->name = obj_type->subtype->name;
+//         vt->subtype = obj_type->subtype->subtype;
+//         return vt;
+//     }
+//     if (strcmp(name,"at")==0)
+//     {
+//         var_type* vt = malloc(sizeof(var_type));
+//         vt->type = POINTER;
+//         vt->name = obj_type->subtype->name;
+//         vt->subtype = obj_type->subtype->subtype;
+//         return vt;
+//     }
+// }
+
+void insert_default_funcs(symbol_table *st) {
+    
+    symbol_table *trig_params = st_create(8, st->level+1, true);
+    st_insert_var(trig_params, (id) {"pos", 0, 0, 0}, (var_type) {.type = CURVE_T});
+    trig_params->is_incomplete = true;
+
+    st_insert_func(st, "sin", (var_type) {.type = CURVE_T}, trig_params);
+    st_insert_func(st, "cos", (var_type) {.type = CURVE_T}, trig_params);
+    st_insert_func(st, "tan", (var_type) {.type = CURVE_T}, trig_params);
+    st_insert_func(st, "cot", (var_type) {.type = CURVE_T}, trig_params);
+    st_insert_func(st, "sec", (var_type) {.type = CURVE_T}, trig_params);
+    st_insert_func(st, "cosec", (var_type) {.type = CURVE_T}, trig_params);
+
+    symbol_table *sum_params = st_create(8, st->level+1, true);
+    var_type vector_of_curves;
+    init_var_type(&vector_of_curves);
+    vector_of_curves = (var_type) {.type = PRIMITIVE, .name = "vector", .num_args = 1, .args = malloc(sizeof(var_type))};
+    init_var_type(&vector_of_curves.args[0]);
+    vector_of_curves.args[0].type = CURVE_T;
+
+    st_insert_var(
+        sum_params, 
+        (id) {"pos", 0, 0, 0}, 
+        vector_of_curves
+    );
+
+    st_insert_func(st, "sum", (var_type) {.type = CURVE_T}, sum_params);
+
+    symbol_table *input_poly_params = st_create(8, st->level+1, true);
+    st_insert_var(input_poly_params, (id) {"pos", 0, 0, 0}, (var_type) {.type = PRIMITIVE, .name = "int"});
+    input_poly_params->is_incomplete = true;
+
+    st_insert_func(st, "input_poly", (var_type) {.type = CURVE_T}, input_poly_params);
+
+    // st_insert_func(st, "print_poly", (var_type) {.type = CURVE_T}, NULL);
+}
+
+void insert_default_vector_functions(symbol_table *st) {
+    symbol_table *empty_table = st_create(8, st->level+1, true);
+    empty_table->is_incomplete = true;
+
+    symbol_table *params = st_create(8, st->level+1, true);
+    st_insert_var(params, (id) {"val", 0, 0, 0}, (var_type) {.type = TEMPLATE});
+    params->is_incomplete = true;
+
+    symbol_table *at_params = st_create(8, st->level+1, true);
+    st_insert_var(at_params, (id) {"pos", 0, 0, 0}, (var_type) {.type = PRIMITIVE, .name = "int"});
+    at_params->is_incomplete = true;
+
+    st_insert_func(st, "size", (var_type) {.type = PRIMITIVE, .name = "int"}, empty_table);
+    st_insert_func(st, "max_size", (var_type) {.type = PRIMITIVE, .name = "int"}, empty_table);
+    st_insert_func(st, "length", (var_type) {.type = PRIMITIVE, .name = "int"}, empty_table);
+    st_insert_func(st, "push_back", (var_type) {.type = PRIMITIVE, .name = "void"}, params);
+    st_insert_func(st, "pop_back", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);
+    st_insert_func(st, "insert", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);
+    // st_insert_func(st, "erase", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);
+    st_insert_func(st, "clear", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);
+    st_insert_func(st, "empty", (var_type) {.type = PRIMITIVE, .name = "bool"}, empty_table);
+
+    st_insert_func(st, "front", (var_type) {.type = TEMPLATE}, empty_table);
+    st_insert_func(st, "back", (var_type) {.type = TEMPLATE}, empty_table);
+    // st_insert_func(st, "data", (var_type) {.type = TEMPLATE}, NULL);
+    st_insert_func(st, "at", (var_type) {.type = TEMPLATE}, at_params);
+}
+
+void insert_vector_type(symbol_table *st) {
+    st_entry entry;
+    entry.name = "vector";
+    entry.type = malloc(sizeof(var_type));
+    init_var_type(entry.type);
+    entry.type->type = PRIMITIVE;
+    entry.type->name = "vector";
+    entry.type->num_args = 1;
+    entry.type->args = malloc(sizeof(var_type));
+    entry.type->args[0].type = TEMPLATE;
+    entry.type->args[0].name = "T";
+    entry.subtable = st_create(8, st->level+1, false);
+    insert_default_vector_functions(entry.subtable);
+    st_insert(st, entry);
+}
+
+var_type *get_obj_func_ret_type(symbol_table* st, char* obj_name, char* name, var_type *type_list, int arg_num) {
+    
+    var_type *null_return = malloc(sizeof(var_type));
+    null_return->type = NOT_DEFINED;
+
+    st_entry *object = find_in_table(st,obj_name);
+
+    if (object==NULL) {
+        return null_return;
+    }
+
+    if (object->type->type != PRIMITIVE || strcmp(object->type->name, "vector") != 0) {
+        return null_return;
+    }
+
+    st_entry *vector = find_in_table(st,"vector");
+    st_entry *fn_entry = find_in_one_table(vector->subtable,name);
+
+    if (fn_entry==NULL) {
+        return null_return;
+    }
+
+    if (fn_entry->subtable->is_incomplete && arg_num!=fn_entry->subtable->filled
+        ||
+        (!fn_entry->subtable->is_incomplete && arg_num!=fn_entry->subtable->filled-1)
+    ){
+        yyerror("Argument count not matched");
+    }
+    else
+        for (int i = 0; i < arg_num; i++) {
+            if (!is_assignable(&type_list[i],fn_entry->subtable->entries[i].type)) {
+                yyerror("Function arguments not matched");
+            }
+        }
+
+    if (fn_entry->type->subtype->type == TEMPLATE) {
+        return &object->type->args[0];
+    }
+    else {
+        return fn_entry->type->subtype;
+    }
+}
