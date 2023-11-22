@@ -10,18 +10,9 @@ func void print_poly(curve f){
     
 }
 
-func curve sin(curve x){
-    
+struct s{
+    int a;
 }
-
-func curve cos(curve x){
-    
-}
-
-func void print(string s, curve c){
-
-}
-
 
 int a;
 
@@ -34,12 +25,14 @@ func int main(){
     f = input_poly(10); // Takes 11 input [a0,a1,...,a10] to form 10 degree poly ( a0 + a1x^1 ... + a10x^10)  
     g = input_poly(9);  // Takes 10 input [a0,a1,...,a9] to form 9 degree poly ( a0 + a1x^1 ... + a9x^9)
 
-    complex<real, real> y_f, y_g;
+    complex y_f, y_g;
 
     y_f = FFT(f,10);
     y_g = FFT(g,10);
 
     complex y;
+
+    print("y_f is ", y_f);
 
     y = y_f * y_g; // Overloading
 
@@ -63,13 +56,11 @@ func complex FFT(curve f,int degree)
 
     curve zeroes(k) = e^(2*k*_i_*pi/(degree + 1));
 
-    curve y_poly(x) = f(zeroes(x)) ;
+    curve y_poly(x) = f(x=zeroes(x)) ;
 
     degree += 1;
 
-    a.b();
-
-    vector<complex> y = {degree};
+    vector<complex> y = {degree, 54};
 
 
     for i in 0 .. degree {
@@ -78,7 +69,7 @@ func complex FFT(curve f,int degree)
 
     }
 
-    return y;
+    return y[0];
 }
 
 func curve InverseFFT(curve y,int degree){
@@ -89,11 +80,11 @@ func curve InverseFFT(curve y,int degree){
 
     curve zeroes(k) = e^(-2*k*_i_*pi/(degree + 1));
 
-   
+
     curve y_poly(x);
 
     for k in 0 .. degree {
-        y_poly += y(i) * x^i;
+        y_poly += y(x=i) * x^i;
     }
 
     vector<complex> y2 = {degree};
@@ -111,4 +102,10 @@ func curve InverseFFT(curve y,int degree){
 
     return c(x);
 
+}
+
+func curve to_curve(complex y){
+    curve c(x);
+    c = y;
+    return c;
 }

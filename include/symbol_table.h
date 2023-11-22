@@ -147,6 +147,8 @@ var_type *get_compatible_type_comparison(var_type *type1, var_type *type2); // r
 var_type *get_compatible_type_bitwise(var_type *type1, var_type *type2); // return compatible type of two types for bitwise operator. call yyerror if not compatible
 bool are_types_equal(var_type *type1, var_type *type2); // return true if types are compatible else return false
 bool check_ret_type(symbol_table *st, var_type *type); // return true if return type is compatible else return false
+bool is_printable(var_type *type); // return true if type is printable else return false
+bool verify_temp_params(char *name, var_type *type); // return true if template parameters are valid else return false
 void yyerror(char *);
 
 char *format_string(char *format, ...);

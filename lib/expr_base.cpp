@@ -646,6 +646,12 @@ Expression operator+(Complex value, Expression expr){
 }
 
 
+Expression Expression::operator+=(Expression expr){
+    *this = *this + expr;
+    return *this;
+}
+
+
 // negate the expression
 Expression Expression::operator-(){
     Expression exp;
@@ -1327,7 +1333,6 @@ Complex Complex::operator+=(Complex c){
     this->imag = this->imag + c.imag;
 
     return *this;
-
 }
 
 Complex Complex::operator+=(double d){

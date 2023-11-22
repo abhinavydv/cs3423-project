@@ -62,6 +62,7 @@ import          (import)
 func            (func)
 dots            ".."
 diff            (D)
+print           (print)
 
 /*Arithmetic Operator*/
 fact_n_not      (!)
@@ -244,7 +245,12 @@ square          [\[\]]
                             DUP;
                             return DIFF;
                         }
-
+{print}                 {
+                            ECHO;
+                            fprintf(yyout, "print: %s\n",yytext);
+                            DUP;
+                            return PRINT;
+                        }
 {arithmetic_binaryOp}   {
                             ECHO;
                             fprintf(yyout, "Arithmetic Bin Op: %s\n",yytext);

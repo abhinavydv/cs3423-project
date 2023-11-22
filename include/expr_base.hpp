@@ -177,6 +177,7 @@ class Expression {
     Expression operator+(Expression);
     // Expression operator+(Complex);
     friend Expression operator+(Complex, Expression);
+    Expression operator+=(Expression);
     Expression operator-();
     Expression operator-(Expression);
     // Expression operator-(Complex);

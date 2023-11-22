@@ -43,13 +43,15 @@
 %token CHAR RETURN INTEGER CURVE DOLLAR_ID
 %token FOR STRUCT AUG_ASSIGN DIFF
 %token VOID ARROW COMPARE AND OR SHIFT DECREMENT INCREMENT
-%token REAL IF ELSE DOT
+%token REAL IF ELSE DOT PRINT
 %token REPEAT UNTIL BREAK CONTINUE IMPORT TRUE FALSE FUNC
 
 %%
 start           :  program  {
-                    add_headers(cpp_file);
-                    fprintf(cpp_file, "%s", $1.code);
+                    if (err == NULL){
+                        add_headers(cpp_file);
+                        fprintf(cpp_file, "%s", $1.code);
+                    }
                 }
                 |  error ';' {yyerror("Syntax error");}
 
@@ -237,10 +239,18 @@ type_defs       :  type decl_id {
 
 type            :  DATA_TYPE temp_params {
                     init_var_type(&$$.type);
-                    $$.type.name = $1.text;
                     $$.type.num_args = $2.type.num_args;
                     $$.type.args = $2.type.args;
-                    $$.code = format_string("%s%s", $1.text, $2.code);
+
+                    if ($2.type.num_args > 0 && !verify_temp_params($1.text, &$2.type)){
+                        yyerror("Invalid template parameters");
+                    }
+                    if (strcmp($1.text, "complex") == 0){
+                        $$.type.name = "Complex";
+                    } else {
+                        $$.type.name = $1.text;
+                    }
+                    $$.code = format_string("%s%s", $$.type.name, $2.code);
                     free($2.code);
                 }
                 |  IDENTIFIER   {
@@ -341,6 +351,10 @@ statement       :  decl_assgn ';'   {
                     free($1.code);
                 }
                 |  forLoop  {
+                    $$.code = format_string("%s\n", $1.code);
+                    free($1.code);
+                }
+                |  print    {
                     $$.code = format_string("%s\n", $1.code);
                     free($1.code);
                 }
@@ -663,7 +677,6 @@ lhs             :  name {
                     $$ = $1;
                 }
 
-// TODO: Handle operator types
 // Logical Operators
 rhs             :  rhs OR and  {
                     $$.type = *get_compatible_type_logical(&$1.type, &$3.type);
@@ -822,7 +835,6 @@ unary_op        :  unary_op_only    {
                 }
 
 // Unary Operators
-// TODO: add &
 unary_op_only   :  '~' final    {
                     if (!is_int(&$2.type)){
                         yyerror("Bitwise not must have int type");
@@ -986,6 +998,31 @@ number          :  REAL    {
                     $$.code = format_string("%s", $1.text);
                 }
 
+print           :  PRINT '(' arglist ')' ';'   {
+                    if ($3.has_assignargs){
+                        yyerror("Print calls cannot contain argument assignments");
+                    }
+                    if ($3.count == 0){
+                        yyerror("Print call must have at least one argument");
+                    }
+                    for (int i=0; i<$3.count; i++){
+                        if (!is_printable(&$3.type_list[i])){
+                            yyerror("Print call must have printable arguments");
+                        }
+                    }
+                    $$.code = format_string("cout");
+                    char *tmp;
+                    for (int i=0; i<$3.code_count; i++){
+                        tmp = $$.code;
+                        $$.code = format_string("%s << %s", $$.code, $3.code_list[i]);
+                        free(tmp);
+                    }
+                    tmp = $$.code;
+                    $$.code = format_string("%s;", $$.code);
+                    free(tmp);
+                    free($3.code);
+                }
+
 // Return Statement
 ret             :  RETURN rhs ';'   {
                     if (!check_ret_type(curr_table, &$2.type)){
@@ -1089,6 +1126,10 @@ membership      :  ARROW    {
 
 // List of arguments for a function call
 arglist         :  argOnlyList  {
+                    // printf("(%d, %d): %s\n", pos_info.row, pos_info.col, $1.code);
+                    // for (int i=0; i<$1.code_count; i++){
+                    //     printf("%s\n", $1.code_list[i]);
+                    // }
                     $$.type_list = $1.type_list;
                     $$.count = $1.count;
 
@@ -1099,6 +1140,7 @@ arglist         :  argOnlyList  {
                 }
                 |  assign_arg_list  {
                     $$.count = 0;
+                    $$.code_count = 0;
                     $$.has_assignargs = true;
 
                     $$.code = format_string("{%s}", $1.code);
@@ -1106,6 +1148,7 @@ arglist         :  argOnlyList  {
                 }
                 |   {
                     $$.count = 0;
+                    $$.code_count = 0;
 
                     $$.code = format_string("");
                 }
@@ -1131,8 +1174,6 @@ argOnlyList     :  rhs  {
                     $$.code_count = $1.code_count + 1;
 
                     $$.code = format_string("%s, %s", $1.code, $3.code);
-                    free($1.code);
-                    free($3.code);
                 }
 
 assign_arg_list :  IDENTIFIER '=' rhs   {

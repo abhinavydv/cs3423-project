@@ -448,8 +448,9 @@ int getsize(char * typename){
 int is_convertible(var_type *type1, var_type *type2) {
     if (are_types_equal(type1,type2))
         return 0;
-    else if (type1->type == CURVE_T && is_number(type2)){
-        return 0;
+    else if (type1->type == CURVE_T){
+        if (is_number(type2) || type2->type == PRIMITIVE && strcmp(type2->name, "Complex") == 0)
+            return 0;
     } else if (is_number(type1) && type2->type == CURVE_T){
         return 0;
     }
@@ -728,6 +729,38 @@ bool check_ret_type(symbol_table *st, var_type *type){
                 return false;
             }
         }
+    }
+
+    return false;
+}
+
+bool is_printable(var_type *type){
+    if (type->type == PRIMITIVE && strcmp(type->name, "bool") == 0)
+        return true;
+    if (type->type == PRIMITIVE && strcmp(type->name, "char") == 0)
+        return true;
+    if (type->type == PRIMITIVE && strcmp(type->name, "int") == 0)
+        return true;
+    if (type->type == PRIMITIVE && strcmp(type->name, "real") == 0)
+        return true;
+    if (type->type == PRIMITIVE && strcmp(type->name, "Complex") == 0)
+        return true;
+    if (type->type == PRIMITIVE && strcmp(type->name, "string") == 0)
+        return true;
+    if (type->type == PRIMITIVE && strcmp(type->name, "vector") == 0)
+        return true;
+    if (type->type == ARRAY)
+        return true;
+    if (type->type == POINTER)
+        return true;
+    if (type->type == CURVE_T)
+        return true;
+    return false;
+}
+
+bool verify_temp_params(char *name, var_type *type){
+    if (strcmp(name, "vector") == 0){
+        return type->num_args == 1;
     }
 
     return false;

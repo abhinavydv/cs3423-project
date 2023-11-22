@@ -1,11 +1,7 @@
 func int main(){
-    int a;
+    int a[10] = {1,2,3,4,5,6,7,8,9,10};
 
     for i in 0..10{
-        a=2;
+        print("a[", i, "]: ", a[i], "\n");
     }
-}
-
-func void print(string s, curve c, int a){
-
 }

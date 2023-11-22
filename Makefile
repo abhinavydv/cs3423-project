@@ -6,6 +6,7 @@
 .SILENT: test_parser_only
 .SILENT: test_symtab
 .SILENT: test_complex
+.SILENT: test_code_gen
 
 yellow = echo $(2) "\033[01;33m$(1)\033[01;0m"
 green = echo $(2) "\033[01;32m$(1)\033[01;0m"
@@ -53,7 +54,7 @@ test_parser_only: create_folders
 	$(call test_parser_at,tests/test_semantic.lg,test_semantic_tokens.txt,test_semantic_parsed.lg,test_semantic.cpp,test_semantic_log.txt)
 	$(call test_parser_at,tests/test_codegen.lg,test_codegen_tokens.txt,test_codegen_parsed.lg,test_codegen.cpp,test_codegen_log.txt)
 
-test_code_gen: create_folders
+test_code_gen: create_folders parser
 	$(call yellow,Testing code generation)
 	$(call test_parser_at,examples/polymultiply.lg,polymultiply_tokens.txt,polymultiply_parsed.lg,polymultiply.cpp,polymultiply_log.txt)
 	g++ -std=c++20 -g -Iinclude tests/cpp_out/polymultiply.cpp lib/expr_base.cpp -o bin/polymultiply
