@@ -123,10 +123,14 @@ function        :  FUNC funcDef  '{' {
                         curr_table = new_table;
                     }
                     else {
+                        $$.error = true;
                         yyerror("Function Redefined!!");
                     }
                 } statements '}'    {
-                    curr_table = curr_table->parent->parent;
+                    curr_table = curr_table->parent;
+                    if (!$$.error){
+                        curr_table = curr_table->parent;
+                    }
                     char *icode = increase_indent($5.code, 1);
                     $$.code = format_string("%s{\n%s}\n\n", $2.code, icode);
                     free($2.code);
@@ -1478,6 +1482,7 @@ void yyerror(char * msg){
     if (prev_err == NULL){
         prev_err = e;
         err = e;
+        err->next = NULL;
     } else {
         prev_err->next = e;
         prev_err = e;

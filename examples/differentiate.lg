@@ -3,33 +3,6 @@ struct hehe {
     int deg;
 };
 
-func curve input_poly(int n){
-    curve f(x);
-    int i;
-    for i in 0..n{
-        f = f + $x^i;
-    }
-    f(x = 1);
-    return f;
-}
-
-func void print_poly(curve f){
-    hehe h;
-    vector<int> a = h.coeff;
-}
-
-func curve sin(curve x){
-    vector<int> v;
-}
-
-func curve cos(curve x){
-    
-}
-
-func void print(string s){
-
-}
-
 func int main(){
     curve f(x,y), g(x);
     f = input_poly(5);

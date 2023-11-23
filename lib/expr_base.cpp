@@ -602,6 +602,8 @@ void after_push_plus(int index, vector<Expression>& exprs){
 
 // override for + operator
 Expression Expression::operator+(Expression expr){
+    // cout << "here" << endl;
+    // cout << *this << "\n" << expr << endl;
     Expression exp = {PLUS};
 
     // if this has + operator then push its exprs to new expr
@@ -1036,13 +1038,24 @@ Expression operator/(Complex c, Expression exp){
 
 Expression Expression::operator^(double d){
 
-    Expression exp;
-    exp = *this;
+    Expression exp = 1, tmp = *this;
 
     if (this->type == CONSTANT)
         exp = pow(this->coeff, d);
-    else
+    else if (this->type == SYMBOL || this->type == FUNCTION){
         exp.power *= d;
+    } else {
+        if (d != (int)d)
+            fprintf(stderr, "Warning: power on expresssion in not int");
+        int t = (int)d;
+        while (t){
+            if (t%2){
+                exp = exp * tmp;
+            }
+            tmp = tmp * tmp;
+            t /= 2;
+        }
+    }
 
     return exp;
 }

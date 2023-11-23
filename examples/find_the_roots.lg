@@ -1,13 +1,5 @@
 // Finding one of the roots of the function f(x)
 
-func curve abs(curve x){
-
-}
-
-func void print (string s, real x){
-
-}
-
 func int main(){
     int n = 10;
     curve g(x) = $x^2 + 1; // default output real (curve g(x) = curve real g(x))

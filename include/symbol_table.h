@@ -84,6 +84,7 @@ struct state {
     int code_count;             // number of codes in code_list
     bool has_assignargs;        // true if assignargs (eg x=2) is present
     bool is_arrow;              // true if arrow (eg x->y) is present
+    bool error;                 // true if error is present
 };
 
 

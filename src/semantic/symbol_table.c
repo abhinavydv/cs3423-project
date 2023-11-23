@@ -294,6 +294,7 @@ void st_insert_func(symbol_table *st, char *name, var_type type, symbol_table* s
     entry.type->subtype = gen_type(new_id, type);
     entry.subtable = subtable;
     st_insert(st, entry);
+    subtable->parent = st;
 }
 
 
@@ -485,7 +486,7 @@ int is_convertible(var_type *type1, var_type *type2) {
     if (are_types_equal(type1,type2))
         return 0;
     else if (type1->type == CURVE_T){
-        if (is_number(type2) || type2->type == PRIMITIVE && strcmp(type2->name, "Complex") == 0)
+        if (is_number(type2) || type2->type == PRIMITIVE && strcmp(type2->name, "complex") == 0)
             return 0;
     } else if (is_number(type1) && type2->type == CURVE_T){
         return 0;
@@ -921,10 +922,14 @@ bool verify_temp_params(char *name, var_type *type){
 // }
 
 void insert_default_funcs(symbol_table *st) {
-    
+    var_type *dummy_type = malloc(sizeof(var_type));
+    init_var_type(dummy_type);
+    dummy_type->type = SYMBOL_TABLE;
+    st_entry dummy = (st_entry){.name = "", .type = dummy_type, .subtable = st_create(8, st->level+1, false)};
+
     symbol_table *trig_params = st_create(8, st->level+1, true);
-    st_insert_var(trig_params, (id) {"pos", 0, 0, 0}, (var_type) {.type = CURVE_T});
-    trig_params->is_incomplete = true;
+    st_insert_var(trig_params, (id) {"param", 0, 0, 0}, (var_type) {.type = CURVE_T});
+    st_insert(trig_params, dummy);
 
     st_insert_func(st, "sin", (var_type) {.type = CURVE_T}, trig_params);
     st_insert_func(st, "cos", (var_type) {.type = CURVE_T}, trig_params);
@@ -932,8 +937,12 @@ void insert_default_funcs(symbol_table *st) {
     st_insert_func(st, "cot", (var_type) {.type = CURVE_T}, trig_params);
     st_insert_func(st, "sec", (var_type) {.type = CURVE_T}, trig_params);
     st_insert_func(st, "cosec", (var_type) {.type = CURVE_T}, trig_params);
+    st_insert_func(st, "floor", (var_type) {.type = CURVE_T}, trig_params);
+    st_insert_func(st, "ceil", (var_type) {.type = CURVE_T}, trig_params);
+    st_insert_func(st, "abs", (var_type) {.type = CURVE_T}, trig_params);
 
     symbol_table *sum_params = st_create(8, st->level+1, true);
+    st_insert(sum_params, dummy);
     var_type vector_of_curves;
     init_var_type(&vector_of_curves);
     vector_of_curves = (var_type) {.type = PRIMITIVE, .name = "vector", .num_args = 1, .args = malloc(sizeof(var_type))};
@@ -942,7 +951,7 @@ void insert_default_funcs(symbol_table *st) {
 
     st_insert_var(
         sum_params, 
-        (id) {"pos", 0, 0, 0}, 
+        (id) {"param", 0, 0, 0}, 
         vector_of_curves
     );
 
@@ -950,29 +959,32 @@ void insert_default_funcs(symbol_table *st) {
 
     symbol_table *input_poly_params = st_create(8, st->level+1, true);
     st_insert_var(input_poly_params, (id) {"pos", 0, 0, 0}, (var_type) {.type = PRIMITIVE, .name = "int"});
-    input_poly_params->is_incomplete = true;
+    st_insert(input_poly_params, dummy);
 
     st_insert_func(st, "input_poly", (var_type) {.type = CURVE_T}, input_poly_params);
-
-    // st_insert_func(st, "print_poly", (var_type) {.type = CURVE_T}, NULL);
 }
 
 void insert_default_vector_functions(symbol_table *st) {
-    symbol_table *empty_table = st_create(8, st->level+1, true);
-    empty_table->is_incomplete = true;
+    var_type *dummy_type = malloc(sizeof(var_type));
+    init_var_type(dummy_type);
+    dummy_type->type = SYMBOL_TABLE;
+    st_entry dummy = (st_entry){.name = "", .type = dummy_type, .subtable = st_create(8, st->level+1, false)};
 
-    symbol_table *params = st_create(8, st->level+1, true);
-    st_insert_var(params, (id) {"val", 0, 0, 0}, (var_type) {.type = TEMPLATE});
-    params->is_incomplete = true;
+    symbol_table *empty_table = st_create(8, st->level+1, true);
+    st_insert(empty_table, dummy);
+
+    symbol_table *temp_params = st_create(8, st->level+1, true);
+    st_insert_var(temp_params, (id) {"val", 0, 0, 0}, (var_type) {.type = TEMPLATE});
+    st_insert(temp_params, dummy);
 
     symbol_table *at_params = st_create(8, st->level+1, true);
     st_insert_var(at_params, (id) {"pos", 0, 0, 0}, (var_type) {.type = PRIMITIVE, .name = "int"});
-    at_params->is_incomplete = true;
+    st_insert(at_params, dummy);
 
     st_insert_func(st, "size", (var_type) {.type = PRIMITIVE, .name = "int"}, empty_table);
     st_insert_func(st, "max_size", (var_type) {.type = PRIMITIVE, .name = "int"}, empty_table);
     st_insert_func(st, "length", (var_type) {.type = PRIMITIVE, .name = "int"}, empty_table);
-    st_insert_func(st, "push_back", (var_type) {.type = PRIMITIVE, .name = "void"}, params);
+    st_insert_func(st, "push_back", (var_type) {.type = PRIMITIVE, .name = "void"}, temp_params);
     st_insert_func(st, "pop_back", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);
     st_insert_func(st, "insert", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);
     // st_insert_func(st, "erase", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);

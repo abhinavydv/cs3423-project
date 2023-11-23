@@ -10,14 +10,19 @@ func int main(){
     int b = 45;
 
     curve f(x), g(y);
-    f = $x*$x;
+    f = $x*$x*sin($x);
     g = $y*$y*$y;
-    curve h(x, y) = f*g+(f^2)*g;
-    print(f+g, "\n", h, "\n", f(4), "\n", g(3), "\n", h(2, 3), "\n");
-    print(D[h, $x], "\n");
-    print(c, "\n");
+    curve h1 = D[f*g, $x];
+    curve h2 = D[(f^2)*g, $x];
+    curve h(x, y) = h1 + h2;
+    // print(f+g, "\n", h, "\n", f(4), "\n", g(3), "\n", h(2, 3), "\n");
+    // print(D[h, $x], "\n");
+    // print(c, "\n");
+
+    print(h1, "\n", h2, "\n", h, "\n", (f^2), "\n");
 
     vector<int> ab;
     ab.push_back(1);
-    print(ab[0], "\n");
+    // print(ab[0], "\n");
+    // print(D[f, $x], "\n");
 }
