@@ -7,6 +7,7 @@
 .SILENT: test_symtab
 .SILENT: test_complex
 .SILENT: test_code_gen
+.SILENT: test_code_gen_only
 
 yellow = echo $(2) "\033[01;33m$(1)\033[01;0m"
 green = echo $(2) "\033[01;32m$(1)\033[01;0m"
@@ -50,15 +51,25 @@ test_parser_only: create_folders
 	$(call test_parser_at,examples/find_the_roots.lg,find_the_roots_tokens.txt,find_the_roots_parsed.lg,find_the_roots.cpp,find_the_roots_log.txt)
 	$(call test_parser_at,examples/differentiate.lg,differentiate_tokens.txt,differentiate_parsed.lg,differentiate.cpp,differentiate_log.txt)
 	$(call test_parser_at,examples/other_funcs.lg,other_funcs_tokens.txt,other_funcs_parsed.lg,other_funcs.cpp,other_funcs_log.txt)
-	$(call test_parser_at,tests/test_parser.lg,test_parser_tokens.txt,test_parser_parsed.lg,test_parser.cpp,test_parser_log.txt)
-	$(call test_parser_at,tests/test_semantic.lg,test_semantic_tokens.txt,test_semantic_parsed.lg,test_semantic.cpp,test_semantic_log.txt)
-	$(call test_parser_at,tests/test_codegen.lg,test_codegen_tokens.txt,test_codegen_parsed.lg,test_codegen.cpp,test_codegen_log.txt)
+	$(call test_parser_at,tests/test_lg/test_parser.lg,test_parser_tokens.txt,test_parser_parsed.lg,test_parser.cpp,test_parser_log.txt)
+	$(call test_parser_at,tests/test_lg/test_semantic.lg,test_semantic_tokens.txt,test_semantic_parsed.lg,test_semantic.cpp,test_semantic_log.txt)
+	$(call test_parser_at,tests/test_lg/test_codegen.lg,test_codegen_tokens.txt,test_codegen_parsed.lg,test_codegen.cpp,test_codegen_log.txt)
 
 test_code_gen: create_folders parser
 	$(call yellow,Testing code generation)
 	$(call test_parser_at,examples/polymultiply.lg,polymultiply_tokens.txt,polymultiply_parsed.lg,polymultiply.cpp,polymultiply_log.txt)
 	g++ -std=c++20 -g -Iinclude tests/cpp_out/polymultiply.cpp lib/expr_base.cpp -o bin/polymultiply
 	./bin/polymultiply
+	$(call green,Code generation test passed)
+	echo
+
+# set SRC while calling this
+# make test_code_gen_only SRC=<filename_without_extension>
+test_code_gen_only: create_folders
+	$(call yellow,Testing code generation)
+	./bin/parser tests/test_lg/$(SRC).lg -l tests/tokens/$(SRC)_tokens.txt -p tests/parsed/$(SRC)_parsed.lg -c tests/cpp_out/$(SRC).cpp > tests/logs/$(SRC)_log.txt
+	g++ -std=c++20 -g -Iinclude tests/cpp_out/$(SRC).cpp lib/expr_base.cpp -o bin/$(SRC)
+	./bin/$(SRC)
 	$(call green,Code generation test passed)
 	echo
 

@@ -757,6 +757,8 @@ bool check_ret_type(symbol_table *st, var_type *type){
     while (!st->parameters){
         st = st->parent;
     }
+    if (!st->parent)
+        return false;
     for (int i=0; i<st->parent->filled; i++){
         if (st->parent->entries[i].subtable == st){
             if (is_assignable(st->parent->entries[i].type->subtype, type)){
