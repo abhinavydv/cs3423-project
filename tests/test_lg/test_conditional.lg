@@ -9,11 +9,11 @@ func int main()
         {
             if (year % 400 == 0)
             {
-                print(year, is a leap year.\n);
+                print(year, "is not a leap year.\n");
             }
             else
             {
-                print(year, "is not a leap year.\n");
+                print(year, "is a leap year.\n");
             }
         }
         else
