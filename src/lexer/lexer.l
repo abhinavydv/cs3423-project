@@ -22,7 +22,8 @@
 
 
 /*Constant*/
-number          [0-9]   
+number          [0-9]
+imag_num        {number}+j
 alpha           [a-zA-Z_]
 alphaNumber     {number}|{alpha}
 strings         [^\\\"]*(\\.)?
@@ -128,7 +129,12 @@ square          [\[\]]
                             DUP;
                             return REAL;
                         }
-
+{imag_num}              {
+                            ECHO;
+                            fprintf(yyout, "Number Constant: %s\n",yytext);
+                            DUP;
+                            return IMAG;
+                        }
 {data_type}             {
                             ECHO;
                             fprintf(yyout, "Data Type: %s\n",yytext);

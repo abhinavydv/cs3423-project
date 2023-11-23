@@ -127,7 +127,7 @@ class Expression {
     Type type;
     Operator op;
     Function func;
-    double pow;
+    double power;
     Complex coeff;
     double degree;
 
@@ -229,6 +229,7 @@ Expression cot(Expression);
 Expression floor(Expression);
 Expression ceil(Expression);
 Expression abs(Expression);
+Expression sum(vector<Expression>);
 
 Complex sin(Complex);
 Complex cos(Complex);
@@ -239,4 +240,5 @@ Complex cot(Complex);
 Complex floor(Complex);
 Complex ceil(Complex);
 Complex abs(Complex);
+Complex pow(Complex, Complex);
 

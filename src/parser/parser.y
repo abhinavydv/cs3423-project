@@ -43,7 +43,7 @@
 %token CHAR RETURN INTEGER CURVE DOLLAR_ID
 %token FOR STRUCT AUG_ASSIGN DIFF
 %token VOID ARROW COMPARE AND OR SHIFT DECREMENT INCREMENT
-%token REAL IF ELSE DOT PRINT
+%token REAL IF ELSE DOT PRINT IMAG
 %token REPEAT UNTIL BREAK CONTINUE IMPORT TRUE FALSE FUNC
 
 %%
@@ -245,12 +245,14 @@ type            :  DATA_TYPE temp_params {
                     if ($2.type.num_args > 0 && !verify_temp_params($1.text, &$2.type)){
                         yyerror("Invalid template parameters");
                     }
-                    if (strcmp($1.text, "complex") == 0){
-                        $$.type.name = "Complex";
-                    } else {
-                        $$.type.name = $1.text;
-                    }
-                    $$.code = format_string("%s%s", $$.type.name, $2.code);
+                    // if (strcmp($1.text, "complex") == 0){
+                    //     $$.type.name = "Complex";
+                    // } else {
+                    //     $$.type.name = $1.text;
+                    // }
+
+                    $$.type.name = $1.text;
+                    $$.code = format_string("%s%s", lg_type_to_cpp_type($1.text), $2.code);
                     free($2.code);
                 }
                 |  IDENTIFIER   {
@@ -927,6 +929,8 @@ final           :  value    {
                 }
                 |  '(' rhs ')'  {
                     $$ = $2;
+                    $$.code = format_string("(%s)", $2.code);
+                    free($2.code);
                 }
 
 // Values: Numbers, Strings, Booleans, Identifiers, Calls, Object Calls, Differentiate
@@ -981,12 +985,11 @@ value           :  number   {
                     $$.code = format_string("Expression(\"%s\")", $1.text+1);
                 }
 
-// TODO: handle int8, int_16, etc.
 // Numbers: Real and Integer
 number          :  REAL    {
                     init_var_type(&$$.type);
                     $$.type.type = PRIMITIVE;
-                    $$.type.name = "real";
+                    $$.type.name = "double";
 
                     $$.code = format_string("%s", $1.text);
                 }
@@ -996,6 +999,13 @@ number          :  REAL    {
                     $$.type.name = "int";
 
                     $$.code = format_string("%s", $1.text);
+                }
+                |  IMAG {
+                    init_var_type(&$$.type);
+                    $$.type.type = PRIMITIVE;
+                    $$.type.name = "complex";
+                    $1.text[strlen($1.text)-1] = '\0';
+                    $$.code = format_string("Complex(0, %s)", $1.text);
                 }
 
 print           :  PRINT '(' arglist ')' ';'   {
@@ -1014,7 +1024,7 @@ print           :  PRINT '(' arglist ')' ';'   {
                     char *tmp;
                     for (int i=0; i<$3.code_count; i++){
                         tmp = $$.code;
-                        $$.code = format_string("%s << %s", $$.code, $3.code_list[i]);
+                        $$.code = format_string("%s << (%s)", $$.code, $3.code_list[i]);
                         free(tmp);
                     }
                     tmp = $$.code;
@@ -1063,9 +1073,10 @@ call            :  IDENTIFIER '(' arglist ')'   {
                                     yyerror("Too many arguments for curve call");
                                 } else {
                                     char *res = format_string("{\"%s\", %s}", $$.type.vars[0], $3.code_list[0]);
-                                    char *tmp = res;
-                                    for (int i=1; i<$3.type.num_vars; i++){
-                                        res = format_string("%s, {\"%s\", %s}", $$.type.vars[i], $3.code_list[i]);
+                                    char *tmp;
+                                    for (int i=1; i<$3.code_count; i++){
+                                        tmp = res;
+                                        res = format_string("%s, {\"%s\", %s}", res, $$.type.vars[i], $3.code_list[i]);
                                         free(tmp);
                                     }
                                     tmp = res;
@@ -1100,8 +1111,30 @@ obj_call        :  name membership IDENTIFIER '(' arglist ')'   {
                                 if ($5.has_assignargs){
                                     yyerror("normal function calls cannot contain argument assignments");
                                 }
+                                $$.type = *get_obj_func_ret_type(curr_table, ($2.is_arrow ? $1.type.subtype : &$1.type), $3.text, $5.type_list, $5.count);
                             } else if ($$.type.type == CURVE) {
-
+                                if (!$5.has_assignargs) {
+                                    if ($5.code_count == 0){
+                                        yyerror("Curve call must have at least one argument");
+                                    } else {
+                                        if ($5.code_count > $$.type.num_vars){
+                                            yyerror("Too many arguments for curve call");
+                                        } else {
+                                            char *res = format_string("{\"%s\", %s}", $$.type.vars[0], $5.code_list[0]);
+                                            char *tmp;
+                                            for (int i=1; i<$5.code_count; i++){
+                                                tmp = res;
+                                                res = format_string("%s, {\"%s\", %s}", res, $$.type.vars[i], $5.code_list[i]);
+                                                free(tmp);
+                                            }
+                                            tmp = res;
+                                            res = format_string("{%s}", tmp);
+                                            free(tmp);
+                                            free($5.code);
+                                            $5.code = res;
+                                        }
+                                    }
+                                }
                             } else {
                                 yyerror(format_string("Member '%s' of type '%s' is not a function", $3.text, $1.type.subtype->name));
                             }
@@ -1548,6 +1581,9 @@ int main(int argc, char *argv[]){
 
     global_table = st_create(8, 0, false);
     curr_table = global_table;
+
+    insert_default_funcs(global_table);
+    insert_vector_type(global_table);
 
     yyparse();
 

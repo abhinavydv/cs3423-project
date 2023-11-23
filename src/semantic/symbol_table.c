@@ -24,6 +24,27 @@ char * datatype[16][2] = {
         {"complex","9"}
 };
 
+#define LG_TO_CPP_LEN 16
+
+char lg_to_cpp[LG_TO_CPP_LEN][2][32] = {
+        {"bool","bool"},
+        {"char","char"},
+        {"int8","int8_t"},
+        {"uint8","uint8_t"},
+        {"int16","int16_t"},
+        {"uint16","uint16_t"},
+        {"int","int32_t"},
+        {"uint","uint32_t"},
+        {"int32","int32_t"},
+        {"uint32","uint32_t"},
+        {"real32","float"},
+        {"int64","int64_t"},
+        {"uint64","uint64_t"},
+        {"real","double"},
+        {"real64","double"},
+        {"complex", "Complex"}
+};
+
 void myprintf(int level, char *format, ...) {
     va_list args;
     va_start(args, format);
@@ -338,6 +359,12 @@ void st_print_type(var_type *type, int level) {
             }
             myprintf(level, "\n");
             break;
+        case NOT_DEFINED:
+            myprintf(level, "not defined\n");
+            break;
+        case TEMPLATE:
+            myprintf(level, "template:\n");
+            break;
         default:
             myprintf(level, "unknown type\n");
     }
@@ -411,6 +438,15 @@ st_entry *find_in_table(symbol_table *st, char *name) {
         st=st->parent;
     }
     return NULL;
+}
+
+char *lg_type_to_cpp_type(char *name){
+    for (int i = 0; i < LG_TO_CPP_LEN; i++) {
+        if (strcmp(name, lg_to_cpp[i][0]) == 0){
+            return lg_to_cpp[i][1];
+        }
+    }
+    return name;
 }
 
 st_entry *struct_ptr(st_entry *entry, symbol_table *st) {
@@ -735,26 +771,31 @@ bool check_ret_type(symbol_table *st, var_type *type){
 }
 
 bool is_printable(var_type *type){
-    if (type->type == PRIMITIVE && strcmp(type->name, "bool") == 0)
+    if (type->type == PRIMITIVE){
+        // if (strcmp(type->name, "bool") == 0)
+        //     return true;
+        // if (strcmp(type->name, "char") == 0)
+        //     return true;
+        // if (strcmp(type->name, "int") == 0)
+        //     return true;
+        // if (strcmp(type->name, "real") == 0)
+        //     return true;
+
+        for (int i=0; i<LG_TO_CPP_LEN; i++){
+            if (strcmp(type->name, lg_to_cpp[i][0]) == 0){
+                return true;
+            }
+        }
+        if (strcmp(type->name, "string") == 0)
+            return true;
+    }
+    else if (type->type == ARRAY)
+        return false;
+    else if (type->type == POINTER)
         return true;
-    if (type->type == PRIMITIVE && strcmp(type->name, "char") == 0)
+    else if (type->type == CURVE_T)
         return true;
-    if (type->type == PRIMITIVE && strcmp(type->name, "int") == 0)
-        return true;
-    if (type->type == PRIMITIVE && strcmp(type->name, "real") == 0)
-        return true;
-    if (type->type == PRIMITIVE && strcmp(type->name, "Complex") == 0)
-        return true;
-    if (type->type == PRIMITIVE && strcmp(type->name, "string") == 0)
-        return true;
-    if (type->type == PRIMITIVE && strcmp(type->name, "vector") == 0)
-        return true;
-    if (type->type == ARRAY)
-        return true;
-    if (type->type == POINTER)
-        return true;
-    if (type->type == CURVE_T)
-        return true;
+    
     return false;
 }
 
@@ -958,25 +999,21 @@ void insert_vector_type(symbol_table *st) {
     st_insert(st, entry);
 }
 
-var_type *get_obj_func_ret_type(symbol_table* st, char* obj_name, char* name, var_type *type_list, int arg_num) {
-    
+var_type *get_obj_func_ret_type(symbol_table* st, var_type *type, char* name, var_type *type_list, int arg_num) {
+
     var_type *null_return = malloc(sizeof(var_type));
     null_return->type = NOT_DEFINED;
 
-    st_entry *object = find_in_table(st,obj_name);
+    // st_entry *object = find_in_table(st,obj_name);
 
-    if (object==NULL) {
-        return null_return;
-    }
-
-    if (object->type->type != PRIMITIVE || strcmp(object->type->name, "vector") != 0) {
+    if (type->type != PRIMITIVE || strcmp(type->name, "vector") != 0) {
         return null_return;
     }
 
     st_entry *vector = find_in_table(st,"vector");
     st_entry *fn_entry = find_in_one_table(vector->subtable,name);
 
-    if (fn_entry==NULL) {
+    if (fn_entry == NULL) {
         return null_return;
     }
 
@@ -986,15 +1023,22 @@ var_type *get_obj_func_ret_type(symbol_table* st, char* obj_name, char* name, va
     ){
         yyerror("Argument count not matched");
     }
-    else
+    else {
+        var_type *type2;
         for (int i = 0; i < arg_num; i++) {
-            if (!is_assignable(&type_list[i],fn_entry->subtable->entries[i].type)) {
+            if (fn_entry->subtable->entries[i].type->type == TEMPLATE){
+                type2 = &type->args[0];
+            } else {
+                type2 = fn_entry->subtable->entries[i].type;
+            }
+            if (!is_assignable(&type_list[i],type2)) {
                 yyerror("Function arguments not matched");
             }
         }
+    }
 
     if (fn_entry->type->subtype->type == TEMPLATE) {
-        return &object->type->args[0];
+        return &type->args[0];
     }
     else {
         return fn_entry->type->subtype;

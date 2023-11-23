@@ -4,4 +4,20 @@ func int main(){
     for i in 0..10{
         print("a[", i, "]: ", a[i], "\n");
     }
+
+    complex c = 1+2j;
+
+    int b = 45;
+
+    curve f(x), g(y);
+    f = $x*$x;
+    g = $y*$y*$y;
+    curve h(x, y) = f*g+(f^2)*g;
+    print(f+g, "\n", h, "\n", f(4), "\n", g(3), "\n", h(2, 3), "\n");
+    print(D[h, $x], "\n");
+    print(c, "\n");
+
+    vector<int> ab;
+    ab.push_back(1);
+    print(ab[0], "\n");
 }

@@ -91,7 +91,7 @@ Expression fix_singlet(Expression expr){
     if (expr.size() == 1 && expr.func == NO_FUNCTION){
         Expression exp = expr[0];
         exp.coeff *= expr.coeff;
-        exp.pow *= expr.pow;
+        exp.power *= expr.power;
         return fix_singlet(exp);
     }
     return expr;
@@ -159,7 +159,7 @@ Expression::Expression(Function func, Expression expr){
 void Expression::init(){
     this->value = "";
     this->coeff = 1.0;
-    this->pow = 1;
+    this->power = 1;
     this->type = SYMBOL;
     this->op = NO_OPERATOR;
     this->func = NO_FUNCTION;
@@ -249,10 +249,10 @@ double Expression::getDegree(){
     this->degree = 0;
     if (this->type == CONSTANT);
     else if (this->exprs.size() <= 1)
-        this->degree = this->pow;
+        this->degree = this->power;
     else if (this->op == MULTIPLY)
         for (auto expr: *this)
-            this->degree += expr.pow;
+            this->degree += expr.power;
     else if(this->op == DIVIDE || this->op == PLUS)
         return (*this)[0].getDegree();
     return this->degree;
@@ -272,8 +272,14 @@ Expression Expression::reduce(const T func, Expression init){
 
 // TODO: replace Complex with Expression
 Expression Expression::evaluate(map<string, Expression> values){
+    if (this->power != 1){
+        Expression expr = *this;
+        expr.power = 1;
+        auto val = expr.evaluate(values);
+        return val^this->power;
+    }
     if (this->type == CONSTANT)
-        return *this;
+        return pow(this->coeff, this->power);
     else if (this->type == SYMBOL)
         if (values.find(value) == values.end())
             return *this;
@@ -327,13 +333,13 @@ Expression Expression::differentiate(Expression exp){
     if (this->type == CONSTANT){
         return 0;
     }
-    else if (this->pow !=1 ){
+    else if (this->power !=1 ){
         result = *this;
-        result.pow--;
+        result.power--;
         Expression exp2 =  *this;
-        exp2.pow = 1;
+        exp2.power = 1;
         
-        result = result *(result.pow+1) * exp2.differentiate(exp);
+        result = result *(result.power+1) * exp2.differentiate(exp);
     }
     else if (this->type == FUNCTION){
         if (this->func == GIF){
@@ -527,11 +533,11 @@ std::string operator<<(std::string str, const Expression& expr){
             ret = without_trail_0(expr.coeff) + "*" + ret;
 
     // add the power part
-    if (expr.pow != 1){
+    if (expr.power != 1){
         if (expr.op != NO_OPERATOR){
             ret = "(" + ret + ")";
         }
-        ret = ret + "^" + without_trail_0(expr.pow);
+        ret = ret + "^" + without_trail_0(expr.power);
     }
 
     return str + ret;
@@ -704,7 +710,7 @@ void after_push_mult(int index, vector<Expression>& exprs){
 
                 // if expr is not constant then only add the powers
                 if (exprs[index].type != CONSTANT)
-                    expr.pow = exprs[index].pow + exprs[i].pow;
+                    expr.power = exprs[index].power + exprs[i].power;
                 exprs.erase(exprs.begin()+max(index, i));
                 exprs.erase(exprs.begin()+min(index, i));
                 push_in_arr(exprs, expr);
@@ -939,13 +945,13 @@ void cancel_commons(Expression& expr1, Expression& expr2, Expression& original, 
         }
     } else {
         if (eq_without_pow(expr1, expr2, false)){
-            if (expr1.pow == expr2.pow) {
+            if (expr1.power == expr2.power) {
                 expr1 = expr2 = Expression(1);
-            } else if (expr1.pow < expr2.pow) {
-                expr2.pow -= expr1.pow;
+            } else if (expr1.power < expr2.power) {
+                expr2.power -= expr1.power;
                 expr1 = Expression(1);
-            } else if (expr1.pow > expr2.pow) {
-                expr1.pow -= expr2.pow;
+            } else if (expr1.power > expr2.power) {
+                expr1.power -= expr2.power;
                 expr2 = Expression(1);
             }
         }
@@ -1032,14 +1038,18 @@ Expression Expression::operator^(double d){
 
     Expression exp;
     exp = *this;
-    exp.pow *= d;
+
+    if (this->type == CONSTANT)
+        exp = pow(this->coeff, d);
+    else
+        exp.power *= d;
 
     return exp;
 }
 
 Expression Expression::operator^=(double d){
 
-    this->pow *= d;
+    this->power *= d;
     return *this;
 }
 
@@ -1077,7 +1087,7 @@ bool eq_without_pow(Expression expr1, Expression expr2, bool check_coeff=false){
 }
 
 bool is_equal(Expression expr1, Expression expr2, bool check_coeff=false){
-    if (expr1.pow != expr2.pow || expr1.getDegree() != expr2.getDegree())
+    if (expr1.power != expr2.power || expr1.getDegree() != expr2.getDegree())
         return false;
     return eq_without_pow(expr1, expr2, check_coeff);
 }
@@ -1124,10 +1134,10 @@ bool Expression::ltWithoutFunc(Expression& expr){
         // if expr->size != 0 and this->size = 0 then
         // check the powers and then check the value
         else if (this->size() == 0)
-            // if (this->pow == expr.pow)
+            // if (this->power == expr.power)
             //     return this->value < expr.value;
             // else
-            //     return this->pow > expr.pow;
+            //     return this->power > expr.power;
             return true;
         // if this->size is not 0 then reverse
         else if(expr.size() == 0)
@@ -1167,8 +1177,8 @@ bool Expression::operator<(Expression expr){
         return true;
     if (this->func != NO_FUNCTION && expr.func != NO_FUNCTION)
         // compare the powers
-        if (this->pow != expr.pow)
-            return this->pow > expr.pow;
+        if (this->power != expr.power)
+            return this->power > expr.power;
         // compare the functions
         else if (this->func != expr.func)
             return functions[this->func] < functions[expr.func];
@@ -1278,6 +1288,15 @@ Expression abs(Expression expr){
         return abs(expr.getCoeff());
     Expression exp = {ABS, expr};
     return exp;
+}
+
+Expression sum(vector<Expression> exprs){
+    Expression expr = 0;
+
+    for (auto ex: exprs){
+        expr = expr + ex;
+    }
+    return expr;
 }
 
 Complex::Complex(complex<double> c){
@@ -1468,151 +1487,126 @@ Complex Complex::operator^=(double d){
 }
 
 bool Complex::operator==(Complex c){
-
     return (real == c.real && imag == c.imag);
 }
 
 bool Complex::operator==(double d){
-    
     return (real == d && imag == 0);
 }
 
 bool operator==(double d,Complex c){
-    
     return c==d;
 
 }
 
 bool Complex::operator!=(Complex c){
-
     return !(*this == c);
 }
 
 bool Complex::operator!=(double d){
-    
     return !(*this == d);
 }
 
 bool operator!=(double d, Complex c){
-
     return (c != d);
 }
 
 bool Complex::operator<(Complex c){
-
     return (real < c.real || (real == c.real && imag < c.imag));
 }   
 
 bool Complex::operator<(double d){
-    
     return (real < d || (real == d && imag < 0));
 }
 
 bool operator<(double d, Complex c){
-    
     return (c<d);
 }
 
 bool Complex::operator>(Complex c){
-
     return (real > c.real || (real == c.real && imag > c.imag));
 
 }
 
 bool Complex::operator>(double d){
-
     return (real > d || (real == d && imag > 0));
 
 }
 
 bool operator>(double d, Complex c){
-    
     return (c>d);
 
 }
 
 bool Complex::operator<=(Complex c){
-
     return !(*this > c);
 }
 
 bool Complex::operator<=(double d){
-    
     return !(*this > d);
 }
 
 bool operator<=(double d, Complex c){
-    
     return !(c>d);
 }
 
 bool Complex::operator>=(Complex c){
-
     return !(*this < c);
 }
 
 bool Complex::operator>=(double d){
-    
     return !(*this < d);
 }
 
 bool operator>=(double d, Complex c){
-    
     return !(c<d);
 }
 
 ostream& operator<<(ostream& os, const Complex& c){
-
     return os << ("" << c);
 }
 
 std::string operator<<(std::string s, const Complex& c){
-
     return s + without_trail_0(c);
 }
 
 Complex sin(Complex c){
-
     return sin(complex(c.getReal(),c.getImag()));
 
 }
 
 Complex cos(Complex c){
-
     return cos(complex(c.getReal(),c.getImag()));
 }
 
 Complex tan(Complex c){
-
     return tan(complex(c.getReal(),c.getImag()));
 }
 
 Complex cosec(Complex c){
-
     return 1.0/sin(c);
 }
 
 Complex sec(Complex c){
-
     return 1.0/cos(c);
 }
 
 Complex cot(Complex c){
-
     return 1.0/tan(c);
 }
 
 Complex floor(Complex c){
-
     return Complex(floor(c.getReal()),floor(c.getImag()));
 }
 
 Complex ceil(Complex c){
     return Complex(ceil(c.getReal()),ceil(c.getImag()));
-
 }
 
 Complex abs(Complex c){
-
     return Complex(abs(c.getReal()),abs(c.getImag()));
+}
+
+Complex pow(Complex c1, Complex c2){
+    return pow(complex<double>(c1.getReal(), c1.getImag()), complex<double>(c2.getReal(), c2.getImag()));
 }

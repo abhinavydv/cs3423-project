@@ -136,11 +136,12 @@ bool number_comparable(var_type *type); // checks if type is number
 bool is_int(var_type *type); // checks if type is number
 st_entry *find_in_one_table(symbol_table *st, char *name);
 st_entry *find_in_table(symbol_table *st, char *name); // return pointer to entry if found else return NULL
+char *lg_type_to_cpp_type(char *name);
 
 bool is_declared(symbol_table *st, char *name); // checks if variable is declared
 bool is_function_matched(symbol_table*, char*, var_type*, int); // checks if function is matched
 bool is_function_def_matched(symbol_table*, char*, var_type*, int); // checks if function is matched
-var_type *get_obj_func_ret_type(symbol_table* st, char* obj_name, char* name, var_type *type_list, int arg_num); // get the type of function call from object and functin name. Call yyerror and return NULL if not found
+var_type *get_obj_func_ret_type(symbol_table* st, var_type* obj_name, char* name, var_type *type_list, int arg_num); // get the type of function call from object and functin name. Call yyerror and return NULL if not found
 bool is_initializer_list_matched(symbol_table*, var_type *type, var_type *list, int count); // checks if initializer list is compatible with type
 var_type *get_compatible_type_logical(var_type *type1, var_type *type2); // return compatible type of two types for logical operator. call yyerror if not compatible
 var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2); // return compatible type of two types for arithmetic operator. call yyerror if not compatible
