@@ -1,0 +1,15 @@
+
+func int main() 
+{
+    vector<int> dp;
+    dp.push_back(0);
+    dp.push_back(1);
+    int temp;
+    for i in 2..11
+    {
+        temp=dp[i-1]+dp[i-2];
+        dp.push_back(temp); 
+    }
+    print("11th fibonacci number : ",dp[10]);
+    return 0;
+}
