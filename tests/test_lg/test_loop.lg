@@ -11,5 +11,29 @@ func int main()
         dp.push_back(temp); 
     }
     print("11th fibonacci number : ",dp[10]);
+
+
+print("\n");
+
+    int originalNumber, rem, result = 0;
+    originalNumber = 153;
+ 
+    until (originalNumber != 0) repeat
+    {
+        rem = originalNumber%10;
+        result += rem*rem*rem;
+        originalNumber /= 10;
+    }
+ 
+    if(result == number)
+    {
+        print(number, " is an Armstrong number.");
+    }
+    else
+    {
+     print(number, " is not an Armstrong number.");
+    }
+
+
     return 0;
 }
