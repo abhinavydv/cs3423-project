@@ -1,0 +1,21 @@
+// tests types for assignments
+
+func int main() {
+    int a, b, *c;
+    a = 1;
+    b = 2;
+
+    c = &b;
+
+    print(a, " ", b, " ", c, "\n");
+
+    c[0] = 3;
+
+    print(a, " ", b, " ", c, "\n");
+
+    int16 d[4] = {56, 32, 7, 3};
+
+    print(d[0], " ", d[1], " ", d[2], " ", d[3], "\n");
+
+    return 0;
+}

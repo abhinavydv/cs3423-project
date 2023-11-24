@@ -116,4 +116,7 @@ int main(){
     cout << (Expression(x+ tan(x)).differentiate("y"))<< "\n";
     cout << (Expression(4*(x^3) * y * cos(x)))<< "\n";
     cout << (y*cos(x)/(x^4)).differentiate(x) << "\n";
+
+    Expression f = x*x + x + y;
+    cout << f({{"x", y}}) << "\n";
 }
