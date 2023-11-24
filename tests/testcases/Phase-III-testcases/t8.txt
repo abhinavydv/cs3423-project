@@ -1,0 +1,8 @@
+
+func int main() 
+{
+    curve h;
+    real h;
+
+    
+}

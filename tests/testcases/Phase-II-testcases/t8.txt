@@ -1,0 +1,9 @@
+int f(curve x){
+    return x*x;
+}
+
+func int main(){
+    
+
+    return 0;
+}

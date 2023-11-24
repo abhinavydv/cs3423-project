@@ -1,0 +1,15 @@
+func int main() 
+{
+    vector<complex> dp;
+    dp.push_back(0+0j);
+    dp.push_back(1+1j);
+    complex temp;
+    curve f(y);
+    f= $y;
+    
+    for i in 2..11
+    {
+        temp=dp[i-1]+dp[i-2];
+        f(temp); 
+    }
+}

@@ -1,0 +1,9 @@
+func int main(){
+
+    int a;
+
+    a = 1.2 +1j;
+    print("1");
+
+    return 1;
+}
