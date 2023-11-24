@@ -1011,6 +1011,59 @@ void insert_vector_type(symbol_table *st) {
     insert_default_vector_functions(entry.subtable);
     st_insert(st, entry);
 }
+/*
+//brr
+void insert_default_string_functions(symbol_table *st) {
+    var_type *dummy_type = malloc(sizeof(var_type));
+    init_var_type(dummy_type);
+    dummy_type->type = SYMBOL_TABLE;
+    st_entry dummy = (st_entry){.name = "", .type = dummy_type, .subtable = st_create(8, st->level+1, false)};
+
+    symbol_table *empty_table = st_create(8, st->level+1, true);
+    st_insert(empty_table, dummy);
+
+    symbol_table *temp_params = st_create(8, st->level+1, true);
+    st_insert_var(temp_params, (id) {"val", 0, 0, 0}, (var_type) {.type = TEMPLATE});
+    st_insert(temp_params, dummy);
+
+    symbol_table *at_params = st_create(8, st->level+1, true);
+    st_insert_var(at_params, (id) {"pos", 0, 0, 0}, (var_type) {.type = PRIMITIVE, .name = "int"});
+    st_insert(at_params, dummy);
+
+    st_insert_func(st, "size", (var_type) {.type = PRIMITIVE, .name = "int"}, empty_table);
+    st_insert_func(st, "max_size", (var_type) {.type = PRIMITIVE, .name = "int"}, empty_table);
+    st_insert_func(st, "length", (var_type) {.type = PRIMITIVE, .name = "int"}, empty_table);
+    st_insert_func(st, "push_back", (var_type) {.type = PRIMITIVE, .name = "void"}, temp_params);
+    st_insert_func(st, "pop_back", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);
+    st_insert_func(st, "insert", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);
+    // st_insert_func(st, "erase", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);
+    st_insert_func(st, "shrink_to_fit", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);
+    st_insert_func(st, "clear", (var_type) {.type = PRIMITIVE, .name = "void"}, empty_table);
+    st_insert_func(st, "empty", (var_type) {.type = PRIMITIVE, .name = "bool"}, empty_table);
+
+    st_insert_func(st, "front", (var_type) {.type = TEMPLATE}, empty_table);
+    st_insert_func(st, "back", (var_type) {.type = TEMPLATE}, empty_table);
+    // st_insert_func(st, "data", (var_type) {.type = TEMPLATE}, NULL);
+    st_insert_func(st, "at", (var_type) {.type = TEMPLATE}, at_params);
+}
+
+void insert_string_type(symbol_table *st) {
+    st_entry entry;
+    entry.name = "string";
+    entry.type = malloc(sizeof(var_type));
+    init_var_type(entry.type);
+    entry.type->type = PRIMITIVE;
+    entry.type->name = "string";
+    entry.type->num_args = 1;
+    entry.type->args = malloc(sizeof(var_type));
+    entry.type->args[0].type = PRIMITIVE;
+    entry.type->args[0].name = "char";
+    entry.subtable = st_create(8, st->level+1, false);
+    insert_default_string_functions(entry.subtable);
+    st_insert(st, entry);
+}
+//brr
+*/
 
 var_type *get_obj_func_ret_type(symbol_table* st, var_type *type, char* name, var_type *type_list, int arg_num) {
 
