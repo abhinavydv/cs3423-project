@@ -495,7 +495,7 @@ int is_convertible(var_type *type1, var_type *type2) {
     if (type1->type == NOT_DEFINED)
         return -1;
     if (type1->type == PRIMITIVE){
-        if (strcmp(type1->name, "vector") && strcmp(type2->name, "vector")){
+        if (strcmp(type1->name, "vector") == 0 && strcmp(type2->name, "vector") == 0){
             return 0;
         }
         int size1 = getsize(type1->name);
@@ -675,7 +675,7 @@ var_type *get_compatible_type_arithmetic(var_type *type1, var_type *type2){
         type->type = NOT_DEFINED;
         return type;
     }
-    if (a==0 || a==2){
+    if (a==0 || a==1){
         return type2;
     }
     return type1;

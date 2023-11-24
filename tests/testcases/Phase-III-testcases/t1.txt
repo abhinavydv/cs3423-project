@@ -1,0 +1,43 @@
+// tests types for assignments
+struct my_struct {
+    int a;
+    int b;
+    curve c;
+    vector<curve> d;
+};
+
+func int main() {
+    int a, b, *c;
+    a = 1;
+    b = 2;
+
+    c = &b;
+
+    print(a, " ", b, " ", c, "\n");
+
+    c[0] = 3;
+
+    print(a, " ", b, " ", c, "\n");
+
+    int16 d[4] = {56, 32, 7, 3};
+
+    print(d[0], " ", d[1], " ", d[2], " ", d[3], "\n");
+
+    curve c1(x, y) = $x * $x + ($y ^ 3) - 1;
+
+    print(c1, "\n");
+    print(c1(3), "\n");
+
+    print(c1(3, 2), " ", c1(1, 1), " ", c1(10, 3), "\n");
+
+    my_struct s;
+    s.a = 1;
+    s.b = 2;
+    s.c = c1;
+    s.d = {c1, c1^2};
+
+    print(s.a, " ", s.b, " ", s.c, "\n");
+    print(s.d[0], " ", s.d[1], "\n");
+
+    return 0;
+}

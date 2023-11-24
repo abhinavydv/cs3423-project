@@ -120,6 +120,12 @@ int main(){
     // f = x*x + x + y;
     // cout << f({{"x", y}}) << "\n";
 
-    f = x*x + (y^3) - 1;
-    cout << f << "\n";
+    // f = x*x + (y^3) - 1;
+    // cout << f << "\n";
+
+    // cout << without_trail_0(-1.0) << "\n";
+
+    Expression c1 = Expression("x") * Expression("x") + (Expression("y") ^ 3) - 1;
+    cout << c1 << "\n";
+    cout << (c1^2) << "\n";
 }

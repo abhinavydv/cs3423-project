@@ -512,7 +512,6 @@ std::string operator<<(std::string str, const Expression& expr){
                 tmp = "" << exp;
                 if (tmp == "")
                     continue;
-                cout << tmp << endl;
                 if (i != 0 && tmp[0] != '-'){
                     ret.push_back('+');
                 }
@@ -526,7 +525,7 @@ std::string operator<<(std::string str, const Expression& expr){
 
     // add the coeffecient part
     if (expr.coeff!=1.0)
-        if (expr.coeff == -1.0)
+        if (expr.coeff == -1.0 && ret[0] != '-')
             ret = "-" + ret;
         else if(expr.type != CONSTANT)
             ret = without_trail_0(expr.coeff) + "*" + ret;
@@ -1047,6 +1046,7 @@ Expression Expression::operator^(double d){
             fprintf(stderr, "Warning: power on expresssion in not int");
         int t = (int)d;
         while (t){
+
             if (t%2){
                 exp = exp * tmp;
             }
@@ -1620,4 +1620,10 @@ Complex abs(Complex c){
 
 Complex pow(Complex c1, Complex c2){
     return pow(complex<double>(c1.getReal(), c1.getImag()), complex<double>(c2.getReal(), c2.getImag()));
+}
+
+int factorial(int n){
+    if (n == 0)
+        return 1;
+    return n*factorial(n-1);
 }

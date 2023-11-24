@@ -70,7 +70,7 @@ test_code_gen: create_folders parser
 # make test_code_gen_only SRC=<filename_without_extension>
 test_code_gen_only: create_folders
 	$(call yellow,Testing code generation)
-	./bin/parser tests/testcases/$(SRC).txt -l tests/tokens/$(SRC)_tokens.txt -p tests/parsed/$(SRC)_parsed.txt -c tests/cpp_out/$(SRC).cpp > tests/logs/$(SRC)_log.txt
+	./bin/parser tests/testcases/$(SRC).txt -l tests/tokens/$(SRC)_tokens.txt -p tests/parsed/$(SRC)_parsed.txt -c tests/cpp_out/$(SRC).cpp
 	$(call green,Generated)
 	$(call yellow,Running)
 	g++ -std=c++20 -g -Iinclude tests/cpp_out/$(SRC).cpp lib/expr_base.cpp -o bin/$(SRC)

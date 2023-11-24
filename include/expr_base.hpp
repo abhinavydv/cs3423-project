@@ -215,10 +215,6 @@ class Expression {
 };
 
 
-/*
-TODO: Create a class for these functions as some of them would 
-conflict with standard math functions
-*/
 // functions
 Expression sin(Expression);
 Expression cos(Expression);
@@ -242,3 +238,6 @@ Complex ceil(Complex);
 Complex abs(Complex);
 Complex pow(Complex, Complex);
 
+string without_trail_0(Complex val);
+
+int factorial(int);
