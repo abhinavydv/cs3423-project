@@ -1,4 +1,4 @@
-func int f(curve x){
+func curve f(curve x){
     return x*x;
 }
 
@@ -32,7 +32,7 @@ func int main(){
 
     print(D[$y, $x]);
 
-    int a1 = 1+1j;
+    complex a1 = 1+1j;
 
     return 0;
 }

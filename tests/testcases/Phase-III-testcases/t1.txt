@@ -34,7 +34,7 @@ func int main() {
     s.a = 1;
     s.b = 2;
     s.c = c1;
-    s.d = {c1, c1^2};
+    s.d = {c1, c1*c1};
 
     print(s.a, " ", s.b, " ", s.c, "\n");
     print(s.d[0], " ", s.d[1], "\n");

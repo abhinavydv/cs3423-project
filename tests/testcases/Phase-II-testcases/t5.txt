@@ -25,7 +25,5 @@ func int main(){
 
 
     my_struct 3strct;
-    
-    
 }
 

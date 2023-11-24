@@ -12,5 +12,4 @@ func int main(){
     f = $x + $b;
 
     ping(f(1),g(7));
-    
 }

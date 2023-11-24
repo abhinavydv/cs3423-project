@@ -13,7 +13,7 @@ func int main()
     print("11th fibonacci number : ",dp[10]);
 
 
-print("\n");
+    print("\n");
 
 // armstrong number using until loop
     int number, originalNumber, rem, result = 0;

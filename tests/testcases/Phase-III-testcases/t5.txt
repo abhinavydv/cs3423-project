@@ -1,9 +1,22 @@
+struct A{
+    int a;
+    int b;
+    int c;
+};
+
 func int main(){
 
     int a;
 
     a = 1.2 +1j;
     print("1");
+
+    A a1;
+
+    a1.a = 1;
+    a1.b = 2;
+    a1.c = 3;
+    a1.d = 4;
 
     return 1;
 }

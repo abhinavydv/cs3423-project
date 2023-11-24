@@ -3,6 +3,6 @@ func int main()
 {
     curve h;
     real h;
-
-    
+    print(h+2);
+    return 0;
 }

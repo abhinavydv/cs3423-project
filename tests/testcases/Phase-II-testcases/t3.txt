@@ -3,13 +3,15 @@ func int main()
     vector<complex> dp;
     dp.push_back(0+0j);
     dp.push_back(1+1j);
+    dp.push_back(5+1j);
     complex temp;
     curve f(y);
     f= $y;
-    
-    for i in 2..11
+
+    for i in 2..4
     {
         temp=dp[i-1]+dp[i-2];
-        f(temp); 
+        f(temp);
+        print(temp, "\n");
     }
 }
