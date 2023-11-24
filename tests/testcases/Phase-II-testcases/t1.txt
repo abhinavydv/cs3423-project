@@ -1,0 +1,45 @@
+// testcases for :  loops and conditional
+
+func int main()
+{
+    int max=100;
+
+    print("Even numbers from 1 to ", max ,":");
+    for i in 1..max {
+        if (i % 2 == 0) 
+        {
+            print( i , " ");
+        }
+    }
+
+
+    vector<int> vec;
+    vec.push_back(0);
+    vec.push_back(1);
+    int temp;
+    for i in 2..16
+    {
+        temp=vec[i-1]+vec[i-2];
+        vec.push_back(temp); 
+    }
+    print("16th fibonacci number : ",vec[15]);
+
+
+print("\n");
+
+
+    int number, val, rem, result = 0;
+    number=153;
+    val = number;
+ 
+    until (val != 0) repeat
+    {
+        rem = val%10;
+        result += rem;
+        val /= 10;
+    }
+    print("sum of digits:", result);
+ 
+    return 0;
+}
+

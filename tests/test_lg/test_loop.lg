@@ -15,8 +15,10 @@ func int main()
 
 print("\n");
 
-    int originalNumber, rem, result = 0;
-    originalNumber = 153;
+// armstrong number using until loop
+    int number, originalNumber, rem, result = 0;
+    number=153;
+    originalNumber = number;
  
     until (originalNumber != 0) repeat
     {
