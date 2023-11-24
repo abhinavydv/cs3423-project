@@ -399,7 +399,7 @@ square          [\[\]]
                             update_pos_info(&pos_info, pos_info.row+1, 0);
                         }
 {comment}               {fprintf(parsed_file, " ");}    // print a space instead of comment
-.                       {printf("Lexer Error at Line Number %d\n",pos_info.row); fflush(yyout); exit(0);}
+.                       {printf("Lexer Error at Line Number %d\n",pos_info.row+1); fflush(yyout); exit(0);}
 
 %%
 

@@ -1,7 +1,7 @@
 func int main(){
     int c = 97;
-    char a;
-    a = c;
+    char a = 'y';
+    // a = c;
     print(a,"\n");
     a = 'z';
     c = a;

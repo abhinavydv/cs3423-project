@@ -11,6 +11,7 @@ func int main()
             print( i , " ");
         }
     }
+    print("\n");
 
 
     vector<int> vec;
@@ -22,7 +23,7 @@ func int main()
         temp=vec[i-1]+vec[i-2];
         vec.push_back(temp); 
     }
-    print("16th fibonacci number : ",vec[15]);
+    print("16th fibonacci number : ",vec[15], "\n");
 
 
 print("\n");
@@ -38,7 +39,7 @@ print("\n");
         result += rem;
         val /= 10;
     }
-    print("sum of digits:", result);
+    print("sum of digits:", result, "\n");
  
     return 0;
 }

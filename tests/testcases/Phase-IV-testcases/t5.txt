@@ -5,7 +5,7 @@ struct temp {
 
 func int main(){
     curve f(x);
-    f = $x^9 + 2*$a;
+    f = $x^9 + $a;
     
     temp t;
     t.deg = 9;

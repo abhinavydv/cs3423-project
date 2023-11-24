@@ -30,7 +30,7 @@ func int main(){
     print(ab[0], "\n");
     print(D[f, $x], "\n");
 
-    print(D[$y, $x]);
+    print(D[$y, $x], "\n");
 
     complex a1 = 1+1j;
 

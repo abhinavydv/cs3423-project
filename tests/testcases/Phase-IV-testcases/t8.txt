@@ -8,5 +8,4 @@ func int main(){
     g = D[f,D[$x^2,$x]];
 
     print(D[f^g,$a]);
-    
 }

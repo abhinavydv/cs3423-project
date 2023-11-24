@@ -1,19 +1,21 @@
 //tetscases for : curves
 func int main(){
 
-curve f(x), g(y),k(x);
+    curve f(x), g(y),k(x);
 
-   f= $x^4 + 3*$x^2 - 2*$x; 
-   k= $x^2 + 3*$x;  
-   g=$y^3 + 2*$y^2;
-   print("differentiation of f wrt x");
-   print(D[f, $x]);
-   print("differentiation of g wrt y");
-   print(D[g, $y]);
+    f = ($x^4) + ($x^2) - $x; 
+    k = ($x^2) + $x;  
+    g = ($y^3) + ($y^2);
+    print("f: ", f, "\n");
+    print("differentiation of f wrt x\n");
+    print(D[f, $x], "\n");
+    print("g: ", g, "\n");
+    print("differentiation of g wrt y\n");
+    print(D[g, $y], "\n");
 
-   curve h(x);
+    curve h(x);
     h = D[f * k, $x];   
-    print(h);
+    print(h, "\n");
     return 0;
 
 }

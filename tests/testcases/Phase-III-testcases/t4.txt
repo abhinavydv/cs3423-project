@@ -8,7 +8,7 @@ func int main() {
     h = tan($x);
 
     vector<curve> list;
-    list.push_back(1);
+    list.push_back($a);
     list.push_back(f);
     list.push_back(g);
     list.push_back(h);
@@ -32,6 +32,7 @@ func int main() {
                 temp += A[i][k]*B[k][j];
             }
             C[i][j] = temp;
+            print(C[i][j], "\n");
         }
     }
 
