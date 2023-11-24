@@ -17,9 +17,9 @@ red = echo $(2) "\033[01;31m$(1)\033[01;0m"
 test_parser_at = $(call yellow,Testing at $(1),-n); ./bin/parser $(1) -l tests/tokens/$(2) -p tests/parsed/$(3) -c tests/cpp_out/$(4) > tests/logs/$(5) && $(call green, \tOK) || $(call red, \tFailed)
 
 create_folders:
-	mkdir -p bin tests/parsed/Phase-II-testcases tests/tokens/Phase-II-testcases tests/logs/Phase-II-testcases tests/cpp_out/Phase-II-testcases
-	mkdir -p tests/parsed/Phase-III-testcases tests/tokens/Phase-III-testcases tests/logs/Phase-III-testcases tests/cpp_out/Phase-III-testcases
-	mkdir -p tests/parsed/Phase-IV-testcases tests/tokens/Phase-IV-testcases tests/logs/Phase-IV-testcases tests/cpp_out/Phase-IV-testcases
+	mkdir -p bin/Phase-II-testcases tests/parsed/Phase-II-testcases tests/tokens/Phase-II-testcases tests/logs/Phase-II-testcases tests/cpp_out/Phase-II-testcases
+	mkdir -p bin/Phase-III-testcases tests/parsed/Phase-III-testcases tests/tokens/Phase-III-testcases tests/logs/Phase-III-testcases tests/cpp_out/Phase-III-testcases
+	mkdir -p bin/Phase-IV-testcases tests/parsed/Phase-IV-testcases tests/tokens/Phase-IV-testcases tests/logs/Phase-IV-testcases tests/cpp_out/Phase-IV-testcases
 
 parser: create_folders
 	$(call yellow,Building parser,-n)
