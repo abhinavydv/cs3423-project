@@ -1,0 +1,39 @@
+func int main() {
+    curve f(x);
+    curve g(x);
+    curve h(x);
+
+    f = sin($x);
+    g = cos($x);
+    h = tan($x);
+
+    vector<curve> list;
+    list.push_back(1);
+    list.push_back(f);
+    list.push_back(g);
+    list.push_back(h);
+
+    vector< vector<int> > A,B,C;
+    vector<int> temp = {1,2};
+
+    A.push_back(temp);
+    A.push_back(temp);
+    B.push_back(temp);
+    B.push_back(temp);
+    C.push_back(temp);
+    C.push_back(temp);
+
+    int size = 2;
+
+    for i in 0..2{
+        for j in 0..2{
+            int temp=0;
+            for k in 0..2{
+                temp += A[i][k]*B[k][j];
+            }
+            C[i][j] = temp;
+        }
+    }
+
+    
+}

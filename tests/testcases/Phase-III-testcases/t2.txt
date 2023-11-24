@@ -1,0 +1,11 @@
+func int main(){
+    int c = 97;
+    char a;
+    a = c;
+    print(a,"\n");
+    a = 'z';
+    c = a;
+    print(c,"\n");
+    complex d = a;
+    print(d,"\n");
+}
