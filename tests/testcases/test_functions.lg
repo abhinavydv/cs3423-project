@@ -1,0 +1,8 @@
+func int recursion(int limit) {
+    return 1 + recursion(limit-1);
+}
+
+func int main() {
+    int limit = 10;
+    print(recursion(limit),"\n");
+}

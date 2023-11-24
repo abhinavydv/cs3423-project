@@ -1,0 +1,49 @@
+struct Name {
+    string first_name;
+    string middle_name;
+    string last_name;
+}
+struct Dob {
+    int day;
+    string month;
+    int year;
+}
+
+struct Nativity {
+    string state;
+    string country;
+}
+;
+struct person {
+    Name name;
+    Dob dob;
+    Nativity nativity;
+}
+
+func void print_details(person Person){
+    print(Person.name.first_name," ", Person.name.middle_name," ",Person.name.last_name," \n");
+    print(Person.dob.day," ", Person.dob.month," ",Person.dob.year," \n");
+    print(Person.nativity.state," ", Person.nativity.country," \n");
+}
+func person fill_fake_details(person Person){
+    Person.name.first_name = "Jhonny";
+    Person.name.last_name = "Sins";
+
+    Person.dob.day = 11;
+    Person.dob.month = "November";
+    Person.dob.year = 1969;
+
+    Person.nativity.state = "Dholakpur";
+    Person.nativity.country = "India" ;
+
+    return Person;
+}
+
+func int main () {
+    person p1;
+    p1.name.first_name = "hehe";
+    print(p1.name.first_name,"\n");
+    p1 = fill_fake_details(p1);
+    print_details(p1);
+    ;;;;;;;;;;;;;;;;;;;;;return 0;
+}
