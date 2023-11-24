@@ -1,0 +1,10 @@
+func int main() {
+    curve f(x);
+    curve g(x);
+    f = $x;
+    g = sin($x);
+    print(D[$x,f]);
+    print(D[g,f]);
+    print(D[g*g,f]);
+    print(D[f,g*g*g*g]);
+}

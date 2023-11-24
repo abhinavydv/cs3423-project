@@ -191,7 +191,6 @@ int push_in_arr(vector<Expression>& exprs, Expression expr){
             break;
         index++;
     }
-    // cout << "index: " << index << " " << expr << " " << (index<exprs.size() ? (expr < exprs[index]) : true) << endl;
     exprs.insert(exprs.begin()+index, expr);
 
     return index;
@@ -280,11 +279,12 @@ Expression Expression::evaluate(map<string, Expression> values){
     }
     if (this->type == CONSTANT)
         return pow(this->coeff, this->power);
-    else if (this->type == SYMBOL)
+    else if (this->type == SYMBOL){
         if (values.find(value) == values.end())
             return *this;
         else
             return Expression(this->coeff * values[this->value]);
+    }
     else if (this->type == FUNCTION){
         Expression expr = this->exprs[0].evaluate(values);
         if (expr.type == CONSTANT){
@@ -325,7 +325,7 @@ Expression Expression::evaluate(map<string, Expression> values){
 Expression Expression::differentiate(Expression exp){
 
     if (exp.type != SYMBOL)
-        throw BugException("Differentiation variable must be a symbol");
+        throw NotDifferentiableException("Differentiation variable must be a symbol");
 
     // const
     Expression result;
@@ -338,7 +338,7 @@ Expression Expression::differentiate(Expression exp){
         result.power--;
         Expression exp2 =  *this;
         exp2.power = 1;
-        
+
         result = result *(result.power+1) * exp2.differentiate(exp);
     }
     else if (this->type == FUNCTION){
@@ -394,8 +394,6 @@ Expression Expression::differentiate(Expression exp){
             }
         }
         else if (this->op == DIVIDE){
-            // cout <<"Here "<< this->exprs[0] << endl;
-            // return  - (4* (Expression("x")^3) * Expression("y") * cos(Expression("x")));
 
             result = ((this->exprs[0].differentiate(exp) * this->exprs[1]) - (this->exprs[1].differentiate(exp) * this->exprs[0]))/ ((this->exprs[1]) ^ 2);
         }
@@ -514,6 +512,7 @@ std::string operator<<(std::string str, const Expression& expr){
                 tmp = "" << exp;
                 if (tmp == "")
                     continue;
+                cout << tmp << endl;
                 if (i != 0 && tmp[0] != '-'){
                     ret.push_back('+');
                 }
@@ -602,8 +601,6 @@ void after_push_plus(int index, vector<Expression>& exprs){
 
 // override for + operator
 Expression Expression::operator+(Expression expr){
-    // cout << "here" << endl;
-    // cout << *this << "\n" << expr << endl;
     Expression exp = {PLUS};
 
     // if this has + operator then push its exprs to new expr
@@ -1043,6 +1040,7 @@ Expression Expression::operator^(double d){
     if (this->type == CONSTANT)
         exp = pow(this->coeff, d);
     else if (this->type == SYMBOL || this->type == FUNCTION){
+        exp = *this;
         exp.power *= d;
     } else {
         if (d != (int)d)

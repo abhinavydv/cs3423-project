@@ -1,0 +1,31 @@
+int a, *b, *c[34];
+
+struct my_struct {
+    int a;
+    curve c;
+    my_struct *d;
+};
+
+func int foo(int a[23]){
+    return a[2]**b;
+}
+
+func curve bar(curve a){
+    return a+34;
+}
+
+func int main(){
+    int a[34];
+    curve b;
+    int *d;
+    int c;
+    c = *d;
+    foo(a);
+    curve asdf = $x + $x^2;
+
+
+    my_struct 3strct;
+    
+    
+}
+

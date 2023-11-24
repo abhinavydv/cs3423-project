@@ -1,0 +1,16 @@
+string s;
+
+func int ping(int i,string j){
+
+    curve h(x);
+
+    return h(i);
+}
+func int main(){
+    curve f(x), g(y);
+    g = $y*$y;
+    f = $x + $b;
+
+    ping(f(1),g(7));
+    
+}

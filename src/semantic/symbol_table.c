@@ -483,13 +483,12 @@ int getsize(char * typename){
 }
 
 int is_convertible(var_type *type1, var_type *type2) {
-    if (are_types_equal(type1,type2))
+    if (are_types_equal(type1,type2)){
         return 0;
+    }
     else if (type1->type == CURVE_T){
         if (is_number(type2) || type2->type == PRIMITIVE && strcmp(type2->name, "complex") == 0)
             return 0;
-    } else if (is_number(type1) && type2->type == CURVE_T){
-        return 0;
     }
     if (type1->type != type2->type)
         return -1;

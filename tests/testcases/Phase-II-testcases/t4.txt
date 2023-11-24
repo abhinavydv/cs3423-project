@@ -1,0 +1,70 @@
+struct Hello{
+    int a, b;
+    curve c;
+    int *d[10];
+}
+
+int b;
+
+func/*fgj*/int main(){
+    b = 1;
+    int a = 1;
+    int *c;
+    int e, f;
+    int /* hehehe */ d = 4;
+    d = d = 6;
+
+    if (a && 1)
+    {
+    }
+
+    d = *c;
+
+    c[5] = a + b - (d * e) / (f % c[1]--);
+
+    return 0;
+}
+
+func int hehe(int *a[2], int b){
+    return a[1][2]!+!b;
+    int ad;
+    curve c = 1;
+
+    if (true){
+        if (true){
+
+        } else {
+
+        }
+    } else if (false){
+        for i in 1..100..10{
+            if (true){
+
+            } else {
+
+            }
+        }
+    } else {
+
+    }
+
+    until (true) repeat {
+        if (true){
+
+        } else {
+
+        }
+        break;
+    }
+
+    repeat {
+        if (true){
+
+        } else {
+
+        }
+        break;
+    } until (true)
+}
+
+

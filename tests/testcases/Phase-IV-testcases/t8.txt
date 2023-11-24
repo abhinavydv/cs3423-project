@@ -1,0 +1,12 @@
+
+string s;
+func int main(){
+    curve f(y),g(y), h(y);
+
+    f = $x*g($y) + f(g($t));
+
+    g = D[f,D[$x^2,$x]];
+
+    print(D[f^g,$a]);
+    
+}

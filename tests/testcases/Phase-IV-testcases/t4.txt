@@ -1,0 +1,23 @@
+func string thanos(int x) {
+    if(x%2==1){
+        return "Wait";
+    }
+    else return "No";
+}
+
+func string yoda(string action) {
+    string dialogue = action+", you will";
+    return dialogue;
+}
+
+func int main() {
+    int count = 1;
+    until(count!=6) repeat{
+        string dialogue = thanos(count);
+        print(dialogue,"\n");
+        count=count+1;
+        dialogue = yoda(dialogue);
+        print(dialogue,"\n");
+    }
+    return 0;
+}

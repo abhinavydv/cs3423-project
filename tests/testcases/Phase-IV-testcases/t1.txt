@@ -1,0 +1,10 @@
+func int main() {
+    curve f(x);
+    curve g(x) = sin($x);
+    f = $x*$x + $x + $y;
+    f= $x ^ 2;
+    curve h(y);
+    h = f($z);
+    print(f,"\n");
+    print(h,"\n");
+}

@@ -1,0 +1,17 @@
+struct temp {
+    vector<complex> coeff;
+    int deg;
+};
+
+func int main(){
+    curve f(x);
+    f = $x^9 + 2*$a;
+    
+    temp t;
+    t.deg = 9;
+    t.coeff.push_back(f(a = 8));
+    t.coeff.push_back(f(a = 2));
+    t.coff.push_back(f(a = 2));
+    print(t.coeff[0],t.coeff[1]);
+    t = D[f,$x];
+}

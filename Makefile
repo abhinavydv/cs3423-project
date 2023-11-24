@@ -8,6 +8,7 @@
 .SILENT: test_complex
 .SILENT: test_code_gen
 .SILENT: test_code_gen_only
+.SILENT: create_folders
 
 yellow = echo $(2) "\033[01;33m$(1)\033[01;0m"
 green = echo $(2) "\033[01;32m$(1)\033[01;0m"
@@ -16,7 +17,9 @@ red = echo $(2) "\033[01;31m$(1)\033[01;0m"
 test_parser_at = $(call yellow,Testing at $(1),-n); ./bin/parser $(1) -l tests/tokens/$(2) -p tests/parsed/$(3) -c tests/cpp_out/$(4) > tests/logs/$(5) && $(call green, \tOK) || $(call red, \tFailed)
 
 create_folders:
-	@mkdir -p bin tests/parsed tests/tokens tests/logs tests/cpp_out
+	mkdir -p bin tests/parsed/Phase-II-testcases tests/tokens/Phase-II-testcases tests/logs/Phase-II-testcases tests/cpp_out/Phase-II-testcases
+	mkdir -p tests/parsed/Phase-III-testcases tests/tokens/Phase-III-testcases tests/logs/Phase-III-testcases tests/cpp_out/Phase-III-testcases
+	mkdir -p tests/parsed/Phase-IV-testcases tests/tokens/Phase-IV-testcases tests/logs/Phase-IV-testcases tests/cpp_out/Phase-IV-testcases
 
 parser: create_folders
 	$(call yellow,Building parser,-n)
@@ -67,7 +70,9 @@ test_code_gen: create_folders parser
 # make test_code_gen_only SRC=<filename_without_extension>
 test_code_gen_only: create_folders
 	$(call yellow,Testing code generation)
-	./bin/parser tests/testcases/$(SRC).lg -l tests/tokens/$(SRC)_tokens.txt -p tests/parsed/$(SRC)_parsed.lg -c tests/cpp_out/$(SRC).cpp > tests/logs/$(SRC)_log.txt
+	./bin/parser tests/testcases/$(SRC).txt -l tests/tokens/$(SRC)_tokens.txt -p tests/parsed/$(SRC)_parsed.txt -c tests/cpp_out/$(SRC).cpp > tests/logs/$(SRC)_log.txt
+	$(call green,Generated)
+	$(call yellow,Running)
 	g++ -std=c++20 -g -Iinclude tests/cpp_out/$(SRC).cpp lib/expr_base.cpp -o bin/$(SRC)
 	./bin/$(SRC)
 	$(call green,Code generation test passed)
