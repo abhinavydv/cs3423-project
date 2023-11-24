@@ -512,6 +512,7 @@ std::string operator<<(std::string str, const Expression& expr){
                 tmp = "" << exp;
                 if (tmp == "")
                     continue;
+                cout << tmp << endl;
                 if (i != 0 && tmp[0] != '-'){
                     ret.push_back('+');
                 }

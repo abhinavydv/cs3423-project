@@ -17,5 +17,12 @@ func int main() {
 
     print(d[0], " ", d[1], " ", d[2], " ", d[3], "\n");
 
+    curve c1(x, y) = $x * $x + ($y ^ 3) - 1;
+
+    print(c1, "\n");
+    print(c1(3), "\n");
+
+    print(c1(3, 2), " ", c1(1, 1), " ", c1(10, 3), "\n");
+
     return 0;
 }
