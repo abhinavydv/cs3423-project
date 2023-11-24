@@ -25,6 +25,7 @@
     // functions
     int yylex();
     void yyerror(char * msg);
+    void print_errs();
 
     void label(char * msg){
         fprintf(parsed_file," /* %s */ ",msg);
@@ -53,7 +54,7 @@ start           :  program  {
                         fprintf(cpp_file, "%s", $1.code);
                     }
                 }
-                |  error ';' {yyerror("Syntax error");}
+                |  error ';' {yyerror("Syntax error"); print_errs(); exit(1);}
 
 // the program
 program         :  global_decl program  {
@@ -1303,7 +1304,6 @@ name            :  name membership IDENTIFIER    {
                     if ($$.type.type == NOT_DEFINED){
                         yyerror(format_string("Variable '%s' not defined", $1.text));
                     }
-
                     $$.code = format_string("%s", $1.text);
                 }
                 |  starred_name {
@@ -1347,7 +1347,10 @@ differentiate   :  DIFF '[' rhs ',' rhs ']' {
                     if ($3.type.type != CURVE_T){
                         yyerror("Differentiation must be a curve");
                     }
-                    if ($5.type.type != CURVE_T && (strcmp($5.type.name, "string") != 0)){
+                    if (is_number(&$3.type) || ($3.type.type == PRIMITIVE && strcmp($5.type.name, "complex") == 0)){
+                        $3.code = format_string("Expression(\"%s\")", $3.code);
+                    }
+                    if ($5.type.type != CURVE_T && $5.type.type == PRIMITIVE && (strcmp($5.type.name, "string") != 0)){
                         yyerror("Type must be a curve or string");
                     }
                     $$.type.type = CURVE_T;
@@ -1359,6 +1362,9 @@ differentiate   :  DIFF '[' rhs ',' rhs ']' {
                 |  DIFF '[' rhs ',' rhs ',' INTEGER ']' {
                     if ($3.type.type != CURVE_T){
                         yyerror("Differentiation must be a curve");
+                    }
+                    if (is_number(&$3.type) || ($3.type.type == PRIMITIVE && strcmp($5.type.name, "complex") == 0)){
+                        $3.code = format_string("Expression(\"%s\")", $3.code);
                     }
                     if ($5.type.type != CURVE_T && $5.type.type != PRIMITIVE && strcmp($5.type.name, "string") != 0){
                         yyerror("Type must be a curve or string");

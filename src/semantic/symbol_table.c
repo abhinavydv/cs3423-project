@@ -72,7 +72,7 @@ char *format_string(char *format, ...) {
     int curr_pos = 0;
     char *str = malloc(size);
     while (*format){
-        fflush(stdout);
+        // fflush(stdout);
         if (*format == '%'){
             format++;
             switch (*format) {

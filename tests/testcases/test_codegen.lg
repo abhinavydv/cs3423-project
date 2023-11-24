@@ -25,4 +25,6 @@ func int main(){
     ab.push_back(1);
     // print(ab[0], "\n");
     // print(D[f, $x], "\n");
+
+    print(D[$y, x]);
 }
