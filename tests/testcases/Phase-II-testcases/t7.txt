@@ -1,10 +1,12 @@
-
 func int main() 
 {
     vector<int> dp;
-    dp.push_back(0)
+    dp.push_back(0);
     dp.push_back(1);
     int temp;
+    curve f(x);
+
+    f = $x + $5 * $7;
     for i in 2..11
     {
         temp=dp[i-1]+dp[i-2];

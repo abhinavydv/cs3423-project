@@ -1,6 +1,18 @@
+struct l {
+    int coeff;
+    string s;
+    curve g(c);
+};
 
 func int main() 
 {
+    curve temp(k);
+    temp = $k+1;
+    for i in 0..10{
+        l l1 ;
+        l1.g = temp($c)+ i;
+        temp = l1.g;
+    }
     curve h;
     real h;
     print(h+2);
