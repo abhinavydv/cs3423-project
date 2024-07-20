@@ -1,0 +1,28 @@
+func curve foo(curve x){
+    return x*x;
+}
+
+func int main(){
+
+    curve f(x), g(y);
+
+    f = foo($x)*sin($x);
+    g = $y*$y*$y;
+
+    curve h1 = D[f*g, $x];
+    curve h2 = D[(f^2)*g, $x];
+    curve h(x, y) = h1 + h2;
+
+    print("f: ", f, "\ng: ", g, "\n");
+    print("h1: ", h1, "\nh2: ", h2, "\nh: ", h, "\n(f^2): ", (f^2), "\n");
+    print("f+g: ", f+g, "\nh: ", h, "\nf(4): ", f(4), "\ng(3): ", g(3), "\nh(2, 3): ", h(2, 3), "\n");
+    print("dh/dx: ", D[h, $x], "\n");
+
+    print("dy/dx: ", D[$y, $x], "\n");
+
+    complex a1 = 1+1j;
+    print("a1: ", a1, "\n");
+    print("f(a): ", f(a1), "\n");
+ 
+    return 0;
+}

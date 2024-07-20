@@ -954,6 +954,8 @@ void cancel_commons(Expression& expr1, Expression& expr2, Expression& original, 
             }
         }
     }
+    expr1 = fix_singlet(expr1);
+    expr2 = fix_singlet(expr2);
     vector<Expression> exprs;
     if (expr1.op == MULTIPLY){
         for (auto &expr: expr1.exprs){
@@ -989,7 +991,6 @@ void cancel_commons(Expression& expr1, Expression& expr2, Expression& original, 
 
 Expression Expression::operator/(Expression expr){
     Expression ret(DIVIDE);
-
     if (this->op == DIVIDE){
         if (expr.op == DIVIDE) {
             ret = (this->exprs[0] * expr.exprs[1]) / (this->exprs[1] * expr.exprs[0]);

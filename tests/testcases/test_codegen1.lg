@@ -40,10 +40,31 @@ func person fill_fake_details(person Person){
 }
 
 func int main () {
+    // structs
     person p1;
     p1.name.first_name = "hehe";
     print(p1.name.first_name,"\n");
     p1 = fill_fake_details(p1);
     print_details(p1);
+
+    // for loop
+    for i in 0..10 {
+        print(i*i+i,"\n");
+    }
+
+    // conditional
+    if (p1.dob.year > 2000) {
+        print("You are a millenial\n");
+    } else {
+        print("You are not a millenial\n");
+    }
+
+    // while loop
+    int j = 0;
+    until (j < 10) repeat {
+        print(j,"\n");
+        j = j + 1;
+    }
+
     ;;;;;;;;;;;;;;;;;;;;;return 0;
 }

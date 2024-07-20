@@ -24,7 +24,7 @@ Project for Compilers - II Course at IITH
 
 ### Future Scope
 - This is a bare minimum implementation of the language. There are many features that can be added to the language.
-- **In built functions**: There are a very few in built functions in the language.
+- **In built functions**: There are a very few in built functions in the language. More functions like integration, solving equations, etc can be added.
 - **Import statements**: Importing other files in the language can be added.
 
 ### Build

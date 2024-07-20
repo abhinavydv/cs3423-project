@@ -1454,6 +1454,7 @@ forLoopTail     :  loopVals DOTS loopVals {label("For loop");}    {
                 }
                 |  value {label("For loop");}   {
                     if (!is_iterable(&$1.type)){
+                        printf("%d\n", $1.type.type);
                         yyerror("For loop must have iterable type");
                     }
                     $$.type = *get_item_type(&$1.type);
@@ -1494,9 +1495,9 @@ void yyerror(char * msg){
         prev_err = e;
     }
 
-    /* printf("%s:%d.%d\n", input_file, pos_info.last_row+1, pos_info.last_col+1);
+    printf("%s:%d.%d\n", input_file, pos_info.last_row+1, pos_info.last_col+1);
     printf("%s\n",msg); */
-    /* exit(1); */
+    exit(1);
 }
 
 void print_errs(){
@@ -1597,6 +1598,8 @@ int main(int argc, char *argv[]){
     insert_vector_type(global_table);
 
     yyparse();
+
+    /* st_print_table(global_table); */
 
     if (err != NULL){
         print_errs();

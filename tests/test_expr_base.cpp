@@ -125,7 +125,14 @@ int main(){
 
     // cout << without_trail_0(-1.0) << "\n";
 
-    Expression c1 = Expression("x") * Expression("x") + (Expression("y") ^ 3) - 1;
-    cout << c1 << "\n";
-    cout << (c1^2) << "\n";
+    // Expression c1 = Expression("x") * Expression("x") + (Expression("y") ^ 3) - 1;
+    // cout << c1 << "\n";
+    // cout << (c1^2) << "\n";
+
+    f = x*x + y*y;
+    Expression g = x;
+
+    auto h = f*(g^2);
+    cout << h << "\n";
+    
 }

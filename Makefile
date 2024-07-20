@@ -9,6 +9,7 @@
 .SILENT: test_code_gen
 .SILENT: test_code_gen_only
 .SILENT: create_folders
+.SILENT: run_testcase
 
 yellow = echo $(2) "\033[01;33m$(1)\033[01;0m"
 green = echo $(2) "\033[01;32m$(1)\033[01;0m"
@@ -71,6 +72,16 @@ test_code_gen: create_folders parser
 test_code_gen_only: create_folders
 	$(call yellow,Testing code generation)
 	./bin/parser tests/testcases/$(SRC).txt -l tests/tokens/$(SRC)_tokens.txt -p tests/parsed/$(SRC)_parsed.txt -c tests/cpp_out/$(SRC).cpp
+	$(call green,Generated)
+	$(call yellow,Running)
+	g++ -std=c++20 -g -Iinclude tests/cpp_out/$(SRC).cpp lib/expr_base.cpp -o bin/$(SRC)
+	./bin/$(SRC)
+	$(call green,Code generation test passed)
+	echo
+
+run_testcase: create_folders
+	$(call yellow,Running testcase)
+	./bin/parser ../testcases/$(SRC).txt -l tests/tokens/$(SRC)_tokens.txt -p tests/parsed/$(SRC)_parsed.txt -c tests/cpp_out/$(SRC).cpp
 	$(call green,Generated)
 	$(call yellow,Running)
 	g++ -std=c++20 -g -Iinclude tests/cpp_out/$(SRC).cpp lib/expr_base.cpp -o bin/$(SRC)
